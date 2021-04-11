@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>퀴즈 페이지</title>
+    <script src="../static/js/quiz.js"></script>
+    <script>
+        document.getElementById("quiz").onload = getRandomImageUrl();
+
+        async function getRandomImageUrl() {
+            new_url = await fetch("../quiz/new")
+            data = new_url.text()
+            json = JSON.parse(await data);
+            url = json["path"]
+            document.getElementById('quiz').src = url;
+            document.getElementById('contain-answer').title = urlToFileName(url);
+            answerClear();
+        }
+    </script>
+    <style>
+        #contain-answer{
+            pointer-events:none;
+        }
+    </style>
+</head>
+<body>
+    <div id="contain-answer">
+        <img src="" alt="image" id="quiz">
+    </div>
+    <form>
+        <label for="answer">정답 : </label>
+        <input type="text" id="answer">
+        <input type="button" value="제출" onclick="isCorrect()">
+        <input type="button" value="정답" onclick="showAnswer()">
+        <input type="button" value="다음" onclick="getRandomImageUrl()">
+    </form>
+    <div id="show-answer">
+    </div>
+
+</body>
+</html>

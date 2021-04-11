@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>quiz</title>
+    <script src="../static/js/quiz.js"></script>
+    <style>
+        #incorrect-sheet-table{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="contain-answer">
+        <img src="" alt="image" id="quiz">
+    </div>
+    <form>
+        <label for="answer">정답 : </label>
+        <input type="text" id="answer">
+        <input type="button" value="제출" onclick="isCorrect()">
+        <input type="button" value="정답" onclick="showAnswer()">
+        <input type="button" value="다음" onclick="nextImage()">
+    </form>
+    <div id="score">
+        정답 개수 :
+        <div id="correct">
+            0
+        </div>
+        오답 개수 :
+        <div id="incorrect">
+            0
+        </div>
+    </div>
+    <div id="show-answer"></div>
+    <div id="incorrect-sheet">
+        오답 노트 <button onclick="toggleFunc()" id="toggleButton"> 접기 </button>
+    <table id="incorrect-sheet-table">
+        <tr></tr> <tr></tr>
+    </table>
+    </div>
+</body>
+    <script>
+        function toggleFunc(){
+            target = document.getElementById('incorrect-sheet-table');
+            if (target.style.display === "none"){
+                target.style.display = "block";
+                document.getElementById('toggleButton').innerText = "접기";
+            } else{
+                target.style.display = "none"
+                document.getElementById('toggleButton').innerText = "펼치기";
+            }
+        }
+        chars = {{order|safe}};
+        arrayNum = 0;
+        document.getElementById("quiz").src = chars[arrayNum];
+        document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+        function nextImage(){
+            arrayNum += 1;
+            if (arrayNum < chars.length) {
+                document.getElementById("quiz").src = chars[arrayNum];
+                document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+            }
+            else{
+                document.getElementById('contain-answer').innerHTML = "퀴즈 종료.";
+            }
+            answerClear();
+        }
+    </script>
+</html>
