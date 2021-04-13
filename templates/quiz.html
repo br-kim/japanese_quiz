@@ -3,25 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>퀴즈 페이지</title>
-    <script src="../static/js/quiz.js"></script>
-    <script>
-        document.getElementById("quiz").onload = getRandomImageUrl();
-
-        async function getRandomImageUrl() {
-            new_url = await fetch("../quiz/new")
-            data = new_url.text()
-            json = JSON.parse(await data);
-            url = json["path"]
-            document.getElementById('quiz').src = url;
-            document.getElementById('contain-answer').title = urlToFileName(url);
-            answerClear();
-        }
-    </script>
-    <style>
-        #contain-answer{
-            pointer-events:none;
-        }
-    </style>
+    <link rel="stylesheet" href=../static/css/main.css>
 </head>
 <body>
     <div id="contain-answer">
@@ -30,12 +12,16 @@
     <form>
         <label for="answer">정답 : </label>
         <input type="text" id="answer">
-        <input type="button" value="제출" onclick="isCorrect()">
-        <input type="button" value="정답" onclick="showAnswer()">
-        <input type="button" value="다음" onclick="getRandomImageUrl()">
+        <input id="submitBtn" type="button" value="제출">
+        <input id="showAnswerBtn" type="button" value="정답">
+        <input id="getRandomImageBtn" type="button" value="다음">
     </form>
     <div id="show-answer">
     </div>
-
+    <script src="../static/js/quiz.js"></script>
+    <script src="../static/js/btn-event.js"></script>
+    <script>
+        document.getElementById("quiz").onload = getRandomImageUrl();
+    </script>
 </body>
 </html>
