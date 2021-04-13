@@ -38,6 +38,15 @@ async def newquiz(request: Request):
     random.shuffle(all_char)
     return templates.TemplateResponse("new_quiz.html", {"request": request, "order": all_char})
 
+@app.get("/quizdata")
+async def quizdata(request: Request):
+    hiragana_list = os.listdir("./static/img/hiragana")
+    katakana_list = os.listdir("./static/img/katakana")
+    all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
+               [f"./static/img/katakana/{char}" for char in katakana_list]
+    random.shuffle(all_char)
+    return {"order": all_char}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

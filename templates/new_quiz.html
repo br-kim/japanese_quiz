@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>quiz</title>
-
     <link rel="stylesheet" href=../static/css/main.css>
 </head>
 <body>
@@ -36,26 +35,6 @@
     </div>
     <script src="../static/js/quiz.js"></script>
     <script src="../static/js/btn-event.js"></script>
-    <script>
-        const getNextImageBtn = document.getElementById('getNextImageBtn');
-        getNextImageBtn.addEventListener('click',nextImage,false);
-
-        chars = {{order|safe}};
-        arrayNum = 0;
-        document.getElementById("quiz").src = chars[arrayNum];
-        document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
-        function nextImage(){
-            arrayNum += 1;
-            if (arrayNum < chars.length) {
-                document.getElementById("quiz").src = chars[arrayNum];
-                document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
-            }
-            else{
-                document.getElementById('contain-answer').innerHTML = "퀴즈 종료.";
-            }
-            answerClear();
-        }
-    </script>
 </body>
 
 </html>

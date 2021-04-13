@@ -10,7 +10,7 @@ function isCorrect(){
     else{
         alert("오답입니다!");
         score = document.getElementById('incorrect').innerText;
-        score = Number(score) + 1
+        score = Number(score) + 1;
         document.getElementById('incorrect').innerText = score;
         table = document.getElementById('incorrect-sheet-table');
         CellList = [];
@@ -45,10 +45,10 @@ function answerClear(){
 }
 
 async function getRandomImageUrl() {
-    new_url = await fetch("../quiz/new")
-    data = new_url.text()
+    new_url = await fetch("../quiz/new");
+    data = new_url.text();
     json = JSON.parse(await data);
-    url = json["path"]
+    url = json["path"];
     document.getElementById('quiz').src = url;
     document.getElementById('contain-answer').title = urlToFileName(url);
     answerClear();
@@ -60,20 +60,53 @@ function toggleFunc(){
         target.style.display = "block";
         document.getElementById('toggleButton').innerText = "접기";
     } else{
-        target.style.display = "none"
+        target.style.display = "none";
         document.getElementById('toggleButton').innerText = "펼치기";
     }
 }
 
-
+var getNextImage = (async function () {
+    arrayNum = 0;
+    res = await fetch("../quizdata");
+    charsJSON = await res.json();
+    chars = charsJSON['order'];
+    document.getElementById("quiz").src = chars[arrayNum];
+    document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+    return function () {
+        arrayNum += 1;
+        if (arrayNum < chars.length) {
+            document.getElementById("quiz").src = chars[arrayNum];
+            document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+        } else {
+            document.getElementById('contain-answer').innerHTML = "퀴즈 종료.";
+        }
+        answerClear();
+    };
+})();
 
 
 const submitBtn = document.getElementById('submitBtn');
-submitBtn.addEventListener('click',isCorrect,false);
-const showAnswerBtn = document.getElementById('showAnswerBtn');
-showAnswerBtn.addEventListener('click',showAnswer, false);
-const getRandomImageBtn = document.getElementById('getRandomImageBtn');
-getRandomImageBtn.addEventListener('click',getRandomImageUrl,false);
-const toggleBtn = document.getElementById('toggleBtn');
-toggleBtn.addEventListener('click',toggleFunc,false);
+if (submitBtn !== null){
+    submitBtn.addEventListener('click',isCorrect,false);
+}
 
+const showAnswerBtn = document.getElementById('showAnswerBtn');
+if (showAnswerBtn !== null){
+    showAnswerBtn.addEventListener('click',showAnswer, false);
+}
+const getRandomImageBtn = document.getElementById('getRandomImageBtn');
+if (getRandomImageBtn !== null) {
+    getRandomImageBtn.addEventListener('click', getRandomImageUrl, false);
+}
+const toggleBtn = document.getElementById('toggleBtn');
+if (toggleBtn !== null){
+    toggleBtn.addEventListener('click',toggleFunc,false);
+}
+
+const getNextImageBtn = document.getElementById('getNextImageBtn');
+if (getNextImageBtn !== null) {
+    getNextImageBtn.addEventListener('click', async () => {
+        let func = await getNextImage;
+        func();
+    }, false);
+}
