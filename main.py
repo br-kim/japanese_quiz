@@ -3,7 +3,7 @@ import os
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles #aiofiles import
+from fastapi.staticfiles import StaticFiles  # aiofiles import
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -30,13 +30,8 @@ async def new(request: Request):
 
 @app.get("/newquiz")
 async def newquiz(request: Request):
-    all_char = []
-    hiragana_list = os.listdir("./static/img/hiragana")
-    katakana_list = os.listdir("./static/img/katakana")
-    all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
-               [f"./static/img/katakana/{char}" for char in katakana_list]
-    random.shuffle(all_char)
-    return templates.TemplateResponse("new_quiz.html", {"request": request, "order": all_char})
+    return templates.TemplateResponse("new_quiz.html", {"request": request})
+
 
 @app.get("/quizdata")
 async def quizdata(request: Request):

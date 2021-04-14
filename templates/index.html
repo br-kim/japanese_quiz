@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href=../static/css/main.css>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %} 메인 페이지{% endblock %}
+{% block content %}
     <div id="begin-inf">
         <form action="/quiz">
             <input type="submit" value="무한모드">
@@ -16,5 +11,4 @@
             <input type="submit" value="제한모드">
         </form>
     </div>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href=../static/css/main.css>
+    {% endblock %}
+</head>
+<body>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    <div id="footer">
+        {% block footer %}footer{% endblock %}
+    </div>
+    {% block scripts %}
+    <script src="../static/js/quiz.js"></script>
+    <script src="../static/js/btn-event.js"></script>
+    {% endblock %}
+</body>
+</html>

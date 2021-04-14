@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>퀴즈 페이지</title>
-    <link rel="stylesheet" href=../static/css/main.css>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %} 무한 모드 {% endblock %}
+{% block content %}
     <div id="contain-answer">
         <img src="" alt="image" id="quiz">
     </div>
@@ -18,10 +13,10 @@
     </form>
     <div id="show-answer">
     </div>
-    <script src="../static/js/quiz.js"></script>
-    <script src="../static/js/btn-event.js"></script>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
     <script>
         document.getElementById("quiz").onload = getRandomImageUrl();
     </script>
-</body>
-</html>
+{% endblock %}
