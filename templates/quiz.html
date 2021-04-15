@@ -9,8 +9,18 @@
         <input type="text" id="answer">
         <input id="submitBtn" type="button" value="제출">
         <input id="showAnswerBtn" type="button" value="정답">
-        <input id="getRandomImageBtn" type="button" value="다음">
+        <input class="getNextBtn" id="getRandomImageBtn" type="button" value="다음">
     </form>
+    <div id="score">
+        정답 개수 :
+        <div id="correct">
+            0
+        </div>
+        오답 개수 :
+        <div id="incorrect">
+            0
+        </div>
+    </div>
     <div id="show-answer">
     </div>
 {% endblock %}

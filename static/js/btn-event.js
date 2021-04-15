@@ -6,6 +6,7 @@ function isCorrect(){
         score = document.getElementById('correct').innerText;
         score = Number(score) + 1
         document.getElementById('correct').innerText = score;
+        document.getElementsByClassName('getNextBtn')[0].click();
     }
     else{
         alert("오답입니다!");

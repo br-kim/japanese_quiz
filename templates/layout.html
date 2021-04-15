@@ -11,9 +11,11 @@
     <div id="content">
         {% block content %}{% endblock %}
     </div>
-    <div id="footer">
-        {% block footer %}footer{% endblock %}
-    </div>
+    <footer>
+        <div id="footer-content">
+        {% include 'footer.html' %}
+        </div>
+    </footer>
     {% block scripts %}
     <script src="../static/js/quiz.js"></script>
     <script src="../static/js/btn-event.js"></script>
