@@ -4,7 +4,7 @@ function isCorrect(){
     if(answer === quiz){
         alert("정답입니다!");
         score = document.getElementById('correct').innerText;
-        score = Number(score) + 1
+        score = Number(score) + 1;
         document.getElementById('correct').innerText = score;
         document.getElementsByClassName('getNextBtn')[0].click();
     }
