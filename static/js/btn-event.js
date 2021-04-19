@@ -57,11 +57,11 @@ async function getRandomImageUrl() {
 
 function toggleFunc(){
     target = document.getElementById('incorrect-sheet-table');
-    if (target.style.display === "none"){
-        target.style.display = "block";
+    if (target.style.visibility === "hidden"){
+        target.style.visibility = "visible";
         document.getElementById('toggleButton').innerText = "접기";
     } else{
-        target.style.display = "none";
+        target.style.visibility = "hidden";
         document.getElementById('toggleButton').innerText = "펼치기";
     }
 }
