@@ -29,5 +29,12 @@
         <tr></tr> <tr></tr>
     </table>
     </div>
+    {% block scripts %}
+      {{ super() }}
+    <script>
+        getNextImage("GET");
+    </script>
+    {% endblock %}
+
 {% endblock %}
 

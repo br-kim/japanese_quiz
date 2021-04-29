@@ -81,12 +81,6 @@ function getTableData(){
     return data;
 }
 
-requestQuizData = async function (){
-    let r = await fetch("../quizdata");
-    let j = await r.json();
-    return j['order'];
-};
-
 requestQuizDataPost = async function (){
     let form = document.createElement('form');
     tdata = getTableData();
@@ -101,11 +95,28 @@ requestQuizDataPost = async function (){
     form.submit();
 };
 
+requestQuizData = async function (reqMethod){
+    tdata = getTableData();
+    let r;
+    if (reqMethod === "GET"){
+        r = await fetch("../quizdata");
+    }
+    else{
+        // r = await fetch("../quizdata", {
+        //     method: "POST",
+        //     body: JSON.stringify(tdata),
+        // });
+        requestQuizDataPost();
+    }
+    let j = await r.json();
+    return j['order'];
+};
 
 
-var getNextImage = (async function () {
+
+var getNextImage = (async function (reqMethod) {
     arrayNum = 0;
-    chars = await requestQuizData();
+    chars = await requestQuizData(reqMethod);
     document.getElementById("quiz").src = chars[arrayNum];
     document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
     return function () {
@@ -118,7 +129,7 @@ var getNextImage = (async function () {
         }
         answerClear();
     };
-})();
+});
 
 
 const submitBtn = document.getElementById('submitBtn');
@@ -143,15 +154,15 @@ const getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
     getNextImageBtn.addEventListener('click', async () => {
         let func = await getNextImage;
-        func();
+        func("GET");
     }, false);
 }
 
 const incorrectQuizBtn = document.getElementById('incorrect-quizBtn');
 if (incorrectQuizBtn !== null){
     incorrectQuizBtn.addEventListener('click',async () => {
-        let func = await requestQuizDataPost;
-        func();
+        let func = await getNextImage;
+        func("POST");
     },false);
 
 }
