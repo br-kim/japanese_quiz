@@ -59,18 +59,53 @@ function toggleFunc(){
     target = document.getElementById('incorrect-sheet-table');
     if (target.style.visibility === "hidden"){
         target.style.visibility = "visible";
-        document.getElementById('toggleButton').innerText = "접기";
+        document.getElementById('toggleBtn').innerText = "접기";
     } else{
         target.style.visibility = "hidden";
-        document.getElementById('toggleButton').innerText = "펼치기";
+        document.getElementById('toggleBtn').innerText = "펼치기";
     }
 }
 
+function getTableData(){
+    table = document.getElementById('incorrect-sheet-table');
+    arr = [];
+    for(let i = 0; i<table.rows.length; i+=2) {
+        console.log(i);
+        buffer = Array.from(table.rows[i].cells);
+        buffer.forEach(function(elem){
+            html = elem.innerHTML;
+            arr.push(html);
+        });
+    }
+    data = {chars : arr};
+    return data;
+}
+
+requestQuizData = async function (){
+    let r = await fetch("../quizdata");
+    let j = await r.json();
+    return j['order'];
+};
+
+requestQuizDataPost = async function (){
+    let form = document.createElement('form');
+    tdata = getTableData();
+    form.method = "POST";
+    form.action = "../incorrectquiz";
+    let hiddenField = document.createElement('input');
+    hiddenField.type = 'hidden';
+    hiddenField.name = 'chars';
+    hiddenField.value = JSON.stringify(tdata);
+    form.appendChild(hiddenField);
+    document.body.appendChild(form);
+    form.submit();
+};
+
+
+
 var getNextImage = (async function () {
     arrayNum = 0;
-    res = await fetch("../quizdata");
-    charsJSON = await res.json();
-    chars = charsJSON['order'];
+    chars = await requestQuizData();
     document.getElementById("quiz").src = chars[arrayNum];
     document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
     return function () {
@@ -110,4 +145,13 @@ if (getNextImageBtn !== null) {
         let func = await getNextImage;
         func();
     }, false);
+}
+
+const incorrectQuizBtn = document.getElementById('incorrect-quizBtn');
+if (incorrectQuizBtn !== null){
+    incorrectQuizBtn.addEventListener('click',async () => {
+        let func = await requestQuizDataPost;
+        func();
+    },false);
+
 }

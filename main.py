@@ -1,9 +1,13 @@
 import random
 import os
+import json
+
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles  # aiofiles import
+
+from dto.charlist import CharList
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -21,7 +25,7 @@ async def quiz(request: Request):
 
 
 @app.get("/quiz/new")
-async def new(request: Request):
+async def new():
     hiragana_list = os.listdir("./static/img/hiragana")
     img = random.choice(hiragana_list)
     img_path = "./static/img/hiragana/" + img
@@ -42,6 +46,15 @@ async def quizdata(request: Request):
     random.shuffle(all_char)
     return {"order": all_char}
 
+
+@app.post("/incorrectquiz")
+async def incorrect_quiz(request: Request, chars: str = Form(...)):
+    print(chars)
+    char_dict = json.loads(chars)
+    print(char_dict)
+    all_char = char_dict['chars']
+    all_char = ["./" + "/".join(i.split('"')[3].split("/")[3:]) for i in all_char]
+    return templates.TemplateResponse("incorrect.html", {"request": request, "order": all_char})
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
