@@ -38,18 +38,11 @@ async def newquiz(request: Request):
 
 
 @app.get("/quizdata")
-@app.post("/quizdata")
-async def quizdata(request: Request, chars: str = None):
+async def quizdata():
     hiragana_list = os.listdir("./static/img/hiragana")
     katakana_list = os.listdir("./static/img/katakana")
-    print(request.method)
-    if request.method == "GET":
-        all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
-                   [f"./static/img/katakana/{char}" for char in katakana_list]
-    else:
-        if not chars:
-            return "error"
-        all_char = json.loads(chars)
+    all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
+               [f"./static/img/katakana/{char}" for char in katakana_list]
     random.shuffle(all_char)
     return {"order": all_char}
 
