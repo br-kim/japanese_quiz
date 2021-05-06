@@ -38,7 +38,10 @@ async def newquiz(request: Request):
 
 
 @app.get("/quizdata")
-async def quizdata():
+async def quizdata(chars: str = None):
+    if chars:
+        a = ["./"+"/".join(i[1:-1].split("src=")[1][1:-1].split("/")[3:]) for i in chars.split(',')]
+        return {"order": a}
     hiragana_list = os.listdir("./static/img/hiragana")
     katakana_list = os.listdir("./static/img/katakana")
     all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
@@ -46,15 +49,6 @@ async def quizdata():
     random.shuffle(all_char)
     return {"order": all_char}
 
-
-@app.post("/incorrectquiz")
-async def incorrect_quiz(request: Request, chars: str = Form(...)):
-    print(chars)
-    char_dict = json.loads(chars)
-    print(char_dict)
-    all_char = char_dict['chars']
-    all_char = ["./" + "/".join(i.split('"')[3].split("/")[3:]) for i in all_char]
-    return templates.TemplateResponse("incorrect.html", {"request": request, "order": all_char})
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

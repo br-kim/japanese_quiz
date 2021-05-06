@@ -1,18 +1,21 @@
-var btnFunction = {
+let btnFunction = {
+
+    scoreAdd : function(elemId){
+        let score = document.getElementById(elemId).innerText;
+        score = Number(score) + 1;
+        document.getElementById(elemId).innerText = score;
+    },
+
     isCorrect : function () {
         answer = document.getElementById('answer').value;
         quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
-            score = document.getElementById('correct').innerText;
-            score = Number(score) + 1;
-            document.getElementById('correct').innerText = score;
-            document.getElementsByClassName('getNextBtn')[0].click();
+            this.scoreAdd('correct');
+            this.getNextImage();
         } else {
             alert("오답입니다!");
-            score = document.getElementById('incorrect').innerText;
-            score = Number(score) + 1;
-            document.getElementById('incorrect').innerText = score;
+            this.scoreAdd('incorrect');
             table = document.getElementById('incorrect-sheet-table');
             CellList = [];
             begin = table.rows.length - 2;
@@ -34,10 +37,12 @@ var btnFunction = {
                 document.getElementById('contain-answer').title;
         }
     },
+
     showAnswer : function () {
         document.getElementById('show-answer').innerText = "정답은 " +
             document.getElementById('contain-answer').title + "입니다.";
     },
+
     answerClear : function () {
         document.getElementById('answer').value = "";
         document.getElementById('show-answer').innerText = "";
@@ -50,7 +55,7 @@ var btnFunction = {
         url = json["path"];
         document.getElementById('quiz').src = url;
         document.getElementById('contain-answer').title = urlToFileName(url);
-        btnFunction.answerClear();
+        this.answerClear();
     },
 
     toggleFunc : function () {
@@ -68,7 +73,6 @@ var btnFunction = {
         table = document.getElementById('incorrect-sheet-table');
         arr = [];
         for (let i = 0; i < table.rows.length; i += 2) {
-            console.log(i);
             buffer = Array.from(table.rows[i].cells);
             buffer.forEach(function (elem) {
                 html = elem.innerHTML;
@@ -79,29 +83,21 @@ var btnFunction = {
         return data;
     },
 
-    requestQuizDataPost : async function () {
-        let form = document.createElement('form');
-        tdata = btnFunction.getTableData();
-        form.method = "POST";
-        form.action = "../incorrectquiz";
-        let hiddenField = document.createElement('input');
-        hiddenField.type = 'hidden';
-        hiddenField.name = 'chars';
-        hiddenField.value = JSON.stringify(tdata);
-        form.appendChild(hiddenField);
-        document.body.appendChild(form);
-        form.submit();
-    },
-
-    requestQuizData : async function () {
-        let r = await fetch("../quizdata");
+    requestQuizData : async function (kind) {
+        let url = new URL('../quizdata','http://'+window.location.host);
+        let tdata= this.getTableData();
+        if(kind === true){
+            url.search = new URLSearchParams(tdata).toString();
+        }
+        let r = await fetch(url);
         let j = await r.json();
         return j['order'];
     },
 
-    getNextImage : (async function () {
-        arrayNum = 0;
-        chars = await btnFunction.requestQuizData();
+    getNextImage : async function () {
+        let arrayNum = 0;
+        let chars = await this.requestQuizData(false);
+        console.log(arrayNum);
         document.getElementById("quiz").src = chars[arrayNum];
         document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
         return function () {
@@ -114,14 +110,16 @@ var btnFunction = {
             }
             btnFunction.answerClear();
         };
-    }),
+    },
 
-    getNextImageIncorrect : (async function () {
-        arrayNum = 0;
-        chars = await btnFunction.requestQuizData();
+    getNextImageIncorrect : async function () {
+        let arrayNum = 0;
+        let chars = await this.requestQuizData(true);
+        console.log(arrayNum);
         document.getElementById("quiz").src = chars[arrayNum];
         document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
         return function () {
+            console.log("inner function");
             arrayNum += 1;
             if (arrayNum < chars.length) {
                 document.getElementById("quiz").src = chars[arrayNum];
@@ -131,7 +129,7 @@ var btnFunction = {
             }
             btnFunction.answerClear();
         };
-    }),
+    },
 };
 
 const submitBtn = document.getElementById('submitBtn');
@@ -143,10 +141,12 @@ const showAnswerBtn = document.getElementById('showAnswerBtn');
 if (showAnswerBtn !== null){
     showAnswerBtn.addEventListener('click',btnFunction.showAnswer,false);
 }
+
 const getRandomImageBtn = document.getElementById('getRandomImageBtn');
 if (getRandomImageBtn !== null) {
     getRandomImageBtn.addEventListener('click', btnFunction.getRandomImageUrl,false);
 }
+
 const toggleBtn = document.getElementById('toggleBtn');
 if (toggleBtn !== null){
     toggleBtn.addEventListener('click',btnFunction.toggleFunc,false);
@@ -154,14 +154,22 @@ if (toggleBtn !== null){
 
 const getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
+    (async() => {
+        func1 = await btnFunction.getNextImage()
+    })();
     getNextImageBtn.addEventListener('click', async () => {
-        let func = await btnFunction.getNextImage;
-        func();
+        func1();
     }, false);
 }
 
 const incorrectQuizBtn = document.getElementById('incorrect-quizBtn');
 if (incorrectQuizBtn !== null){
     incorrectQuizBtn.addEventListener('click',async () => {
+        await (async () => {
+            func2 = await btnFunction.getNextImageIncorrect();
+        })();
+    },{once:true});
+    incorrectQuizBtn.addEventListener('click',async () =>{
+        func2();
     },false);
 }
