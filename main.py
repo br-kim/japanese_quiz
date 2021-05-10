@@ -25,10 +25,18 @@ async def quiz(request: Request):
 
 
 @app.get("/quiz/new")
-async def new():
-    hiragana_list = os.listdir("./static/img/hiragana")
-    img = random.choice(hiragana_list)
-    img_path = "./static/img/hiragana/" + img
+async def new(hiragana: str = None, katakana: str = None):
+    result = []
+    hiragana_urls = ["./static/img/hiragana/" + i for i in os.listdir("./static/img/hiragana")]
+    katakana_urls = ["./static/img/katakana/" + i for i in os.listdir("./static/img/katakana")]
+    if hiragana:
+        result += hiragana_urls
+    if katakana:
+        result += katakana_urls
+    if hiragana is None and katakana is None:
+        result += hiragana_urls
+        result += katakana_urls
+    img_path = random.choice(result)
     return {"path": img_path}
 
 

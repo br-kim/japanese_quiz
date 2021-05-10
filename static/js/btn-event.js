@@ -49,12 +49,21 @@ let btnFunction = {
         },
 
     getRandomImageUrl : async function () {
-        new_url = await fetch("../quiz/new");
+        let hira = document.getElementById('inf-hiragana');
+        let kata = document.getElementById('inf-katakana');
+        let url = new URL('/quiz/new','http://'+window.location.host);
+        if(hira.checked){
+            url.searchParams.append('hiragana','hiragana');
+        }
+        if(kata.checked){
+            url.searchParams.append('katakana','katakana');
+        }
+        new_url = await fetch(url);
         data = new_url.text();
         json = JSON.parse(await data);
-        url = json["path"];
-        document.getElementById('quiz').src = url;
-        document.getElementById('contain-answer').title = urlToFileName(url);
+        file_url = json["path"];
+        document.getElementById('quiz').src = file_url;
+        document.getElementById('contain-answer').title = urlToFileName(file_url);
         this.answerClear();
     },
 
