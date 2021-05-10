@@ -94,25 +94,30 @@ let btnFunction = {
     },
 
     initRefreshBtn : function (){
-        let refreshBtn = document.createElement('button');
-        refreshBtn.innerText = "새로 고침";
-        refreshBtn.id = "refresherBtn";
-        document.getElementById('refresher-container').appendChild(refreshBtn);
-        document.getElementById("refresherBtn").addEventListener('click',function (){
-            location.reload();
-        },false);
+        if (document.getElementById('refresherBtn') === null){
+            let refreshBtn = document.createElement('button');
+            refreshBtn.innerText = "새로 고침";
+            refreshBtn.id = "refresherBtn";
+            document.getElementById('refresher-container').appendChild(refreshBtn);
+            document.getElementById("refresherBtn").addEventListener('click',function (){
+                location.reload();
+            },false);
+        }
+    },
+
+    changeTitleSrc : function (arr, arrNum){
+        document.getElementById("quiz").src = arr[arrNum];
+        document.getElementById('contain-answer').title = urlToFileName(arr[arrNum]);
     },
 
     getNextImage : async function () {
         let arrayNum = 0;
         let chars = await this.requestQuizData(false);
-        document.getElementById("quiz").src = chars[arrayNum];
-        document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+        btnFunction.changeTitleSrc(chars,arrayNum);
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
-                document.getElementById("quiz").src = chars[arrayNum];
-                document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+                btnFunction.changeTitleSrc(chars,arrayNum);
             } else {
                 btnFunction.initRefreshBtn();
             }
@@ -123,13 +128,11 @@ let btnFunction = {
     getNextImageIncorrect : function () {
         let arrayNum = 0;
         let chars = btnFunction.getTableData();
-        document.getElementById("quiz").src = chars[arrayNum];
-        document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+        btnFunction.changeTitleSrc(chars,arrayNum);
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
-                document.getElementById("quiz").src = chars[arrayNum];
-                document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
+                btnFunction.changeTitleSrc(chars,arrayNum);
             } else {
                 btnFunction.initRefreshBtn();
             }
