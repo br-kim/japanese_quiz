@@ -40,7 +40,10 @@ async def newquiz(request: Request):
 @app.get("/quizdata")
 async def quizdata(chars: str = None):
     if chars:
-        a = ["./"+"/".join(i[1:-1].split("src=")[1][1:-1].split("/")[3:]) for i in chars.split(',')]
+        print(chars)
+        # a = ["./"+"/".join(i[1:-1].split("src=")[1][1:-1].split("/")[3:]) for i in chars.split(',')]
+        a = ["./"+"/".join(i.split("/")[3:]) for i in chars.split(',')]
+        print(a)
         return {"order": a}
     hiragana_list = os.listdir("./static/img/hiragana")
     katakana_list = os.listdir("./static/img/katakana")

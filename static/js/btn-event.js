@@ -11,11 +11,11 @@ let btnFunction = {
         quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
-            this.scoreAdd('correct');
+            btnFunction.scoreAdd('correct');
             this.getNextImage();
         } else {
             alert("오답입니다!");
-            this.scoreAdd('incorrect');
+            btnFunction.scoreAdd('incorrect');
             table = document.getElementById('incorrect-sheet-table');
             CellList = [];
             begin = table.rows.length - 2;
@@ -75,12 +75,11 @@ let btnFunction = {
         for (let i = 0; i < table.rows.length; i += 2) {
             buffer = Array.from(table.rows[i].cells);
             buffer.forEach(function (elem) {
-                html = elem.innerHTML;
-                arr.push(html);
+                let url = elem.firstChild.src;
+                arr.push(url);
             });
         }
-        data = {chars: arr};
-        return data;
+        return arr;
     },
 
     requestQuizData : async function (kind) {
@@ -94,10 +93,19 @@ let btnFunction = {
         return j['order'];
     },
 
+    initRefreshBtn : function (){
+        let refreshBtn = document.createElement('button');
+        refreshBtn.innerText = "새로 고침";
+        refreshBtn.id = "refresherBtn";
+        document.getElementById('refresher-container').appendChild(refreshBtn);
+        document.getElementById("refresherBtn").addEventListener('click',function (){
+            location.reload();
+        },false);
+    },
+
     getNextImage : async function () {
         let arrayNum = 0;
         let chars = await this.requestQuizData(false);
-        console.log(arrayNum);
         document.getElementById("quiz").src = chars[arrayNum];
         document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
         return function () {
@@ -106,26 +114,24 @@ let btnFunction = {
                 document.getElementById("quiz").src = chars[arrayNum];
                 document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
             } else {
-                document.getElementById('contain-answer').innerHTML = "퀴즈 종료.";
+                btnFunction.initRefreshBtn();
             }
             btnFunction.answerClear();
         };
     },
 
-    getNextImageIncorrect : async function () {
+    getNextImageIncorrect : function () {
         let arrayNum = 0;
-        let chars = await this.requestQuizData(true);
-        console.log(arrayNum);
+        let chars = btnFunction.getTableData();
         document.getElementById("quiz").src = chars[arrayNum];
         document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
         return function () {
-            console.log("inner function");
             arrayNum += 1;
             if (arrayNum < chars.length) {
                 document.getElementById("quiz").src = chars[arrayNum];
                 document.getElementById('contain-answer').title = urlToFileName(chars[arrayNum]);
             } else {
-                document.getElementById('contain-answer').innerHTML = "퀴즈 종료.";
+                btnFunction.initRefreshBtn();
             }
             btnFunction.answerClear();
         };
@@ -155,21 +161,23 @@ if (toggleBtn !== null){
 const getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
     (async() => {
-        func1 = await btnFunction.getNextImage()
+        func1 = await btnFunction.getNextImage();
     })();
     getNextImageBtn.addEventListener('click', async () => {
         func1();
     }, false);
 }
 
-const incorrectQuizBtn = document.getElementById('incorrect-quizBtn');
+const incorrectQuizBtn = document.getElementById('incorrectQuizBtn');
 if (incorrectQuizBtn !== null){
-    incorrectQuizBtn.addEventListener('click',async () => {
-        await (async () => {
-            func2 = await btnFunction.getNextImageIncorrect();
-        })();
+    incorrectQuizBtn.addEventListener('click', function () {
+        func2 = btnFunction.getNextImageIncorrect();
     },{once:true});
-    incorrectQuizBtn.addEventListener('click',async () =>{
+}
+
+const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
+if (incorrectQuizNextBtn !== null){
+    incorrectQuizNextBtn.addEventListener('click', function () {
         func2();
     },false);
 }

@@ -4,6 +4,8 @@
     <div id="contain-answer">
         <img src="" alt="image" id="quiz">
     </div>
+    <div id="refresher-container">
+    </div>
     <form>
         <label for="answer">정답 : </label>
         <input type="text" id="answer">
@@ -24,17 +26,11 @@
     <div id="show-answer"></div>
     <div id="incorrect-sheet">
         오답 노트 <button id="toggleBtn"> 접기 </button>
-        <button id="incorrect-quizBtn"> 오답퀴즈 </button>
+        <button id="incorrectQuizBtn"> 오답퀴즈 </button>
+        <button id="incorrectQuizNextBtn">다음</button>
     <table id="incorrect-sheet-table">
         <tr></tr> <tr></tr>
     </table>
     </div>
-    {% block scripts %}
-      {{ super() }}
-    <script>
-        btnFunction.getNextImage();
-    </script>
-    {% endblock %}
-
 {% endblock %}
 
