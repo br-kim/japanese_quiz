@@ -41,24 +41,24 @@ async def new(hiragana: str = None, katakana: str = None):
 
 
 @app.get("/newquiz")
-async def newquiz(request: Request):
+async def newquiz(request: Request, hiragana: str = None, katakana: str = None):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 
 
 @app.get("/quizdata")
-async def quizdata(chars: str = None):
-    # if chars:
-    #     print(chars)
-    #     # a = ["./"+"/".join(i[1:-1].split("src=")[1][1:-1].split("/")[3:]) for i in chars.split(',')]
-    #     a = ["./"+"/".join(i.split("/")[3:]) for i in chars.split(',')]
-    #     print(a)
-    #     return {"order": a}
-    hiragana_list = os.listdir("./static/img/hiragana")
-    katakana_list = os.listdir("./static/img/katakana")
-    all_char = [f"./static/img/hiragana/{char}" for char in hiragana_list] + \
-               [f"./static/img/katakana/{char}" for char in katakana_list]
-    random.shuffle(all_char)
-    return {"order": all_char}
+async def quizdata(hiragana: str = None, katakana: str = None):
+    result = []
+    hiragana_urls = ["./static/img/hiragana/" + i for i in os.listdir("./static/img/hiragana")]
+    katakana_urls = ["./static/img/katakana/" + i for i in os.listdir("./static/img/katakana")]
+    if hiragana:
+        result += hiragana_urls
+    if katakana:
+        result += katakana_urls
+    if hiragana is None and katakana is None:
+        result += hiragana_urls
+        result += katakana_urls
+    random.shuffle(result)
+    return {"order": result}
 
 
 if __name__ == "__main__":

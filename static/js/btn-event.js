@@ -91,12 +91,18 @@ let btnFunction = {
         return arr;
     },
 
-    requestQuizData : async function (kind) {
+    requestQuizData : async function () {
         let url = new URL('../quizdata','http://'+window.location.host);
-        let tdata= this.getTableData();
-        if(kind === true){
-            url.search = new URLSearchParams(tdata).toString();
+        let params = new URLSearchParams(location.search);
+        let hira = params.get('hiragana');
+        let kata = params.get('katakana');
+        if (hira !== null){
+            url.searchParams.append('hiragana','hiragana');
         }
+        if (kata !== null){
+            url.searchParams.append('katakana','katakana');
+        }
+
         let r = await fetch(url);
         let j = await r.json();
         return j['order'];
@@ -121,7 +127,7 @@ let btnFunction = {
 
     getNextImage : async function () {
         let arrayNum = 0;
-        let chars = await this.requestQuizData(false);
+        let chars = await this.requestQuizData();
         btnFunction.changeTitleSrc(chars,arrayNum);
         return function () {
             arrayNum += 1;
