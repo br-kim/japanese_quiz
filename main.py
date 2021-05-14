@@ -7,7 +7,6 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles  # aiofiles import
 
-from dto.charlist import CharList
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")

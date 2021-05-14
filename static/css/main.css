@@ -1,6 +1,6 @@
-/*#contain-answer{*/
-/*    pointer-events:none;*/
-/*}*/
+#contain-answer{
+    pointer-events:none;
+}
 
 #incorrect-sheet-table{
     text-align: center;

@@ -12,29 +12,31 @@ let btnFunction = {
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
-            this.getNextImage();
+            document.getElementsByClassName('getNextBtn')[0].click();
         } else {
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
             table = document.getElementById('incorrect-sheet-table');
-            CellList = [];
-            begin = table.rows.length - 2;
-            cellsLength = table.rows[begin].cells.length;
-            if (cellsLength > 4) {
-                f = Math.floor(cellsLength / 4);
-                begin += 2 * f;
-                table.insertRow();
-                table.insertRow();
-            }
+            if (table !== null){
+                CellList = [];
+                begin = table.rows.length - 2;
+                cellsLength = table.rows[begin].cells.length;
+                if (cellsLength > 4) {
+                    f = Math.floor(cellsLength / 4);
+                    begin += 2 * f;
+                    table.insertRow();
+                    table.insertRow();
+                }
 
-            for (let i = begin; i < begin + 2; i++) {
-                CellList.push(table.rows[i].insertCell(-1));
-            }
-            CellList[0].innerHTML =
-                "<img alt='image' src=" + document.getElementById('quiz').src + ">";
+                for (let i = begin; i < begin + 2; i++) {
+                    CellList.push(table.rows[i].insertCell(-1));
+                }
+                CellList[0].innerHTML =
+                    "<img alt='image' src=" + document.getElementById('quiz').src + ">";
 
-            CellList[1].innerText =
-                document.getElementById('contain-answer').title;
+                CellList[1].innerText =
+                    document.getElementById('contain-answer').title;
+            }
         }
     },
 
@@ -64,7 +66,7 @@ let btnFunction = {
         file_url = json["path"];
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
-        this.answerClear();
+        btnFunction.answerClear();
     },
 
     toggleFunc : function () {
