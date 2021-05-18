@@ -8,10 +8,13 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles  # aiofiles import
 
+import urls
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory='static'), name="static")
 templates = Jinja2Templates(directory='templates')
+
+
 
 
 def gen_img_path(gana: str):
@@ -42,7 +45,7 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/quiz")
+@app.get(urls.inf_quiz_page_url)
 async def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {"request": request})
 
@@ -54,7 +57,7 @@ async def new(hiragana: str = None, katakana: str = None):
     return {"path": img_path}
 
 
-@app.get("/newquiz")
+@app.get(urls.lim_quiz_page_url)
 async def newquiz(request: Request):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 

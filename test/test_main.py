@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
 
+import urls
 from ..apps import app
+
 
 client = TestClient(app)
 
