@@ -14,13 +14,13 @@ def test_main():
 
 def test_get_quiz_path_only_hiragana():
     payload = {'hiragana': 'hiragana'}
-    response = client.get("/quiz/new", params=payload)
+    response = client.get(urls.inf_quiz_data_url, params=payload)
     json = response.json()
     assert json['path'].split('/')[3] == 'hiragana'
 
 
 def test_get_quiz_path_only_katakana():
     payload = {'katakana': 'katakana'}
-    response = client.get("/quiz/new", params=payload)
+    response = client.get(urls.inf_quiz_data_url, params=payload)
     json = response.json()
     assert json['path'].split('/')[3] == 'katakana'

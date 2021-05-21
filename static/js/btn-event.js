@@ -1,5 +1,8 @@
 let btnFunction = {
 
+    randomImageUrl : '/quiz/path',
+    limitQuizImagesUrl : '/newquiz/path-list',
+
     scoreAdd : function(elemId){
         let score = document.getElementById(elemId).innerText;
         score = Number(score) + 1;
@@ -53,7 +56,7 @@ let btnFunction = {
     getRandomImageUrl : async function () {
         let hira = document.getElementById('inf-hiragana');
         let kata = document.getElementById('inf-katakana');
-        let url = new URL('/quiz/new','http://'+window.location.host);
+        let url = new URL(btnFunction.randomImageUrl,'http://'+window.location.host);
         if(hira.checked){
             url.searchParams.append('hiragana','hiragana');
         }
@@ -94,7 +97,7 @@ let btnFunction = {
     },
 
     requestQuizData : async function () {
-        let url = new URL('../quizdata','http://'+window.location.host);
+        let url = new URL(btnFunction.limitQuizImagesUrl,'http://'+window.location.host);
         let params = new URLSearchParams(location.search);
         let hira = params.get('hiragana');
         let kata = params.get('katakana');
