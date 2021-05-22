@@ -6,13 +6,13 @@ def gen_img_path(gana: str):
     return "./static/img/" + gana
 
 
-def gen_img_path_list(hiragana: Optional[str], katakana: Optional[str]):
+def gen_img_path_list(gana_type: Optional[str]):
     result = []
-    if hiragana:
+    if gana_type == 'hiragana':
         result += hiragana_urls
-    if katakana:
+    if gana_type == 'katakana':
         result += katakana_urls
-    if hiragana is None and katakana is None:
+    if gana_type == 'all' or gana_type is None:
         result += hiragana_urls
         result += katakana_urls
     return result

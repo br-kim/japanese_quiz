@@ -1,7 +1,7 @@
 import random
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles  # aiofiles import
 
@@ -24,8 +24,11 @@ async def quiz(request: Request):
 
 
 @app.get(urls.inf_quiz_data_url)
-async def new(hiragana: str = None, katakana: str = None):
-    result = utils.gen_img_path_list(hiragana, katakana)
+async def new(kind: str = None):
+    print(kind)
+    result = utils.gen_img_path_list(kind)
+    if not result:
+        raise HTTPException(status_code=404, detail="Invalid Params")
     img_path = random.choice(result)
     return {"path": img_path}
 
@@ -36,10 +39,27 @@ async def newquiz(request: Request):
 
 
 @app.get(urls.lim_quiz_data_url)
-async def quizdata(hiragana: str = None, katakana: str = None):
-    result = utils.gen_img_path_list(hiragana, katakana)
+async def quizdata(kind: str = None):
+    result = utils.gen_img_path_list(kind)
+    if not result:
+        raise HTTPException(status_code=404, detail="Invalid Params")
     random.shuffle(result)
     return {"order": result}
+
+
+@app.get('/quizdata/{data_type}')
+async def pathdata(data_type: str, kind: str = None):
+    result = utils.gen_img_path_list(kind)
+    if data_type == "path":
+        img_path = random.choice(result)
+        return {"path": img_path}
+
+    elif data_type == "path-list":
+        random.shuffle(result)
+        return {"order": result}
+
+    else:
+        raise HTTPException(status_code=404, detail="Invalid Kind")
 
 
 if __name__ == "__main__":

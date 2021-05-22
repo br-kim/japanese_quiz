@@ -12,8 +12,9 @@
     <div id="begin-full">
         <form action="/newquiz">
             <input type="submit" value="제한모드">
-            <label><input type="checkbox" name="hiragana" value="hiragana" checked> 히라가나 </label>
-            <label><input type="checkbox" name="katakana" value="katakana" checked> 카타가나 </label>
+            <label><input type="radio" name="kind" value="hiragana" > 히라가나 </label>
+            <label><input type="radio" name="kind" value="katakana" > 카타가나 </label>
+            <label><input type="radio" name="kind" value="all" checked> 모든문자 </label>
         </form>
     </div>
 {% endblock %}

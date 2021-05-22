@@ -2,6 +2,9 @@ let btnFunction = {
 
     randomImageUrl : '/quiz/path',
     limitQuizImagesUrl : '/newquiz/path-list',
+    quizPathUrl : '/quizdata',
+    limQuiz: '/path-list',
+    infQuiz: '/path',
 
     scoreAdd : function(elemId){
         let score = document.getElementById(elemId).innerText;
@@ -56,12 +59,15 @@ let btnFunction = {
     getRandomImageUrl : async function () {
         let hira = document.getElementById('inf-hiragana');
         let kata = document.getElementById('inf-katakana');
-        let url = new URL(btnFunction.randomImageUrl,'http://'+window.location.host);
-        if(hira.checked){
-            url.searchParams.append('hiragana','hiragana');
+        let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz,'http://'+window.location.host);
+        if (hira.checked && kata.checked){
+            url.searchParams.append('kind','all');
         }
-        if(kata.checked){
-            url.searchParams.append('katakana','katakana');
+        else if(hira.checked){
+            url.searchParams.append('kind','hiragana');
+        }
+        else if(kata.checked){
+            url.searchParams.append('kind','katakana');
         }
         new_url = await fetch(url);
         data = new_url.text();
@@ -97,15 +103,17 @@ let btnFunction = {
     },
 
     requestQuizData : async function () {
-        let url = new URL(btnFunction.limitQuizImagesUrl,'http://'+window.location.host);
+        let url = new URL(btnFunction.quizPathUrl + btnFunction.limQuiz,'http://'+window.location.host);
         let params = new URLSearchParams(location.search);
-        let hira = params.get('hiragana');
-        let kata = params.get('katakana');
-        if (hira !== null){
-            url.searchParams.append('hiragana','hiragana');
+        let ganaType = params.get('kind');
+        if (ganaType === 'all'){
+            url.searchParams.append('kind',ganaType);
         }
-        if (kata !== null){
-            url.searchParams.append('katakana','katakana');
+        else if (ganaType === 'hiragana'){
+            url.searchParams.append('kind',ganaType);
+        }
+        else if (ganaType === 'katakana'){
+            url.searchParams.append('kind',ganaType);
         }
 
         let r = await fetch(url);
