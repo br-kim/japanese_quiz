@@ -1,3 +1,4 @@
+aiofiles==0.7.0
 altgraph==0.16.1
 asn1crypto==0.24.0
 astroid==2.3.3
@@ -63,6 +64,7 @@ pyOpenSSL==19.1.0
 PyPDF2==1.26.0
 pyrsistent==0.15.7
 python-dateutil==2.8.1
+pywin32==227
 pywin32-ctypes==0.2.0
 pywinpty==0.5.7
 pyzmq==18.1.1
@@ -89,6 +91,7 @@ wcwidth==0.1.8
 webencodings==0.5.1
 Werkzeug==0.16.0
 widgetsnbextension==3.5.1
+WMI==1.5.1
 wrapt==1.11.2
 xdis==4.2.2
 zipp==2.2.0
