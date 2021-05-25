@@ -38,7 +38,7 @@ jupyter-console==6.1.0
 jupyter-core==4.6.2
 jwt==0.6.1
 lazy-object-proxy==1.4.3
-lxml==4.3.3
+lxml==4.6.3
 macholib==1.11
 MarkupSafe==1.1.1
 mccabe==0.6.1
