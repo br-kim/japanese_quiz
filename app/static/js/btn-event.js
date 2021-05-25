@@ -79,7 +79,7 @@ let btnFunction = {
     },
 
     toggleFunc : function () {
-        target = document.getElementById('incorrect-sheet-table');
+        let target = document.getElementById('incorrect-sheet-table');
         if (target.style.visibility === "hidden") {
             target.style.visibility = "visible";
             document.getElementById('toggleBtn').innerText = "접기";
@@ -90,8 +90,8 @@ let btnFunction = {
     },
 
     getTableData : function () {
-        table = document.getElementById('incorrect-sheet-table');
-        arr = [];
+        let table = document.getElementById('incorrect-sheet-table');
+        let arr = [];
         for (let i = 0; i < table.rows.length; i += 2) {
             buffer = Array.from(table.rows[i].cells);
             buffer.forEach(function (elem) {

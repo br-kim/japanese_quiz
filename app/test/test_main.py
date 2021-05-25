@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-import urls
+from .. import urls
 from ..apps import app
 
 
@@ -13,14 +13,14 @@ def test_main():
 
 
 def test_get_quiz_path_only_hiragana():
-    payload = {'hiragana': 'hiragana'}
+    payload = {'kind': 'hiragana'}
     response = client.get(urls.inf_quiz_data_url, params=payload)
     json = response.json()
     assert json['path'].split('/')[3] == 'hiragana'
 
 
 def test_get_quiz_path_only_katakana():
-    payload = {'katakana': 'katakana'}
+    payload = {'kind': 'katakana'}
     response = client.get(urls.inf_quiz_data_url, params=payload)
     json = response.json()
     assert json['path'].split('/')[3] == 'katakana'

@@ -23,14 +23,14 @@ async def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {"request": request})
 
 
-@app.get(urls.inf_quiz_data_url)
-async def new(kind: str = None):
-    print(kind)
-    result = utils.gen_img_path_list(kind)
-    if not result:
-        raise HTTPException(status_code=404, detail="Invalid Params")
-    img_path = random.choice(result)
-    return {"path": img_path}
+# @app.get(urls.inf_quiz_data_url)
+# async def new(kind: str = None):
+#     print(kind)
+#     result = utils.gen_img_path_list(kind)
+#     if not result:
+#         raise HTTPException(status_code=404, detail="Invalid Params")
+#     img_path = random.choice(result)
+#     return {"path": img_path}
 
 
 @app.get(urls.lim_quiz_page_url)
@@ -38,13 +38,13 @@ async def newquiz(request: Request):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 
 
-@app.get(urls.lim_quiz_data_url)
-async def quizdata(kind: str = None):
-    result = utils.gen_img_path_list(kind)
-    if not result:
-        raise HTTPException(status_code=404, detail="Invalid Params")
-    random.shuffle(result)
-    return {"order": result}
+# @app.get(urls.lim_quiz_data_url)
+# async def quizdata(kind: str = None):
+#     result = utils.gen_img_path_list(kind)
+#     if not result:
+#         raise HTTPException(status_code=404, detail="Invalid Params")
+#     random.shuffle(result)
+#     return {"order": result}
 
 
 @app.get('/quizdata/{data_type}')
