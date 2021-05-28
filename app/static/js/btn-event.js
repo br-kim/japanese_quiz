@@ -103,7 +103,7 @@ let btnFunction = {
     },
 
     requestQuizData : async function () {
-        let url = new URL(btnFunction.quizPathUrl + btnFunction.limQuiz,'http://'+window.location.host);
+        let url = new URL(btnFunction.quizPathUrl + btnFunction.limQuiz,window.location.origin);
         let params = new URLSearchParams(location.search);
         let ganaType = params.get('kind');
         if (ganaType === 'all'){
