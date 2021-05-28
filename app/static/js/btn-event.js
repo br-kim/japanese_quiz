@@ -59,7 +59,7 @@ let btnFunction = {
     getRandomImageUrl : async function () {
         let hira = document.getElementById('inf-hiragana');
         let kata = document.getElementById('inf-katakana');
-        let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz,'http://'+window.location.host);
+        let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz, window.location.origin);
         if (hira.checked && kata.checked){
             url.searchParams.append('kind','all');
         }
