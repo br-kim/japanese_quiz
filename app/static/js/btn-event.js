@@ -72,7 +72,7 @@ let btnFunction = {
         new_url = await fetch(url);
         data = new_url.text();
         json = JSON.parse(await data);
-        file_url = json["path"];
+        file_url = json.path;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
