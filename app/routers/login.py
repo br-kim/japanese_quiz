@@ -26,7 +26,7 @@ async def login(request: Request):
         'access_type': 'offline',
         'include_granted_scopes': 'true',
         'state': state,
-        'redirect_uri': 'http://127.0.0.1:8000/forredirect',
+        'redirect_uri': f'{request.base_url}forredirect',
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
@@ -51,7 +51,7 @@ async def forredirect(request: Request):
         "code": code,
         "client_id": osenv.GOOGLE_CLIENT_ID,
         "client_secret": osenv.GOOGLE_CLIENT_SECRET,
-        "redirect_uri": "http://127.0.0.1:8000/forredirect",
+        'redirect_uri': f'{request.base_url}forredirect',
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
