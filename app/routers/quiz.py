@@ -11,20 +11,20 @@ from dependencies import check_user
 
 templates = Jinja2Templates(directory='templates')
 
-router = APIRouter(dependencies=[Depends(check_user)])
+quiz_router = APIRouter(dependencies=[Depends(check_user)])
 
 
-@router.get(urls.inf_quiz_page_url)
+@quiz_router.get(urls.inf_quiz_page_url)
 async def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {"request": request})
 
 
-@router.get(urls.lim_quiz_page_url)
+@quiz_router.get(urls.lim_quiz_page_url)
 async def newquiz(request: Request):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 
 
-@router.get(f'{urls.QUIZ_DATA_BASE_URL}'+'/{data_type}')
+@quiz_router.get(f'{urls.QUIZ_DATA_BASE_URL}' + '/{data_type}')
 async def pathdata(data_type: str, kind: str = None):
     result = utils.gen_img_path_list(kind)
     if data_type == "path":
