@@ -1,3 +1,8 @@
 <a class="nav-menu" href="/">메인</a>
 <a class="nav-menu" href="/quiz">무한모드</a>
 <a class="nav-menu" href="/newquiz">제한모드</a>
+{% if not request.session.get('user_id') %}
+<a class="nav-menu" href="/login">로그인</a>
+{% else %}
+<a class="nav-menu">{{request.session.get('user_name')}}님, 환영합니다!</a>
+{% endif %}

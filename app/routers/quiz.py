@@ -1,30 +1,30 @@
 import random
 
 
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Depends
 from fastapi import Request, HTTPException
+from fastapi.templating import Jinja2Templates
 
 import urls
 import utils
-from fastapi.templating import Jinja2Templates
+from dependencies import check_user
 
 templates = Jinja2Templates(directory='templates')
 
-router = APIRouter()
+quiz_router = APIRouter(dependencies=[Depends(check_user)])
 
 
-@router.get(urls.inf_quiz_page_url)
+@quiz_router.get(urls.inf_quiz_page_url)
 async def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {"request": request})
 
 
-@router.get(urls.lim_quiz_page_url)
+@quiz_router.get(urls.lim_quiz_page_url)
 async def newquiz(request: Request):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 
 
-@router.get('/quizdata/{data_type}')
+@quiz_router.get(f'{urls.QUIZ_DATA_BASE_URL}' + '/{data_type}')
 async def pathdata(data_type: str, kind: str = None):
     result = utils.gen_img_path_list(kind)
     if data_type == "path":
