@@ -18,11 +18,12 @@ async def login(request: Request):
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     request.session['state'] = state
     scope = "https://www.googleapis.com/auth/userinfo.profile"
+    scope2 = "https://www.googleapis.com/auth/userinfo.email"
     print(request.session['state'])
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
-        'scope': scope,
+        'scope': scope+" "+scope2,
         'access_type': 'offline',
         'include_granted_scopes': 'true',
         'state': state,
@@ -55,13 +56,28 @@ async def forredirect(request: Request):
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
+    print(res.json())
     id_token = res.json()['id_token']
     res_info = jwt.decode(id_token, options={"verify_signature": False})
-
+    print(res_info)
     user_email = res_info['email']
     user_name = res_info['given_name']
-    print(res_info)
     request.session['user_id'] = user_email
     request.session['user_name'] = user_name
+    request.session['user_token'] = res.json()['access_token']
     # return f"hello, {user_name}. Your E-Mail ID : {user_email}"
+    return RedirectResponse('/')
+
+
+@login_router.get("/logout")
+async def logout(request: Request):
+    request.session['user_id'] = None
+    request.session['user_name'] = None
+    token = request.session['user_token']
+    request.session['user_token'] = None
+    token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"
+    header = {
+        "Content-type": "application/x-www-form-urlencoded"
+    }
+    requests.post(token_revoke, headers=header)
     return RedirectResponse('/')
