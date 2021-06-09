@@ -3,7 +3,6 @@ from typing import Optional
 
 
 def gen_img_path(gana: str):
-    print(os.getcwd())
     return "./static/img/" + gana
 
 
