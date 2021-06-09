@@ -56,15 +56,16 @@ async def forredirect(request: Request):
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
-    print(res.json())
-    id_token = res.json()['id_token']
+    response_json = res.json()
+    print(response_json)
+    id_token = response_json.get('id_token')
     res_info = jwt.decode(id_token, options={"verify_signature": False})
     print(res_info)
-    user_email = res_info['email']
-    user_name = res_info['given_name']
+    user_email = res_info.get('email')
+    user_name = res_info.get('given_name')
     request.session['user_id'] = user_email
     request.session['user_name'] = user_name
-    request.session['user_token'] = res.json()['access_token']
+    request.session['user_token'] = response_json['access_token']
     # return f"hello, {user_name}. Your E-Mail ID : {user_email}"
     return RedirectResponse('/')
 
@@ -73,7 +74,7 @@ async def forredirect(request: Request):
 async def logout(request: Request):
     request.session['user_id'] = None
     request.session['user_name'] = None
-    token = request.session['user_token']
+    token = request.session.get('user_token')
     request.session['user_token'] = None
     token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"
     header = {
