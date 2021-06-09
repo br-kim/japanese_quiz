@@ -20,12 +20,12 @@ async def quiz(request: Request):
 
 
 @quiz_router.get(urls.lim_quiz_page_url)
-async def newquiz(request: Request):
+async def new_quiz(request: Request):
     return templates.TemplateResponse("new_quiz.html", {"request": request})
 
 
 @quiz_router.get(f'{urls.QUIZ_DATA_BASE_URL}' + '/{data_type}')
-async def pathdata(data_type: str, kind: str = None):
+async def path_data(data_type: str, kind: str = None):
     result = utils.gen_img_path_list(kind)
     if data_type == "path":
         img_path = random.choice(result)
