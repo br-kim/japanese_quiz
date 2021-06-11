@@ -1,11 +1,16 @@
 import uvicorn
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles  # aiofiles import
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 import osenv
 from routers import quiz, login
+import models
+from database import engine
+
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory='static'), name="static")
