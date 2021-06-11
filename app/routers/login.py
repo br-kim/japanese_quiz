@@ -6,6 +6,7 @@ import requests
 import jwt
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 import osenv
@@ -16,6 +17,7 @@ from dependencies import get_db
 
 
 login_router = APIRouter()
+templates = Jinja2Templates(directory='templates')
 
 
 @login_router.get("/login")
@@ -75,7 +77,8 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     email = schemas.UserCreate(email=user_email)
     db_user = crud.get_user_by_email(db, email=user_email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        # raise HTTPException(status_code=400, detail="Email already registered")
+        return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
     crud.create_user(db=db, user=email)
     return RedirectResponse('/')
 
