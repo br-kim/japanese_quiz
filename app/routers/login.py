@@ -4,7 +4,7 @@ import os
 
 import requests
 import jwt
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -38,14 +38,6 @@ async def login(request: Request):
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
-    # url = "https://accounts.google.com/o/oauth2/v2/auth?" \
-    #       "response_type=code&" \
-    #       f"scope={scope}&" \
-    #       "access_type=offline&" \
-    #       "include_granted_scopes=true&" \
-    #       f"state={state}&" \
-    #       "redirect_uri=http%3A//127.0.0.1:8000/forredirect&" \
-    #       f"client_id={osenv.GOOGLE_CLIENT_ID}"
     return RedirectResponse(req_url)
 
 
@@ -54,7 +46,7 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     if request.query_params["state"] != request.session["state"]:
         return "error"
 
-    code = request.query_params["code"]  # request.session['code']
+    code = request.query_params["code"]
     params = {
         "code": code,
         "client_id": osenv.GOOGLE_CLIENT_ID,
@@ -73,11 +65,9 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     request.session['user_id'] = user_email
     request.session['user_name'] = user_name
     request.session['user_token'] = response_json['access_token']
-    # return f"hello, {user_name}. Your E-Mail ID : {user_email}"
     email = schemas.UserCreate(email=user_email)
     db_user = crud.get_user_by_email(db, email=user_email)
     if db_user:
-        # raise HTTPException(status_code=400, detail="Email already registered")
         return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
     crud.create_user(db=db, user=email)
     return RedirectResponse('/')
