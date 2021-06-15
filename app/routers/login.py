@@ -24,13 +24,11 @@ templates = Jinja2Templates(directory='templates')
 async def login(request: Request):
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     request.session['state'] = state
-    scope = "https://www.googleapis.com/auth/userinfo.profile"
-    scope2 = "https://www.googleapis.com/auth/userinfo.email"
     print(request.session['state'])
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
-        'scope': scope + " " + scope2,
+        'scope': " ".join(urls.GOOGLE_AUTH_SCOPES),
         'access_type': 'offline',
         'include_granted_scopes': 'true',
         'state': state,
@@ -75,9 +73,9 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
 
 @login_router.get("/logout")
 async def logout(request: Request):
+    token = request.session.get('user_token')
     request.session['user_id'] = None
     request.session['user_name'] = None
-    token = request.session.get('user_token')
     request.session['user_token'] = None
     token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"
     header = {
