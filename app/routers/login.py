@@ -67,7 +67,9 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user_email)
     if db_user:
         return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
-    crud.create_user(db=db, user=email)
+    else:
+        current_db_user = crud.create_user(db=db, user=email)
+        crud.create_user_scoreboard(db=db, user_id=current_db_user.id)
     return RedirectResponse('/')
 
 
