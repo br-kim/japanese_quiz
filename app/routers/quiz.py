@@ -61,10 +61,9 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
 
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, db: Session = Depends(get_db)):
-    json = await request.json()
-    print(json)
-    if json['csrf_token'] == request.session['csrf_token']:
-        char_data = json['character'].split('/')[-2:]
+    res_json = await request.json()
+    if res_json['csrf_token'] == request.session['csrf_token']:
+        char_data = res_json['character'].split('/')[-2:]
         char_type = char_data[0]
         char_name = char_data[1].split('.')[0]
         print(char_type, char_name)
