@@ -4,6 +4,6 @@
 {% if not request.session.get('user_email') %}
 <a class="nav-menu" href="/login">로그인</a>
 {% else %}
-<a class="nav-menu" href="/scoreboard?user_email={{request.session.get('user_email')}}">
+<a class="nav-menu" href="/scoreboard">
     {{request.session.get('user_name')}}님, 환영합니다!</a>
 {% endif %}
