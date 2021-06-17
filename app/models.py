@@ -1,6 +1,12 @@
-from sqlalchemy import Column, Integer, String
+import os
+import json
+
+from sqlalchemy import Column, Integer, String, JSON
 
 from database import Base
+
+hiragana_data = dict.fromkeys([file_name.split('.')[0] for file_name in os.listdir('static/img/hiragana')], 0)
+katakana_data = dict.fromkeys([file_name.split('.')[0] for file_name in os.listdir('static/img/katakana')], 0)
 
 
 class User(Base):
@@ -8,3 +14,19 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+
+
+class HiraganaScore(Base):
+    __tablename__ = "hiragana"
+
+    id = Column(Integer, primary_key=True, index=True)
+    score = Column(String, server_default=json.dumps(hiragana_data))
+
+
+class KatakanaScore(Base):
+    __tablename__ = "katakana"
+
+    id = Column(Integer, primary_key=True, index=True)
+    score = Column(String, server_default=json.dumps(katakana_data))
+
+
