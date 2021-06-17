@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 
 import urls
 import utils
-import schemas
 import crud
 from dependencies import check_user, get_db
 
@@ -34,7 +33,6 @@ async def path_data(request: Request, data_type: str, kind: str = None):
     result = utils.gen_img_path_list(kind)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
     request.session['csrf_token'] = csrf_token
-    print(csrf_token)
     if data_type == "path":
         img_path = random.choice(result)
         return {"path": img_path, "csrf_token": csrf_token}
@@ -66,7 +64,6 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         char_data = res_json['character'].split('/')[-2:]
         char_type = char_data[0]
         char_name = char_data[1].split('.')[0]
-        print(char_type, char_name)
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
         user_id = current_user.id
         crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
