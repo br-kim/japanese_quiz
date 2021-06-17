@@ -60,7 +60,7 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     print(res_info)
     user_email = res_info.get('email')
     user_name = res_info.get('given_name')
-    request.session['user_id'] = user_email
+    request.session['user_email'] = user_email
     request.session['user_name'] = user_name
     request.session['user_token'] = response_json['access_token']
     email = schemas.UserCreate(email=user_email)
@@ -76,7 +76,7 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
 @login_router.get("/logout")
 async def logout(request: Request):
     token = request.session.get('user_token')
-    request.session['user_id'] = None
+    request.session['user_email'] = None
     request.session['user_name'] = None
     request.session['user_token'] = None
     token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"

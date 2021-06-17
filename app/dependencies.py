@@ -4,7 +4,7 @@ from database import SessionLocal
 
 
 async def check_user(request: Request):
-    if not request.session.get('user_id'):
+    if not request.session.get('user_email'):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
