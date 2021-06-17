@@ -1,13 +1,18 @@
 import random
-
+import base64
+import os
+import json
 
 from fastapi import APIRouter, Depends
 from fastapi import Request, HTTPException
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 
 import urls
 import utils
-from dependencies import check_user
+import schemas
+import crud
+from dependencies import check_user, get_db
 
 templates = Jinja2Templates(directory='templates')
 
@@ -25,15 +30,45 @@ async def new_quiz(request: Request):
 
 
 @quiz_router.get(urls.QUIZ_DATA_BASE_URL+'/{data_type}')
-async def path_data(data_type: str, kind: str = None):
+async def path_data(request: Request, data_type: str, kind: str = None):
     result = utils.gen_img_path_list(kind)
+    csrf_token = base64.b64encode(os.urandom(8)).decode()
+    request.session['csrf_token'] = csrf_token
+    print(csrf_token)
     if data_type == "path":
         img_path = random.choice(result)
-        return {"path": img_path}
+        return {"path": img_path, "csrf_token": csrf_token}
 
     elif data_type == "path-list":
         random.shuffle(result)
-        return {"order": result}
+        return {"order": result, "csrf_token": csrf_token}
 
     else:
         raise HTTPException(status_code=404, detail="Invalid Kind")
+
+
+@quiz_router.get('/scoreboard')
+async def scoreboard(request: Request, db: Session = Depends(get_db)):
+    user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
+    hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
+    kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
+
+    return {
+        "hiragana_score": json.loads(hira_score.score),
+        "katakana_score": json.loads(kata_score.score)
+    }
+
+
+@quiz_router.patch('/scoreupdate')
+async def score_update(request: Request, db: Session = Depends(get_db)):
+    json = await request.json()
+    print(json)
+    if json['csrf_token'] == request.session['csrf_token']:
+        char_data = json['character'].split('/')[-2:]
+        char_type = char_data[0]
+        char_name = char_data[1].split('.')[0]
+        print(char_type, char_name)
+        current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
+        user_id = current_user.id
+        crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
+    return

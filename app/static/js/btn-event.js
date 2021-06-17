@@ -19,6 +19,14 @@ let btnFunction = {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
             document.getElementsByClassName('getNextBtn')[0].click();
+            req_data = {
+                'csrf_token': csrf_token,
+                'character': document.getElementById('quiz').src
+            };
+            fetch('/scoreupdate',{
+                method: "PATCH",
+                body: JSON.stringify(req_data)
+            });
         } else {
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
@@ -73,6 +81,8 @@ let btnFunction = {
         data = new_url.text();
         json = JSON.parse(await data);
         file_url = json.path;
+        csrf_token = json.csrf_token;
+        console.log(csrf_token);
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
@@ -106,19 +116,14 @@ let btnFunction = {
         let url = new URL(btnFunction.quizPathUrl + btnFunction.limQuiz,window.location.origin);
         let params = new URLSearchParams(location.search);
         let ganaType = params.get('kind');
-        if (ganaType === 'all'){
-            url.searchParams.append('kind',ganaType);
+        if (ganaType === null){
+            ganaType = 'all';
         }
-        else if (ganaType === 'hiragana'){
-            url.searchParams.append('kind',ganaType);
-        }
-        else if (ganaType === 'katakana'){
-            url.searchParams.append('kind',ganaType);
-        }
+        url.searchParams.append('kind',ganaType);
 
         let r = await fetch(url);
-        let j = await r.json();
-        return j['order'];
+        // let j = await r.json();
+        return await r.json();
     },
 
     initRefreshBtn : function (){
@@ -140,7 +145,10 @@ let btnFunction = {
 
     getNextImage : async function () {
         let arrayNum = 0;
-        let chars = await this.requestQuizData();
+        let res = await this.requestQuizData();
+        let chars = res.order;
+        csrf_token = res.csrf_token;
+        console.log(csrf_token);
         btnFunction.changeTitleSrc(chars,arrayNum);
         return function () {
             arrayNum += 1;
