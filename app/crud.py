@@ -45,10 +45,8 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
     db_scoreboard = None
     if char_type == 'hiragana':
         db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
-        # models.HiraganaScore(id=user_id)
     elif char_type == 'katakana':
         db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
-        # models.KatakanaScore(id=user_id)
     else:
         return None
     score = json.loads(db_scoreboard.score)
