@@ -67,4 +67,6 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
         user_id = current_user.id
         crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
+    else:
+        raise HTTPException(status_code=404, detail="Invalid Access")
     return
