@@ -24,7 +24,6 @@ templates = Jinja2Templates(directory='templates')
 async def login(request: Request):
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     request.session['state'] = state
-    print(request.session['state'])
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
@@ -54,10 +53,8 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
     response_json = res.json()
-    print(response_json)
     id_token = response_json.get('id_token')
     res_info = jwt.decode(id_token, options={"verify_signature": False})
-    print(res_info)
     user_email = res_info.get('email')
     user_name = res_info.get('given_name')
     request.session['user_email'] = user_email
