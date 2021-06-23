@@ -3,8 +3,7 @@ import base64
 import os
 import json
 
-from fastapi import APIRouter, Depends
-from fastapi import Request, HTTPException
+from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -69,4 +68,4 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
     else:
         raise HTTPException(status_code=404, detail="Invalid Access")
-    return
+    return Response(status.HTTP_204_NO_CONTENT)
