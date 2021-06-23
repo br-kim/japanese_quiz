@@ -65,7 +65,9 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         char_name = char_data[1].split('.')[0]
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
         user_id = current_user.id
-        crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
+        result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
+        if result is None:
+            raise HTTPException(status_code=400, detail="Bad Request")
     else:
         raise HTTPException(status_code=404, detail="Invalid Access")
     return Response(status.HTTP_204_NO_CONTENT)
