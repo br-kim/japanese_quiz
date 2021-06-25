@@ -34,3 +34,17 @@ nav{
 #incorrect-sheet-table{
     margin : auto;
 }
+
+.score-board{
+    float:left;
+}
+
+.inner-score-board{
+    float:left;
+}
+
+#score-board-wrapper{
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}

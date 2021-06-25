@@ -50,10 +50,12 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
 
-    return {
+    return templates.TemplateResponse("scoreboard.html", {
+        "request": request,
         "hiragana_score": json.loads(hira_score.score),
         "katakana_score": json.loads(kata_score.score)
-    }
+    })
+
 
 
 @quiz_router.patch('/scoreupdate')
