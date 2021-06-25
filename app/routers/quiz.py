@@ -41,7 +41,7 @@ async def path_data(request: Request, data_type: str, kind: str = None):
         return {"order": result, "csrf_token": csrf_token}
 
     else:
-        raise HTTPException(status_code=404, detail="Invalid Kind")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Kind")
 
 
 @quiz_router.get('/scoreboard')
@@ -57,7 +57,6 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
     })
 
 
-
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, db: Session = Depends(get_db)):
     res_json = await request.json()
@@ -69,7 +68,7 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         user_id = current_user.id
         result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
         if result is None:
-            raise HTTPException(status_code=400, detail="Bad Request")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
     else:
-        raise HTTPException(status_code=404, detail="Invalid Access")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Access")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
