@@ -3,8 +3,7 @@ import base64
 import os
 import json
 
-from fastapi import APIRouter, Depends
-from fastapi import Request, HTTPException
+from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -42,7 +41,7 @@ async def path_data(request: Request, data_type: str, kind: str = None):
         return {"order": result, "csrf_token": csrf_token}
 
     else:
-        raise HTTPException(status_code=404, detail="Invalid Kind")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Kind")
 
 
 @quiz_router.get('/scoreboard')
@@ -51,10 +50,11 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
 
-    return {
+    return templates.TemplateResponse("scoreboard.html", {
+        "request": request,
         "hiragana_score": json.loads(hira_score.score),
         "katakana_score": json.loads(kata_score.score)
-    }
+    })
 
 
 @quiz_router.patch('/scoreupdate')
@@ -66,5 +66,9 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         char_name = char_data[1].split('.')[0]
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
         user_id = current_user.id
-        crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
-    return
+        result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
+        if result is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Access")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

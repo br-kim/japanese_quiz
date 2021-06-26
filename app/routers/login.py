@@ -24,7 +24,6 @@ templates = Jinja2Templates(directory='templates')
 async def login(request: Request):
     state = hashlib.sha256(os.urandom(1024)).hexdigest()
     request.session['state'] = state
-    print(request.session['state'])
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
@@ -54,10 +53,8 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
     response_json = res.json()
-    print(response_json)
     id_token = response_json.get('id_token')
     res_info = jwt.decode(id_token, options={"verify_signature": False})
-    print(res_info)
     user_email = res_info.get('email')
     user_name = res_info.get('given_name')
     request.session['user_email'] = user_email
@@ -68,7 +65,7 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     if db_user:
         if not crud.get_user_hiragana_score(db=db, user_id=db_user.id):
             crud.create_user_scoreboard(db=db, user_id=db_user.id)
-        return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
+        # return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
     else:
         current_db_user = crud.create_user(db=db, user=email)
         crud.create_user_scoreboard(db=db, user_id=current_db_user.id)
@@ -86,4 +83,4 @@ async def logout(request: Request):
         "Content-type": "application/x-www-form-urlencoded"
     }
     requests.post(token_revoke, headers=header)
-    return RedirectResponse('/')
+    return templates.TemplateResponse("error.html", {"request": request, "message": "로그아웃이 완료되었습니다."})
