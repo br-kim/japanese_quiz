@@ -67,6 +67,7 @@ let btnFunction = {
     getRandomImageUrl : async function () {
         let hira = document.getElementById('inf-hiragana');
         let kata = document.getElementById('inf-katakana');
+        let weighted = document.getElementById('is-weighted');
         let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz, window.location.origin);
         if (hira.checked && kata.checked){
             url.searchParams.append('kind','all');
@@ -77,12 +78,14 @@ let btnFunction = {
         else if(kata.checked){
             url.searchParams.append('kind','katakana');
         }
+        if (weighted.checked){
+            url.searchParams.append('is_weighted', 'true');
+        }
         new_url = await fetch(url);
         data = new_url.text();
         json = JSON.parse(await data);
         file_url = json.path;
         csrf_token = json.csrf_token;
-        console.log(csrf_token);
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();

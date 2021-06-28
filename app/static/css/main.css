@@ -22,6 +22,13 @@
     text-decoration: none;
     color: white;
 }
+.nav-menu-right{
+    float:right;
+    margin: 1em 3em;
+    display: block;
+    text-decoration: none;
+    color: white;
+}
 nav{
     height: 4em;
     background-color: black;
