@@ -50,9 +50,7 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
                 score_dict = json.loads(kata_score)
                 total_score = sum(score_dict.values())
                 weight += [total_score - i for i in score_dict.values()]
-
-            img_path = random.choices(result, weight)
-            print(weight)
+            img_path = random.choices(result, weight).pop()
         else:
             img_path = random.choice(result)
         return {"path": img_path, "csrf_token": csrf_token}
