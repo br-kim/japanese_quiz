@@ -28,18 +28,38 @@ async def new_quiz(request: Request):
 
 
 @quiz_router.get(urls.QUIZ_DATA_BASE_URL+'/{data_type}')
-async def path_data(request: Request, data_type: str, kind: str = None):
+async def path_data(request: Request, data_type: str, kind: str = 'all', is_weighted: str = '',
+                    db: Session = Depends(get_db)):
     result = utils.gen_img_path_list(kind)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
     request.session['csrf_token'] = csrf_token
     if data_type == "path":
-        img_path = random.choice(result)
+        if is_weighted:
+            cur_user_email = request.session.get('user_email')
+            cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
+            weight = []
+            if kind == 'hiragana' or kind == 'all':
+                hira_score_db = crud.get_user_hiragana_score(db=db, user_id=cur_user.id)
+                hira_score = hira_score_db.score
+                score_dict = json.loads(hira_score)
+                total_score = sum(score_dict.values())
+                weight += [total_score - i for i in score_dict.values()]
+            if kind == 'katakana' or kind == 'all':
+                kata_score_db = crud.get_user_katakana_score(db=db, user_id=cur_user.id)
+                kata_score = kata_score_db.score
+                score_dict = json.loads(kata_score)
+                total_score = sum(score_dict.values())
+                weight += [total_score - i for i in score_dict.values()]
+
+            img_path = random.choices(result, weight)
+            print(weight)
+        else:
+            img_path = random.choice(result)
         return {"path": img_path, "csrf_token": csrf_token}
 
     elif data_type == "path-list":
         random.shuffle(result)
         return {"order": result, "csrf_token": csrf_token}
-
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Kind")
 
