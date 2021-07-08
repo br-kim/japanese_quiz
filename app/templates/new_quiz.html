@@ -6,13 +6,17 @@
     </div>
     <div id="refresher-container">
     </div>
-    <form>
+    <form onsubmit="return false;">
         <label for="answer">정답 : </label>
         <input type="text" id="answer">
-        <input id="submitBtn" type="button" value="제출">
-        <input id="showAnswerBtn" type="button" value="정답">
-        <input class="getNextBtn" id="getNextImageBtn" type="button" value="다음">
+        <input id="submitBtn" type="submit" value="제출">
+        <input class="getNextBtn" id="getNextImageBtn" type="hidden" value="다음">
     </form>
+    <div id ="contain-answer-btn">
+        <form>
+            <input id="showAnswerBtn" type="button" value="정답">
+        </form>
+    </div>
     <div id="score">
         정답 개수 :
         <div id="correct">

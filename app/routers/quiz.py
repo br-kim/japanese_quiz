@@ -88,5 +88,5 @@ async def score_update(request: Request, db: Session = Depends(get_db)):
         if result is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Access")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Access")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
