@@ -55,3 +55,15 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
     db.commit()
     db.refresh(db_scoreboard)
     return score[char_name]
+
+
+def create_article(db: Session, article: schemas.ArticleCreate):
+    db_article = models.FreeBoard(writer=article.writer, contents=article.contents)
+    db.add(db_article)
+    db.commit()
+    db.refresh(db_article)
+    return db_article
+
+
+def get_article(db: Session, article_num: int):
+    return db.query(models.FreeBoard).filter(models.FreeBoard.id == article_num).first()

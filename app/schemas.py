@@ -44,3 +44,19 @@ class KatakanaScore(KatakanaScoreBase):
 
     class Config:
         orm_mode = True
+
+
+class ArticleBase(BaseModel):
+    writer: str
+    contents: str
+
+
+class ArticleCreate(ArticleBase):
+    pass
+
+
+class Article(ArticleBase):
+    id: int
+
+    class Config:
+        orm_mode: True
