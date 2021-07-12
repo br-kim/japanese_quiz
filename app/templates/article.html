@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %} 자유 게시판 {% endblock %}
+{% block content %}
+<script>
+    loadArticle = async () => {
+        urlSearchParams = new URLSearchParams(window.location.search);
+        params = Object.fromEntries(urlSearchParams.entries());
+        res = await fetch(location.origin+'/freeboard/'+params.pagenum);
+        article = await res.json();
+        document.getElementById('article-title').innerText = article.title;
+        document.getElementById('article-content').innerText = article.contents;
+    }
+</script>
+<br>
+<div id="contain-article">
+    <div id="show-article">
+        <div id="article-title"></div><br>
+        <div id="article-content"></div>
+    </div>
+</div>
+<script>
+    window.onload = loadArticle();
+</script>
+{% endblock %}

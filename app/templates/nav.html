@@ -1,6 +1,7 @@
 <a class="nav-menu" href="/">메인</a>
 <a class="nav-menu" href="/quiz">무한모드</a>
 <a class="nav-menu" href="/newquiz">제한모드</a>
+<a class="nav-menu" href="/fb">자유게시판</a>
 {% if not request.session.get('user_email') %}
 <a class="nav-menu-right" href="/login">로그인</a>
 {% else %}

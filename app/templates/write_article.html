@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %} 글쓰기 {% endblock %}
+{% block content %}
+<script>
+    sendArticle = async () => {
+        data = {
+            title: document.getElementById('input-title').value,
+            contents: document.getElementById('input-content').value
+        }
+        if (!data.title || !data.contents){
+            alert('제목과 내용을 입력해주세요.')
+            return
+        }
+        res = await fetch('/freeboard/write',{
+            method:'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        article_num = await res.text()
+        window.location.href = location.origin + '/article?pagenum='+article_num
+    }
+</script>
+
+    <div id="contain-article-write" style="width:40%">
+        <label>
+            <input id="input-title" type="text" style="width:100%" name="title" placeholder="제목을 입력해주세요.">
+            <br><br><br>
+            <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
+            <br>
+            <input type="button" value="저장" onclick="sendArticle()">
+        </label>
+    </div>
+
+{% endblock %}

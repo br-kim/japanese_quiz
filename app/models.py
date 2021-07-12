@@ -1,7 +1,7 @@
 import os
 import json
 
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, UnicodeText
 
 from database import Base
 
@@ -30,3 +30,10 @@ class KatakanaScore(Base):
     score = Column(String, server_default=json.dumps(katakana_data))
 
 
+class FreeBoard(Base):
+    __tablename__ = "freeboard"
+
+    id: Column = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    contents = Column(UnicodeText)
+    writer = Column(String)

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block title %} 점수판 {% endblock %}
+{% block content %}
+<script>
+    loadArticleList = (async (pagenum) => {
+        let url = new URL(location.origin + '/freeboard');
+        let params = {'page': pagenum};
+        url.search = new URLSearchParams(params).toString();
+        let req = await fetch(url);
+        let res_json = await req.json();
+        buildArticleHead(res_json.articles);
+        buildPageIndex(res_json.articles_length,pagenum);
+    });
+
+    function buildArticleHead(articleJsonArray){
+        document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
+        articleJsonArray.forEach(elem => {
+            let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
+            let titleCell = newRow.insertCell();
+            let writerCell = newRow.insertCell();
+            titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
+            writerCell.textContent = elem.writer;
+        })
+    }
+
+    function buildPageIndex(totalPage,nowPage){
+        document.getElementById('pages').innerHTML ="";
+        for(let i = 1; i < totalPage+2; i++){
+            document.getElementById('pages').innerHTML +=
+                `<a onclick="loadArticleList(${i})">${i}</a>`;
+        }
+    }
+</script>
+<h1>자유 게시판  <a href="/write"><button>글 쓰기</button></a></h1>
+<div id="contain-table">
+    <table id="result">
+        <thead>
+            <tr>
+                <th>제목</th><th>글쓴이</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div id="pages"></div>
+
+<script>
+    document.onload = loadArticleList(1);
+</script>
+{% endblock %}
