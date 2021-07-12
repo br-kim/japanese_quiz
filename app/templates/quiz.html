@@ -1,32 +1,14 @@
 {% extends "layout.html" %}
 {% block title %} 무한 모드 {% endblock %}
 {% block content %}
-    <div id="contain-answer">
-        <img src="" alt="image" id="quiz">
-    </div>
+{% include 'quiz_block.html' %}
     <form onsubmit="return false;">
         <label for="answer">정답 : </label>
         <input type="text" id="answer">
         <input id="submitBtn" type="submit" value="제출">
         <input class="getNextBtn" id="getRandomImageBtn" type="hidden" value="다음">
     </form>
-    <div id ="contain-answer-btn">
-        <form>
-            <input id="showAnswerBtn" type="button" value="정답">
-        </form>
-    </div>
-    <div id="show-answer"></div>
-    <div id="score">
-        정답 개수 :
-        <div id="correct">
-            0
-        </div>
-        오답 개수 :
-        <div id="incorrect">
-            0
-        </div>
-    </div>
-
+{% include 'answer_block.html' %}
     <form>
         <label><input type="checkbox" name="hiragana" value="hiragana" id="inf-hiragana" checked> 히라가나 </label>
         <label><input type="checkbox" name="katakana" value="katakana" id="inf-katakana" checked> 카타가나 </label>

@@ -1,33 +1,15 @@
 {% extends "layout.html" %}
 {% block title %}제한 모드{% endblock %}
 {% block content %}
-    <div id="contain-answer">
-        <img src="" alt="image" id="quiz">
-    </div>
-    <div id="refresher-container">
-    </div>
+{% include 'quiz_block.html' %}
+    <div id="refresher-container"></div>
     <form onsubmit="return false;">
         <label for="answer">정답 : </label>
         <input type="text" id="answer">
         <input id="submitBtn" type="submit" value="제출">
         <input class="getNextBtn" id="getNextImageBtn" type="hidden" value="다음">
     </form>
-    <div id ="contain-answer-btn">
-        <form>
-            <input id="showAnswerBtn" type="button" value="정답">
-        </form>
-    </div>
-    <div id="show-answer"></div>
-    <div id="score">
-        정답 개수 :
-        <div id="correct">
-            0
-        </div>
-        오답 개수 :
-        <div id="incorrect">
-            0
-        </div>
-    </div>
+{% include 'answer_block.html' %}
     <div id="incorrect-sheet">
         오답 노트 <button id="toggleBtn"> 접기 </button>
         <button id="incorrectQuizBtn"> 오답퀴즈 </button>
