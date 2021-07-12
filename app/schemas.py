@@ -48,6 +48,7 @@ class KatakanaScore(KatakanaScoreBase):
 
 class ArticleBase(BaseModel):
     writer: str
+    title: str
     contents: str
 
 

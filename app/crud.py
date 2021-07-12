@@ -58,7 +58,7 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
 
 
 def create_article(db: Session, article: schemas.ArticleCreate):
-    db_article = models.FreeBoard(writer=article.writer, contents=article.contents)
+    db_article = models.FreeBoard(writer=article.writer, contents=article.contents, title=article.title)
     db.add(db_article)
     db.commit()
     db.refresh(db_article)
@@ -67,3 +67,11 @@ def create_article(db: Session, article: schemas.ArticleCreate):
 
 def get_article(db: Session, article_num: int):
     return db.query(models.FreeBoard).filter(models.FreeBoard.id == article_num).first()
+
+
+def get_articles_limit(db: Session, offset_value: int):
+    return db.query(models.FreeBoard).order_by(models.FreeBoard.id.desc()).offset(offset_value).limit(3).all()
+
+
+def get_all_article_size(db: Session):
+    return db.query(models.FreeBoard).count()
