@@ -2,6 +2,10 @@
     pointer-events:none;
 }
 
+#quiz{
+    border: black solid;
+}
+
 #incorrect-sheet-table{
     text-align: center;
 }
@@ -54,4 +58,26 @@ nav{
     display: flex;
     justify-content: center;
     min-height: 100vh;
+}
+
+#contain-table{
+    border: black groove;
+    display: inline-block;
+    justify-content: center;
+    min-height: 50vh;
+}
+
+#contain-article{
+    border: black groove;
+    display: inline-block;
+    width: 100vh;
+    justify-content: center;
+}
+
+#contain-article-write{
+    display: inline-block;
+}
+
+#input-content{
+    resize: none;
 }
