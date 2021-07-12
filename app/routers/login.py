@@ -65,7 +65,6 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     if db_user:
         if not crud.get_user_hiragana_score(db=db, user_id=db_user.id):
             crud.create_user_scoreboard(db=db, user_id=db_user.id)
-        # return templates.TemplateResponse("error.html", {"request": request, "message": "이미 가입된 회원입니다."})
     else:
         current_db_user = crud.create_user(db=db, user=email)
         crud.create_user_scoreboard(db=db, user_id=current_db_user.id)
