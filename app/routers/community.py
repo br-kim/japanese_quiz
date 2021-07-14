@@ -38,7 +38,7 @@ async def show_article(request: Request):
 async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
     total_size = crud.get_all_article_size(db=db)
     offset = 3 * (page - 1)
-    return {'articles_length': total_size // 3, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
+    return {'articles_length': (total_size-1) // 3, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
 
 
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
