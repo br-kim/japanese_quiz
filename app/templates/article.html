@@ -2,6 +2,7 @@
 {% block title %} 자유 게시판 {% endblock %}
 {% block content %}
 <script>
+
     loadArticle = async () => {
         urlSearchParams = new URLSearchParams(window.location.search);
         params = Object.fromEntries(urlSearchParams.entries());
@@ -9,16 +10,64 @@
         article = await res.json();
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('article-content').innerText = article.contents;
+        document.getElementById('article-writer').innerText = article.writer;
     }
+    loadComments = async () => {
+        urlSearchParams = new URLSearchParams(window.location.search);
+        params = Object.fromEntries(urlSearchParams.entries());
+        res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
+        comments = await res.json()
+        console.log(comments)
+        comments.forEach(ele => {
+            document.getElementById('show-comments').innerText += ele.writer+'\n'
+            document.getElementById('show-comments').innerText += ele.contents+'\n'
+        })
+    }
+    sendComment = async () => {
+        urlSearchParams = new URLSearchParams(window.location.search);
+        params = Object.fromEntries(urlSearchParams.entries());
+
+        data = {
+            contents: document.getElementById('comment-contents').value,
+            article_id: Number(params.pagenum)
+        };
+        console.log(data);
+        if (!data.article_id || !data.contents){
+            alert('내용을 입력해주세요.')
+            return
+        }
+        res = await fetch('/freeboard/write/comment',{
+            method:'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        window.location.href = location.origin + '/article?pagenum='+params.pagenum
+    }
+
 </script>
+<h1><a href="/fb">자유 게시판</a></h1>
 <br>
 <div id="contain-article">
     <div id="show-article">
-        <div id="article-title"></div><br>
-        <div id="article-content"></div>
+        <div id="article-title" style="text-align: left; margin-left: 2vw; margin-top: 1vh"></div><br>
+        <div id="article-writer" style="text-align: left;  margin-left: 2vw; margin-top: 1vh"></div><br>
+        <div id="article-content" style="text-align: left;  margin-left: 2vw; margin-top: 1vh; margin-bottom: 3vh" ></div>
+    </div>
+</div>
+<div id="write-comment">
+    <label>
+        <input type="text" id="comment-contents">
+        <input type="button" value="등록" onclick="sendComment()">
+    </label>
+</div>
+<div id="contain-comments">
+    <div id="show-comments">
     </div>
 </div>
 <script>
     window.onload = loadArticle();
+    document.getElementById('show-comments').onload = loadComments();
 </script>
 {% endblock %}
