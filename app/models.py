@@ -1,7 +1,7 @@
 import os
 import json
 
-from sqlalchemy import Column, Integer, String, JSON, UnicodeText
+from sqlalchemy import Column, Integer, String, JSON, UnicodeText, func, DateTime
 
 from database import Base
 
@@ -9,7 +9,11 @@ hiragana_data = dict.fromkeys([file_name.split('.')[0] for file_name in os.listd
 katakana_data = dict.fromkeys([file_name.split('.')[0] for file_name in os.listdir('static/img/katakana')], 0)
 
 
-class User(Base):
+class TimestampMixin(object):
+    created_at = Column(DateTime, default=func.now())
+
+
+class User(TimestampMixin, Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -30,10 +34,19 @@ class KatakanaScore(Base):
     score = Column(String, server_default=json.dumps(katakana_data))
 
 
-class FreeBoard(Base):
+class FreeBoard(TimestampMixin, Base):
     __tablename__ = "freeboard"
 
     id: Column = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     contents = Column(UnicodeText)
     writer = Column(String)
+
+
+class Comment(TimestampMixin, Base):
+    __tablename__ = "comment"
+
+    id: Column = Column(Integer, primary_key=True, index=True)
+    contents = Column(UnicodeText)
+    writer = Column(String)
+    article_id = Column(Integer, index=True)
