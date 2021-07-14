@@ -2,8 +2,14 @@
 {% block title %} 점수판 {% endblock %}
 {% block content %}
 <script>
-    loadArticleList = (async (pagenum) => {
-        let url = new URL(location.origin + '/freeboard');
+    loadArticleList = (async () => {
+        urlSearchParams = new URLSearchParams(window.location.search);
+        paramss = Object.fromEntries(urlSearchParams.entries());
+        pagenum = paramss.page
+        if (!pagenum){
+            pagenum = 1
+        }
+        let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
         let params = {'page': pagenum};
         url.search = new URLSearchParams(params).toString();
         let req = await fetch(url);
@@ -27,7 +33,8 @@
         document.getElementById('pages').innerHTML ="";
         for(let i = 1; i < totalPage+2; i++){
             document.getElementById('pages').innerHTML +=
-                `<a onclick="loadArticleList(${i})">${i}</a>`;
+                // `<a onclick="loadArticleList(${i})">${i}</a> `;
+                `<a href='/fb?page=${i}'>${i}</a> `;
         }
     }
 </script>
@@ -45,6 +52,6 @@
 <div id="pages"></div>
 
 <script>
-    document.onload = loadArticleList(1);
+    window.onload = loadArticleList();
 </script>
 {% endblock %}
