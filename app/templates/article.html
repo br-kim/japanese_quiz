@@ -2,7 +2,6 @@
 {% block title %} 자유 게시판 {% endblock %}
 {% block content %}
 <script>
-
     loadArticle = async () => {
         urlSearchParams = new URLSearchParams(window.location.search);
         params = Object.fromEntries(urlSearchParams.entries());
@@ -19,8 +18,19 @@
         res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
         comments = await res.json()
         comments.forEach(ele => {
-            document.getElementById('show-comments').innerText += ele.writer+'\n'
-            document.getElementById('show-comments').innerText += ele.contents+'\n'
+            commentDiv = document.createElement('div');
+            writerDiv = document.createElement('div');
+            contentsDiv = document.createElement('div');
+            commentDiv.classList.add('contain-comment')
+            writerDiv.id = 'comment-writer'
+            contentsDiv.id = 'comment-contents'
+            writerDiv.innerText += ele.writer
+            contentsDiv.innerText += ele.contents
+            commentDiv.appendChild(writerDiv)
+            commentDiv.appendChild(contentsDiv)
+            commentDiv.innerHTML += '<br>'
+            document.getElementById('show-comments').appendChild(commentDiv)
+
         })
     }
     sendComment = async () => {
@@ -45,23 +55,24 @@
         })
         window.location.href = location.origin + '/article?pagenum='+params.pagenum
     }
-
 </script>
 <h1><a href="/fb">자유 게시판</a></h1>
 <br>
 <div id="contain-article">
     <div id="show-article">
-        <div id="article-title" style="float:left; text-align: left; margin-left: 2vw; margin-top: 1vh"></div>
-        <div id="article-created" style="float:right; text-align: right;  margin-right: 2vw; margin-top: 1vh"></div>
+        <div id="article-title"></div>
+        <div id="article-created"></div>
         <br> <br>
-        <div id="article-writer" style="text-align: left; margin-left: 2vw; margin-top: 1vh"></div><br>
-        <div id="article-content" style="text-align: left; margin-left: 2vw; margin-top: 1vh; margin-bottom: 3vh"></div>
+        <div id="article-writer"></div><br>
+        <div id="article-content"></div>
     </div>
 </div>
 <div id="write-comment">
     <label>
-        <input type="text" id="comment-contents">
+        <input type="text" id="comment-contents" style="width: 50vh;">
         <input type="button" value="등록" onclick="sendComment()">
+        <br>
+        <br>
     </label>
 </div>
 <div id="contain-comments">
