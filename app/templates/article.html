@@ -11,13 +11,13 @@
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('article-content').innerText = article.contents;
         document.getElementById('article-writer').innerText = article.writer;
+        document.getElementById('article-created').innerText = article.created_at.split('.')[0];
     }
     loadComments = async () => {
         urlSearchParams = new URLSearchParams(window.location.search);
         params = Object.fromEntries(urlSearchParams.entries());
         res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
         comments = await res.json()
-        console.log(comments)
         comments.forEach(ele => {
             document.getElementById('show-comments').innerText += ele.writer+'\n'
             document.getElementById('show-comments').innerText += ele.contents+'\n'
@@ -51,9 +51,11 @@
 <br>
 <div id="contain-article">
     <div id="show-article">
-        <div id="article-title" style="text-align: left; margin-left: 2vw; margin-top: 1vh"></div><br>
-        <div id="article-writer" style="text-align: left;  margin-left: 2vw; margin-top: 1vh"></div><br>
-        <div id="article-content" style="text-align: left;  margin-left: 2vw; margin-top: 1vh; margin-bottom: 3vh" ></div>
+        <div id="article-title" style="float:left; text-align: left; margin-left: 2vw; margin-top: 1vh"></div>
+        <div id="article-created" style="float:right; text-align: right;  margin-right: 2vw; margin-top: 1vh"></div>
+        <br> <br>
+        <div id="article-writer" style="text-align: left; margin-left: 2vw; margin-top: 1vh"></div><br>
+        <div id="article-content" style="text-align: left; margin-left: 2vw; margin-top: 1vh; margin-bottom: 3vh"></div>
     </div>
 </div>
 <div id="write-comment">
