@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Type
 
 from sqlalchemy import Column, Integer, String, JSON, UnicodeText, func, DateTime
 
@@ -10,6 +11,9 @@ katakana_data = dict.fromkeys([file_name.split('.')[0] for file_name in os.listd
 
 
 class TimestampMixin(object):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     created_at = Column(DateTime, default=func.now())
 
 
