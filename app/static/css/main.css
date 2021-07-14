@@ -10,6 +10,11 @@
     text-align: center;
 }
 
+body{
+    margin: 0 0 120px 0;
+    /*margin-bottom: 120px;*/
+}
+
 #footer-content{
     position: fixed;
     bottom: 0;
@@ -33,7 +38,8 @@
     text-decoration: none;
     color: white;
 }
-nav{
+header{
+    margin-top: 0;
     height: 4em;
     background-color: black;
 }
@@ -80,4 +86,45 @@ nav{
 
 #input-content{
     resize: none;
+}
+
+#show-comments{
+    border: black groove;
+    display: inline-block;
+    width: 100vh;
+}
+
+#comment-writer{
+    text-align: left;
+}
+
+#comment-contents{
+    text-align: left;
+}
+
+#article-title{
+    float:left;
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh
+}
+
+#article-created{
+    float:right;
+    text-align: right;
+    margin-right: 2vw;
+    margin-top: 1vh
+}
+
+#article-writer, #comment-contents, #comment-writer{
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh
+}
+
+#article-content{
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh;
+    margin-bottom: 3vh
 }
