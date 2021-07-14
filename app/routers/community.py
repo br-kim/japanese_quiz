@@ -46,8 +46,10 @@ async def write_article(request: Request, article: Article, db=Depends(get_db)):
     writer = request.session.get('user_email')
     if not (writer and article.dict().get('title') and article.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    print(article)
     db_article = schemas.ArticleCreate(writer=writer, title=html.escape(article.title),
                                        contents=html.escape(article.contents))
+    print(db_article)
     created_article = crud.create_article(db, db_article)
     return created_article.id
 
