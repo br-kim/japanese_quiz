@@ -11,7 +11,7 @@
             alert('제목과 내용을 입력해주세요.')
             return
         }
-        res = await fetch('/freeboard/write',{
+        res = await fetch('/freeboard/write/article',{
             method:'POST',
             headers: {
                 'Content-Type':'application/json'

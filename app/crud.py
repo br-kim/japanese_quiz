@@ -75,3 +75,15 @@ def get_articles_limit(db: Session, offset_value: int):
 
 def get_all_article_size(db: Session):
     return db.query(models.FreeBoard).count()
+
+
+def create_comment(db: Session, comment: schemas.CommentCreate):
+    db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id)
+    db.add(db_comment)
+    db.commit()
+    db.refresh(db_comment)
+    return db_comment
+
+
+def get_comments_by_article_id(db: Session, article_id: int):
+    return db.query(models.Comment).filter(models.Comment.article_id == article_id).all()
