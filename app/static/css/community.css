@@ -1,0 +1,67 @@
+#contain-article{
+    border: black groove;
+    display: inline-block;
+    width: 100vh;
+    justify-content: center;
+}
+
+#contain-article-write{
+    display: inline-block;
+}
+
+#input-content{
+    resize: none;
+}
+
+#show-comments{
+    border: black groove;
+    display: inline-block;
+    width: 100vh;
+}
+
+#comment-writer{
+    width: 30%;
+    text-align: left;
+}
+
+#comment-contents{
+    width:30%;
+    text-align: left;
+}
+
+#article-title{
+    float:left;
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh
+}
+
+#article-created{
+    float:right;
+    text-align: right;
+    margin-right: 2vw;
+    margin-top: 1vh
+}
+
+#article-writer, #comment-contents, #comment-writer{
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh
+}
+
+#article-content{
+    text-align: left;
+    margin-left: 2vw;
+    margin-top: 1vh;
+    margin-bottom: 3vh
+}
+
+.comment-edit-button{
+    /*width:30%;*/
+    float:right;
+    display: block;
+}
+
+.input-label{
+    visibility: hidden;
+}
