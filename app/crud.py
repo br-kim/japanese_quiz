@@ -108,3 +108,17 @@ def update_comment(db: Session, comment_id: int, contents: str):
     db.commit()
     db.refresh(db_comment)
     return db_comment
+
+
+def delete_article(db: Session, article_id: int):
+    db_article = db.query(models.FreeBoard).filter(models.FreeBoard.id == article_id).first()
+    db.delete(db_article)
+    db.commit()
+    return
+
+
+def delete_comment(db: Session, comment_id:int):
+    db_comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
+    db.delete(db_comment)
+    db.commit()
+    return

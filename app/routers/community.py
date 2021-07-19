@@ -91,6 +91,18 @@ async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, 
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
 
+@community_router.delete('/freeboard/delete/article')
+async def delete_article(article_id: int, db=Depends(get_db)):
+    crud.delete_article(db=db, article_id=article_id)
+    return
+
+
+@community_router.delete('/freeboard/delete/comment')
+async def delete_comment(comment_id: int, db=Depends(get_db)):
+    crud.delete_comment(db=db, comment_id=comment_id)
+    return
+
+
 @community_router.get('/write')
 async def write_page(request: Request):
     return templates.TemplateResponse('write_article.html', {'request': request})
