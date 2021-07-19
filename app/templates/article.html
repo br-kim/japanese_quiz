@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %} 자유 게시판 {% endblock %}
+{% block title %} {% endblock %}
 {% block content %}
 <h1><a href="/fb">자유 게시판</a></h1>
 <br>
@@ -32,8 +32,9 @@
 {% block scripts %}
     {{ super() }}
     <script>
-    document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit)
-    window.onload = articleFunction.loadArticle();
-    document.getElementById('show-comments').onload = articleFunction.loadComments();
+        document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit);
+        document.getElementById('article-delete-button').addEventListener('click',articleFunction.deleteArticle);
+        window.onload = articleFunction.loadArticle();
+        document.getElementById('show-comments').onload = articleFunction.loadComments();
     </script>
 {% endblock %}
