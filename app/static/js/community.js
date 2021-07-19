@@ -1,4 +1,9 @@
 let articleFunction = {
+    getSearchParam: () => {
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        return Object.fromEntries(urlSearchParams.entries());
+    },
+
     sendArticle : async function (){
         let data = {
             title: document.getElementById('input-title').value,
@@ -20,8 +25,7 @@ let articleFunction = {
     },
 
     editArticle : async function (){
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let params = Object.fromEntries(urlSearchParams.entries());
+        let params = articleFunction.getSearchParam();
         let articleId = params.pagenum;
         let data = {
             title: document.getElementById('input-title').value,
@@ -42,28 +46,24 @@ let articleFunction = {
     },
 
     loadEdit : async ()=>{
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let params = Object.fromEntries(urlSearchParams.entries());
+        let params = articleFunction.getSearchParam();
         let articleId = params.pagenum;
-        location.href = `/article/edit?pagenum=${articleId}`
-
+        location.href = `/article/edit?pagenum=${articleId}`;
     },
 
     loadBeforeArticle : async ()=>{
-        let urlSearchParams1 = new URLSearchParams(window.location.search);
-        let params1 = Object.fromEntries(urlSearchParams1.entries());
-        let res1 = await fetch(location.origin+'/freeboard/'+params1.pagenum);
-        let article = await res1.json();
-        console.log(article)
-        document.getElementById('input-title').value = article.title
-        document.getElementById('input-content').value = article.contents
+        let params = articleFunction.getSearchParam();
+        let res = await fetch(location.origin+'/freeboard/'+params.pagenum);
+        let article = await res.json();
+        document.getElementById('input-title').value = article.title;
+        document.getElementById('input-content').value = article.contents;
     },
 
     loadArticle : async () => {
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let params = Object.fromEntries(urlSearchParams.entries());
+        let params = articleFunction.getSearchParam();
         let res = await fetch(location.origin+'/freeboard/'+params.pagenum);
         let article = await res.json();
+        document.title = article.title;
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('article-content').innerText = article.contents;
         document.getElementById('article-writer').innerText = article.writer;
@@ -86,23 +86,27 @@ let articleFunction = {
         let button = document.createElement('button');
         let editInput = document.createElement('input');
         let inputLabel = document.createElement('label');
-        let editButton = document.createElement('input');
+        let editSubmitButton = document.createElement('input');
         let deleteButton = document.createElement('input');
 
-        editButton.type = 'button';
-        editButton.value = '등록';
+        editSubmitButton.type = 'button';
+        editSubmitButton.value = '등록';
 
         inputLabel.appendChild(editInput)
-        inputLabel.appendChild(editButton)
+        inputLabel.appendChild(editSubmitButton)
         inputLabel.id = `comment-edit-label-${ele.id}`
         inputLabel.classList.add('input-label')
 
         editInput.id = `comment-edit-input-${ele.id}`
-        editButton.id = `comment-edit-submit-${ele.id}`
+        editSubmitButton.id = `comment-edit-submit-${ele.id}`
+
+        commentDiv.dataset.commentId = ele.id;
+
 
         button.innerText = '수정'
         deleteButton.type = 'button';
         deleteButton.value = '삭제';
+        deleteButton.id = `comment-delete-button-${ele.id}`
         commentDiv.classList.add('contain-comment')
         writerDiv.id = 'comment-writer'
         contentsDiv.id = 'comment-contents'
@@ -112,6 +116,7 @@ let articleFunction = {
         contentsDiv.innerText += ele.contents
         commentDiv.appendChild(writerDiv)
         commentDiv.appendChild(button)
+        commentDiv.appendChild(deleteButton)
         commentDiv.appendChild(contentsDiv)
         commentDiv.appendChild(inputLabel)
         commentDiv.innerHTML += '<br>'
@@ -121,16 +126,18 @@ let articleFunction = {
                 articleFunction.toggleComment(document.getElementById(inputLabel.id))
             },false)
         document.getElementById(button.id).classList.add('comment-edit-button')
-        document.getElementById(editButton.id).addEventListener(
+        document.getElementById(editSubmitButton.id).addEventListener(
             'click', ()=>{
                 articleFunction.sendEditComment(document.getElementById(editInput.id));
             },false);
+        document.getElementById(deleteButton.id).classList.add('comment-edit-button')
+        document.getElementById(deleteButton.id).addEventListener('click',async () =>{
+            articleFunction.deleteComment(ele.id);
+        }, false)
     },
 
-
     loadComments : async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
+        params = articleFunction.getSearchParam();
         res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
         comments = await res.json()
         comments.forEach(ele => {
@@ -139,8 +146,7 @@ let articleFunction = {
     },
 
     sendEditComment : async (elem) =>{
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
+        params = articleFunction.getSearchParam();
         let commentId = elem.id.split("-")[elem.id.split("-").length-1];
         console.log(elem.id.split("-"))
         data = {
@@ -164,14 +170,11 @@ let articleFunction = {
     },
 
     sendComment : async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
-
+        params = articleFunction.getSearchParam();
         data = {
             contents: document.getElementById('comment-contents').value,
             article_id: Number(params.pagenum)
         };
-        console.log(data);
         if (!data.article_id || !data.contents){
             alert('내용을 입력해주세요.')
             return
@@ -184,5 +187,27 @@ let articleFunction = {
             body: JSON.stringify(data)
         })
         window.location.href = location.origin + '/article?pagenum='+params.pagenum
+    },
+
+    deleteArticle: async () => {
+        let data = {
+            content_id: Number(articleFunction.getSearchParam().pagenum)
+        }
+        await fetch(`/freeboard/delete/article`,{
+            method:'DELETE',
+            body: JSON.stringify(data)
+        })
+        window.location.href = document.referrer;
+    },
+
+    deleteComment: async (commentId) =>{
+        let data = {
+            content_id: commentId
+        }
+        await fetch('/freeboard/delete/comment',{
+            method:'DELETE',
+            body: JSON.stringify(data)
+        })
+        window.location.reload();
     }
 };
