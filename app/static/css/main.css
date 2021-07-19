@@ -95,10 +95,12 @@ header{
 }
 
 #comment-writer{
+    width: 30%;
     text-align: left;
 }
 
 #comment-contents{
+    width:30%;
     text-align: left;
 }
 
@@ -127,4 +129,14 @@ header{
     margin-left: 2vw;
     margin-top: 1vh;
     margin-bottom: 3vh
+}
+
+.comment-edit-button{
+    /*width:30%;*/
+    float:right;
+    display: block;
+}
+
+.input-label{
+    visibility: hidden;
 }
