@@ -149,14 +149,13 @@
     <div id="show-comments">
     </div>
 </div>
-<script>
-    document.getElementById('article-edit-button').addEventListener('click',()=>{
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let params = Object.fromEntries(urlSearchParams.entries());
-        let articleId = params.pagenum;
-        location.href = `/article/edit?pagenum=${articleId}`
-    })
+
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+    document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit)
     window.onload = loadArticle();
     document.getElementById('show-comments').onload = loadComments();
-</script>
+    </script>
 {% endblock %}

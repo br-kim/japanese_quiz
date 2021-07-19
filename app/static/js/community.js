@@ -40,4 +40,21 @@ let articleFunction = {
         });
         window.location.href = location.origin + '/article?pagenum='+articleId;
     },
+    loadEdit : async ()=>{
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        let params = Object.fromEntries(urlSearchParams.entries());
+        let articleId = params.pagenum;
+        location.href = `/article/edit?pagenum=${articleId}`
+
+    },
+
+    loadBeforeArticle : async ()=>{
+        let urlSearchParams1 = new URLSearchParams(window.location.search);
+        let params1 = Object.fromEntries(urlSearchParams1.entries());
+        let res1 = await fetch(location.origin+'/freeboard/'+params1.pagenum);
+        let article = await res1.json();
+        console.log(article)
+        document.getElementById('input-title').value = article.title
+        document.getElementById('input-content').value = article.contents
+    }
 };
