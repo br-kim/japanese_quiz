@@ -39,6 +39,8 @@ body{
     color: white;
 }
 header{
+    white-space: normal;
+    overflow: scroll;
     margin-top: 0;
     height: 4em;
     background-color: black;
@@ -71,60 +73,4 @@ header{
     display: inline-block;
     justify-content: center;
     min-height: 50vh;
-}
-
-#contain-article{
-    border: black groove;
-    display: inline-block;
-    width: 100vh;
-    justify-content: center;
-}
-
-#contain-article-write{
-    display: inline-block;
-}
-
-#input-content{
-    resize: none;
-}
-
-#show-comments{
-    border: black groove;
-    display: inline-block;
-    width: 100vh;
-}
-
-#comment-writer{
-    text-align: left;
-}
-
-#comment-contents{
-    text-align: left;
-}
-
-#article-title{
-    float:left;
-    text-align: left;
-    margin-left: 2vw;
-    margin-top: 1vh
-}
-
-#article-created{
-    float:right;
-    text-align: right;
-    margin-right: 2vw;
-    margin-top: 1vh
-}
-
-#article-writer, #comment-contents, #comment-writer{
-    text-align: left;
-    margin-left: 2vw;
-    margin-top: 1vh
-}
-
-#article-content{
-    text-align: left;
-    margin-left: 2vw;
-    margin-top: 1vh;
-    margin-bottom: 3vh
 }

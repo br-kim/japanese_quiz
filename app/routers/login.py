@@ -15,7 +15,6 @@ import schemas
 import crud
 from dependencies import get_db
 
-
 login_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
@@ -82,4 +81,5 @@ async def logout(request: Request):
         "Content-type": "application/x-www-form-urlencoded"
     }
     requests.post(token_revoke, headers=header)
+    request.get('https://mail.google.com/mail/u/0/?logout&hl=en')
     return templates.TemplateResponse("error.html", {"request": request, "message": "로그아웃이 완료되었습니다."})

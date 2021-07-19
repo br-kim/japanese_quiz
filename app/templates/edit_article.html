@@ -7,7 +7,13 @@
             <br><br><br>
             <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
             <br>
-            <input type="button" value="저장" onclick="articleFunction.sendArticle()">
+            <input type="button" value="저장" onclick="articleFunction.editArticle()">
         </label>
     </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+    articleFunction.loadBeforeArticle()
+    </script>
 {% endblock %}

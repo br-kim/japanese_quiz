@@ -1,8 +1,7 @@
 import os
 import json
-from typing import Type
 
-from sqlalchemy import Column, Integer, String, JSON, UnicodeText, func, DateTime
+from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime
 
 from database import Base
 

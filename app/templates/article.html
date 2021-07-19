@@ -1,68 +1,18 @@
 {% extends "layout.html" %}
-{% block title %} 자유 게시판 {% endblock %}
+{% block title %} {% endblock %}
 {% block content %}
-<script>
-    loadArticle = async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
-        res = await fetch(location.origin+'/freeboard/'+params.pagenum);
-        article = await res.json();
-        document.getElementById('article-title').innerText = article.title;
-        document.getElementById('article-content').innerText = article.contents;
-        document.getElementById('article-writer').innerText = article.writer;
-        document.getElementById('article-created').innerText = article.created_at.split('.')[0];
-    }
-    loadComments = async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
-        res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
-        comments = await res.json()
-        comments.forEach(ele => {
-            commentDiv = document.createElement('div');
-            writerDiv = document.createElement('div');
-            contentsDiv = document.createElement('div');
-            commentDiv.classList.add('contain-comment')
-            writerDiv.id = 'comment-writer'
-            contentsDiv.id = 'comment-contents'
-            writerDiv.innerText += ele.writer
-            contentsDiv.innerText += ele.contents
-            commentDiv.appendChild(writerDiv)
-            commentDiv.appendChild(contentsDiv)
-            commentDiv.innerHTML += '<br>'
-            document.getElementById('show-comments').appendChild(commentDiv)
-
-        })
-    }
-    sendComment = async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        params = Object.fromEntries(urlSearchParams.entries());
-
-        data = {
-            contents: document.getElementById('comment-contents').value,
-            article_id: Number(params.pagenum)
-        };
-        console.log(data);
-        if (!data.article_id || !data.contents){
-            alert('내용을 입력해주세요.')
-            return
-        }
-        res = await fetch('/freeboard/write/comment',{
-            method:'POST',
-            headers: {
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        window.location.href = location.origin + '/article?pagenum='+params.pagenum
-    }
-</script>
 <h1><a href="/fb">자유 게시판</a></h1>
 <br>
+
 <div id="contain-article">
+<div>
+    <input id="article-edit-button" type="button" value="수정" style="float:right">
+    <input id="article-delete-button" type="button" value="삭제" style="float:right">
+</div>
     <div id="show-article">
         <div id="article-title"></div>
         <div id="article-created"></div>
-        <br> <br>
+        <br>
         <div id="article-writer"></div><br>
         <div id="article-content"></div>
     </div>
@@ -70,17 +20,21 @@
 <div id="write-comment">
     <label>
         <input type="text" id="comment-contents" style="width: 50vh;">
-        <input type="button" value="등록" onclick="sendComment()">
-        <br>
-        <br>
+        <input type="button" value="등록" onclick="articleFunction.sendComment()"><br><br>
     </label>
 </div>
 <div id="contain-comments">
     <div id="show-comments">
     </div>
 </div>
-<script>
-    window.onload = loadArticle();
-    document.getElementById('show-comments').onload = loadComments();
-</script>
+
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit);
+        document.getElementById('article-delete-button').addEventListener('click',articleFunction.deleteArticle);
+        window.onload = articleFunction.loadArticle();
+        document.getElementById('show-comments').onload = articleFunction.loadComments();
+    </script>
 {% endblock %}

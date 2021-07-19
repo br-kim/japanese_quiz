@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
-{% block title %} 점수판 {% endblock %}
+{% block title %} 자유 게시판 {% endblock %}
 {% block content %}
 <script>
-    loadArticleList = (async () => {
-        urlSearchParams = new URLSearchParams(window.location.search);
-        paramss = Object.fromEntries(urlSearchParams.entries());
-        pagenum = paramss.page
+    loadArticleList = async () => {
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        let paramss = Object.fromEntries(urlSearchParams.entries());
+        let pagenum = paramss.page
         if (!pagenum){
             pagenum = 1
         }
@@ -16,7 +16,7 @@
         let res_json = await req.json();
         buildArticleHead(res_json.articles);
         buildPageIndex(res_json.articles_length,pagenum);
-    });
+    };
 
     function buildArticleHead(articleJsonArray){
         document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
