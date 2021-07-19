@@ -77,6 +77,15 @@ def get_all_article_size(db: Session):
     return db.query(models.FreeBoard).count()
 
 
+def update_article(db: Session, article_id: int, title: str, contents: str):
+    article = get_article(db, article_id)
+    article.contents = contents
+    article.title = title
+    db.commit()
+    db.refresh(article)
+    return article
+
+
 def create_comment(db: Session, comment: schemas.CommentCreate):
     db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id)
     db.add(db_comment)
@@ -85,5 +94,17 @@ def create_comment(db: Session, comment: schemas.CommentCreate):
     return db_comment
 
 
+def get_comment(db: Session, comment_id:int):
+    return db.query(models.Comment).filter(models.Comment.id == comment_id).first()
+
+
 def get_comments_by_article_id(db: Session, article_id: int):
     return db.query(models.Comment).filter(models.Comment.article_id == article_id).all()
+
+
+def update_comment(db: Session, comment_id: int, contents: str):
+    db_comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
+    db_comment.contents = contents
+    db.commit()
+    db.refresh(db_comment)
+    return db_comment
