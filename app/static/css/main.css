@@ -39,9 +39,8 @@ body{
     color: white;
 }
 header{
-    white-space:nowrap;
-    overflow-x:scroll;
-    overflow-y:scroll;
+    white-space: normal;
+    overflow: scroll;
     margin-top: 0;
     height: 4em;
     background-color: black;
