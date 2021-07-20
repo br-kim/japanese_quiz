@@ -6,6 +6,7 @@ import json
 from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
 import urls
 import utils
@@ -15,6 +16,11 @@ from dependencies import check_user, get_db
 templates = Jinja2Templates(directory='templates')
 
 quiz_router = APIRouter(dependencies=[Depends(check_user)])
+
+
+class AnswerRes(BaseModel):
+    csrf_token: str
+    character: str
 
 
 @quiz_router.get(urls.inf_quiz_page_url)
@@ -76,10 +82,9 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
 
 
 @quiz_router.patch('/scoreupdate')
-async def score_update(request: Request, db: Session = Depends(get_db)):
-    res_json = await request.json()
-    if res_json['csrf_token'] == request.session['csrf_token']:
-        char_data = res_json['character'].split('/')[-2:]
+async def score_update(request: Request, response: AnswerRes, db: Session = Depends(get_db)):
+    if response.csrf_token == request.session.get('csrf_token'):
+        char_data = response.character.split('/')[-2:]
         char_type = char_data[0]
         char_name = char_data[1].split('.')[0]
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
