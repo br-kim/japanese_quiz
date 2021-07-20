@@ -209,5 +209,42 @@ let articleFunction = {
             body: JSON.stringify(data)
         })
         window.location.reload();
+    },
+
+    loadArticleList : async () => {
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        let paramss = Object.fromEntries(urlSearchParams.entries());
+        let pagenum = paramss.page
+        if (!pagenum){
+            pagenum = 1
+        }
+        let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
+        let params = {'page': pagenum};
+        url.search = new URLSearchParams(params).toString();
+        let req = await fetch(url);
+        let res_json = await req.json();
+        articleFunction.buildArticleHead(res_json.articles);
+        articleFunction.buildPageIndex(res_json.articles_length,pagenum);
+    },
+
+    buildArticleHead : (articleJsonArray) => {
+        document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
+        articleJsonArray.forEach(elem => {
+            let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
+            let titleCell = newRow.insertCell();
+            let writerCell = newRow.insertCell();
+            titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
+            writerCell.textContent = elem.writer;
+        })
+    },
+
+    buildPageIndex: (totalPage,nowPage) => {
+        document.getElementById('pages').innerHTML ="";
+        for(let i = 1; i < totalPage+2; i++){
+            document.getElementById('pages').innerHTML +=
+                // `<a onclick="loadArticleList(${i})">${i}</a> `;
+                `<a href='/fb?page=${i}'>${i}</a> `;
+        }
     }
+
 };
