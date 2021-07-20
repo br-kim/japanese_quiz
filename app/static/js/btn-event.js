@@ -12,19 +12,22 @@ let btnFunction = {
         document.getElementById(elemId).innerText = score;
     },
 
-    isCorrect : function () {
+    isCorrect : async function () {
         answer = document.getElementById('answer').value;
         quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
             document.getElementsByClassName('getNextBtn')[0].click();
-            req_data = {
-                'csrf_token': csrf_token,
-                'character': document.getElementById('quiz').src
+            let req_data = {
+                csrf_token: csrf_token,
+                character: document.getElementById('quiz').src
             };
-            fetch('/scoreupdate',{
+            await fetch('/scoreupdate',{
                 method: "PATCH",
+                headers:{
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(req_data)
             });
         } else {
@@ -81,7 +84,9 @@ let btnFunction = {
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        new_url = await fetch(url);
+        new_url = await fetch(url,{
+            method: 'GET',
+        });
         data = new_url.text();
         json = JSON.parse(await data);
         file_url = json.path;
