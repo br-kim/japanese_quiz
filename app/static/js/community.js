@@ -92,48 +92,48 @@ let articleFunction = {
         editSubmitButton.type = 'button';
         editSubmitButton.value = '등록';
 
-        inputLabel.appendChild(editInput)
-        inputLabel.appendChild(editSubmitButton)
-        inputLabel.id = `comment-edit-label-${ele.id}`
-        inputLabel.classList.add('input-label')
+        inputLabel.appendChild(editInput);
+        inputLabel.appendChild(editSubmitButton);
+        inputLabel.id = `comment-edit-label-${ele.id}`;
+        inputLabel.classList.add('input-label');
 
-        editInput.id = `comment-edit-input-${ele.id}`
-        editSubmitButton.id = `comment-edit-submit-${ele.id}`
+        editInput.id = `comment-edit-input-${ele.id}`;
+        editSubmitButton.id = `comment-edit-submit-${ele.id}`;
 
         commentDiv.dataset.commentId = ele.id;
 
 
-        button.innerText = '수정'
+        button.innerText = '수정';
         deleteButton.type = 'button';
         deleteButton.value = '삭제';
-        deleteButton.id = `comment-delete-button-${ele.id}`
-        commentDiv.classList.add('contain-comment')
-        writerDiv.id = 'comment-writer'
-        contentsDiv.id = 'comment-contents'
-        button.id = `comment-edit-button-${ele.id}`
+        deleteButton.id = `comment-delete-button-${ele.id}`;
+        commentDiv.classList.add('contain-comment');
+        writerDiv.id = 'comment-writer';
+        contentsDiv.id = 'comment-contents';
+        button.id = `comment-edit-button-${ele.id}`;
 
-        writerDiv.innerText += ele.writer
-        contentsDiv.innerText += ele.contents
-        commentDiv.appendChild(writerDiv)
-        commentDiv.appendChild(button)
-        commentDiv.appendChild(deleteButton)
-        commentDiv.appendChild(contentsDiv)
-        commentDiv.appendChild(inputLabel)
-        commentDiv.innerHTML += '<br>'
-        document.getElementById('show-comments').appendChild(commentDiv)
+        writerDiv.innerText += ele.writer;
+        contentsDiv.innerText += ele.contents;
+        commentDiv.appendChild(writerDiv);
+        commentDiv.appendChild(button);
+        commentDiv.appendChild(deleteButton);
+        commentDiv.appendChild(contentsDiv);
+        commentDiv.appendChild(inputLabel);
+        commentDiv.innerHTML += '<br>';
+        document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(`comment-edit-button-${ele.id}`)
             .addEventListener('click',()=>{
                 articleFunction.toggleComment(document.getElementById(inputLabel.id))
-            },false)
-        document.getElementById(button.id).classList.add('comment-edit-button')
+            },false);
+        document.getElementById(button.id).classList.add('comment-edit-button');
         document.getElementById(editSubmitButton.id).addEventListener(
             'click', ()=>{
                 articleFunction.sendEditComment(document.getElementById(editInput.id));
             },false);
-        document.getElementById(deleteButton.id).classList.add('comment-edit-button')
+        document.getElementById(deleteButton.id).classList.add('comment-edit-button');
         document.getElementById(deleteButton.id).addEventListener('click',async () =>{
             articleFunction.deleteComment(ele.id);
-        }, false)
+        }, false);
     },
 
     loadComments : async () => {
@@ -212,15 +212,14 @@ let articleFunction = {
     },
 
     loadArticleList : async () => {
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let paramss = Object.fromEntries(urlSearchParams.entries());
-        let pagenum = paramss.page
+        let params = articleFunction.getSearchParam();
+        let pagenum = params.page
         if (!pagenum){
             pagenum = 1
         }
         let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
-        let params = {'page': pagenum};
-        url.search = new URLSearchParams(params).toString();
+        let data = {'page': pagenum};
+        url.search = new URLSearchParams(data).toString();
         let req = await fetch(url);
         let res_json = await req.json();
         articleFunction.buildArticleHead(res_json.articles);
@@ -242,9 +241,7 @@ let articleFunction = {
         document.getElementById('pages').innerHTML ="";
         for(let i = 1; i < totalPage+2; i++){
             document.getElementById('pages').innerHTML +=
-                // `<a onclick="loadArticleList(${i})">${i}</a> `;
                 `<a href='/fb?page=${i}'>${i}</a> `;
         }
     }
-
 };
