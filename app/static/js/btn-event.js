@@ -1,15 +1,39 @@
 let btnFunction = {
-
     randomImageUrl : '/quiz/path',
     limitQuizImagesUrl : '/newquiz/path-list',
     quizPathUrl : '/quizdata',
     limQuiz: '/path-list',
     infQuiz: '/path',
+    functionContain : null,
 
     scoreAdd : function(elemId){
         let score = document.getElementById(elemId).innerText;
         score = Number(score) + 1;
         document.getElementById(elemId).innerText = score;
+    },
+
+    buildIncorrectSheetTable : function () {
+        let table = document.getElementById('incorrect-sheet-table');
+        if (table !== null) {
+            let cellList = [];
+            let begin = table.rows.length - 2;
+            let cellsLength = table.rows[begin].cells.length;
+            if (cellsLength > 4) {
+                let f = Math.floor(cellsLength / 4);
+                begin += 2 * f;
+                table.insertRow();
+                table.insertRow();
+            }
+
+            for (let i = begin; i < begin + 2; i++) {
+                cellList.push(table.rows[i].insertCell(-1));
+            }
+            cellList[0].innerHTML =
+                "<img alt='image' src=" + document.getElementById('quiz').src + ">";
+
+            cellList[1].innerText =
+                document.getElementById('contain-answer').title;
+        }
     },
 
     isCorrect : async function () {
@@ -18,10 +42,10 @@ let btnFunction = {
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
-            document.getElementsByClassName('getNextBtn')[0].click();
             let req_data = {
                 csrf_token: csrf_token,
-                character: document.getElementById('quiz').src
+                character: document.getElementById('quiz').src,
+                quiz_type: location.pathname
             };
             await fetch('/scoreupdate',{
                 method: "PATCH",
@@ -29,38 +53,60 @@ let btnFunction = {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(req_data)
-            });
+            }).then(async function(response){
+                if(response.status === 403){
+                    alert('csrf 오류입니다.');
+                } else{
+                     if(location.pathname === '/quiz') {
+                         await btnFunction.getRandomImageUrl();
+                     } else{
+                         if(!btnFunction.functionContain) {
+                             btnFunction.functionContain = await btnFunction.getNextImage();
+                         }
+                         else{
+                             btnFunction.functionContain();
+                         }}}});
         } else {
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
-            table = document.getElementById('incorrect-sheet-table');
-            if (table !== null){
-                CellList = [];
-                begin = table.rows.length - 2;
-                cellsLength = table.rows[begin].cells.length;
-                if (cellsLength > 4) {
-                    f = Math.floor(cellsLength / 4);
-                    begin += 2 * f;
-                    table.insertRow();
-                    table.insertRow();
-                }
-
-                for (let i = begin; i < begin + 2; i++) {
-                    CellList.push(table.rows[i].insertCell(-1));
-                }
-                CellList[0].innerHTML =
-                    "<img alt='image' src=" + document.getElementById('quiz').src + ">";
-
-                CellList[1].innerText =
-                    document.getElementById('contain-answer').title;
-            }
+            // table = document.getElementById('incorrect-sheet-table');
+            // if (table !== null){
+            //     cellList = [];
+            //     begin = table.rows.length - 2;
+            //     cellsLength = table.rows[begin].cells.length;
+            //     if (cellsLength > 4) {
+            //         f = Math.floor(cellsLength / 4);
+            //         begin += 2 * f;
+            //         table.insertRow();
+            //         table.insertRow();
+            //     }
+            //
+            //     for (let i = begin; i < begin + 2; i++) {
+            //         cellList.push(table.rows[i].insertCell(-1));
+            //     }
+            //     cellList[0].innerHTML =
+            //         "<img alt='image' src=" + document.getElementById('quiz').src + ">";
+            //
+            //     cellList[1].innerText =
+            //         document.getElementById('contain-answer').title;
+             if(location.pathname === '/quiz') {
+                 await btnFunction.getRandomImageUrl();
+             }else {
+                 btnFunction.buildIncorrectSheetTable();
+                 if(!btnFunction.functionContain){
+                     btnFunction.functionContain = await btnFunction.getNextImage();
+                 }
+                 else{
+                     btnFunction.functionContain();
+                 }
+             }
         }
-    },
+        },
 
     showAnswer : function () {
         document.getElementById('show-answer').innerText = "정답은 " +
             document.getElementById('contain-answer').title + "입니다.";
-    },
+        },
 
     answerClear : function () {
         document.getElementById('answer').value = "";
@@ -84,12 +130,12 @@ let btnFunction = {
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        new_url = await fetch(url,{
+        let new_url = await fetch(url,{
             method: 'GET',
         });
-        data = new_url.text();
-        json = JSON.parse(await data);
-        file_url = json.path;
+        let data = new_url.text();
+        let json = JSON.parse(await data);
+        let file_url = json.path;
         csrf_token = json.csrf_token;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
@@ -112,7 +158,7 @@ let btnFunction = {
         let arr = [];
         for (let i = 0; i < table.rows.length; i += 2) {
             buffer = Array.from(table.rows[i].cells);
-            buffer.forEach(function (elem) {
+            buffer.forEach((elem) => {
                 let url = elem.firstChild.src;
                 arr.push(url);
             });
@@ -128,9 +174,7 @@ let btnFunction = {
             ganaType = 'all';
         }
         url.searchParams.append('kind',ganaType);
-
         let r = await fetch(url);
-        // let j = await r.json();
         return await r.json();
     },
 
@@ -156,7 +200,6 @@ let btnFunction = {
         let res = await this.requestQuizData();
         let chars = res.order;
         csrf_token = res.csrf_token;
-        console.log(csrf_token);
         btnFunction.changeTitleSrc(chars,arrayNum);
         return function () {
             arrayNum += 1;
