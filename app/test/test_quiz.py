@@ -28,3 +28,11 @@ def test_get_quiz_path_only_katakana():
     response = client.get('/quizdata/path', params=payload)
     json = response.json()
     assert json['path'].split('/')[3] == 'katakana'
+
+
+def test_get_quiz_path_both():
+    payload = {'kind': 'all'}
+    response = client.get('/quizdata/path', params=payload)
+    json = response.json()
+    gana_type = json['path'].split('/')[3]
+    assert gana_type == 'katakana' or gana_type == 'hiragana'

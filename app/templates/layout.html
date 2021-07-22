@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% block head %}
-        <meta charset="UTF-8">
-        <title>{% block title %}{% endblock %}</title>
-        <link rel="stylesheet" href=../static/css/main.css>
-        <link rel="stylesheet" href=../static/css/community.css>
-    {% endblock %}
+{% block head %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href=../static/css/main.css>
+    <link rel="stylesheet" href=../static/css/community.css>
+{% endblock %}
 </head>
 <body>
     <header>
         <div id="nav-content">
-        {% include 'nav.html' %}
+            {% include 'nav.html' %}
         </div>
     </header>
-    <div id="content">
-        <br>
+    <div id="content"><br>
         {% block content %}{% endblock %}
     </div>
     <footer>
         <div id="footer-content">
-        {% include 'footer.html' %}
+            {% include 'footer.html' %}
         </div>
     </footer>
     {% block scripts %}
-        <script src="../static/js/quiz.js"></script>
-        <script src="../static/js/btn-event.js"></script>
-        <script src="../static/js/community.js"></script>
+<script src="../static/js/quiz.js"></script>
+<script src="../static/js/btn-event.js"></script>
+<script src="../static/js/community.js"></script>
     {% endblock %}
 </body>
 </html>

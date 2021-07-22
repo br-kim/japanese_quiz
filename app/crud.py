@@ -48,7 +48,7 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
     elif char_type == 'katakana':
         db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
     else:
-        return None
+        raise ValueError
     score = json.loads(db_scoreboard.score)
     score[char_name] += 1
     db_scoreboard.score = json.dumps(score)

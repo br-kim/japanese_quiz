@@ -8,12 +8,9 @@ def gen_img_path(gana: str):
 
 def gen_img_path_list(gana_type: str):
     result = []
-    flag = False
-    if gana_type == 'all':
-        flag = True
-    if gana_type == 'hiragana' or flag:
+    if gana_type == 'hiragana' or gana_type == 'all':
         result += hiragana_urls
-    if gana_type == 'katakana' or flag:
+    if gana_type == 'katakana' or gana_type == 'all':
         result += katakana_urls
     return result
 

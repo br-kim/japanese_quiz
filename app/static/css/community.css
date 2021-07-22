@@ -65,3 +65,7 @@
 .input-label{
     visibility: hidden;
 }
+
+.article-button{
+    float:right
+}

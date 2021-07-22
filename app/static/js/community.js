@@ -92,48 +92,48 @@ let articleFunction = {
         editSubmitButton.type = 'button';
         editSubmitButton.value = '등록';
 
-        inputLabel.appendChild(editInput)
-        inputLabel.appendChild(editSubmitButton)
-        inputLabel.id = `comment-edit-label-${ele.id}`
-        inputLabel.classList.add('input-label')
+        inputLabel.appendChild(editInput);
+        inputLabel.appendChild(editSubmitButton);
+        inputLabel.id = `comment-edit-label-${ele.id}`;
+        inputLabel.classList.add('input-label');
 
-        editInput.id = `comment-edit-input-${ele.id}`
-        editSubmitButton.id = `comment-edit-submit-${ele.id}`
+        editInput.id = `comment-edit-input-${ele.id}`;
+        editSubmitButton.id = `comment-edit-submit-${ele.id}`;
 
         commentDiv.dataset.commentId = ele.id;
 
 
-        button.innerText = '수정'
+        button.innerText = '수정';
         deleteButton.type = 'button';
         deleteButton.value = '삭제';
-        deleteButton.id = `comment-delete-button-${ele.id}`
-        commentDiv.classList.add('contain-comment')
-        writerDiv.id = 'comment-writer'
-        contentsDiv.id = 'comment-contents'
-        button.id = `comment-edit-button-${ele.id}`
+        deleteButton.id = `comment-delete-button-${ele.id}`;
+        commentDiv.classList.add('contain-comment');
+        writerDiv.id = 'comment-writer';
+        contentsDiv.id = 'comment-contents';
+        button.id = `comment-edit-button-${ele.id}`;
 
-        writerDiv.innerText += ele.writer
-        contentsDiv.innerText += ele.contents
-        commentDiv.appendChild(writerDiv)
-        commentDiv.appendChild(button)
-        commentDiv.appendChild(deleteButton)
-        commentDiv.appendChild(contentsDiv)
-        commentDiv.appendChild(inputLabel)
-        commentDiv.innerHTML += '<br>'
-        document.getElementById('show-comments').appendChild(commentDiv)
+        writerDiv.innerText += ele.writer;
+        contentsDiv.innerText += ele.contents;
+        commentDiv.appendChild(writerDiv);
+        commentDiv.appendChild(button);
+        commentDiv.appendChild(deleteButton);
+        commentDiv.appendChild(contentsDiv);
+        commentDiv.appendChild(inputLabel);
+        commentDiv.innerHTML += '<br>';
+        document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(`comment-edit-button-${ele.id}`)
             .addEventListener('click',()=>{
                 articleFunction.toggleComment(document.getElementById(inputLabel.id))
-            },false)
-        document.getElementById(button.id).classList.add('comment-edit-button')
+            },false);
+        document.getElementById(button.id).classList.add('comment-edit-button');
         document.getElementById(editSubmitButton.id).addEventListener(
             'click', ()=>{
                 articleFunction.sendEditComment(document.getElementById(editInput.id));
             },false);
-        document.getElementById(deleteButton.id).classList.add('comment-edit-button')
+        document.getElementById(deleteButton.id).classList.add('comment-edit-button');
         document.getElementById(deleteButton.id).addEventListener('click',async () =>{
             articleFunction.deleteComment(ele.id);
-        }, false)
+        }, false);
     },
 
     loadComments : async () => {
@@ -209,5 +209,39 @@ let articleFunction = {
             body: JSON.stringify(data)
         })
         window.location.reload();
+    },
+
+    loadArticleList : async () => {
+        let params = articleFunction.getSearchParam();
+        let pagenum = params.page
+        if (!pagenum){
+            pagenum = 1
+        }
+        let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
+        let data = {'page': pagenum};
+        url.search = new URLSearchParams(data).toString();
+        let req = await fetch(url);
+        let res_json = await req.json();
+        articleFunction.buildArticleHead(res_json.articles);
+        articleFunction.buildPageIndex(res_json.articles_length,pagenum);
+    },
+
+    buildArticleHead : (articleJsonArray) => {
+        document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
+        articleJsonArray.forEach(elem => {
+            let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
+            let titleCell = newRow.insertCell();
+            let writerCell = newRow.insertCell();
+            titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
+            writerCell.textContent = elem.writer;
+        })
+    },
+
+    buildPageIndex: (totalPage,nowPage) => {
+        document.getElementById('pages').innerHTML ="";
+        for(let i = 1; i < totalPage+2; i++){
+            document.getElementById('pages').innerHTML +=
+                `<a href='/fb?page=${i}'>${i}</a> `;
+        }
     }
 };
