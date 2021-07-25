@@ -41,15 +41,15 @@ class FreeBoard(TimestampMixin, Base):
     __tablename__ = "freeboard"
 
     id: Column = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    contents = Column(UnicodeText)
-    writer = Column(String)
+    title = Column(String, nullable=False)
+    contents = Column(UnicodeText, nullable=False)
+    writer = Column(String, nullable=False)
 
 
 class Comment(TimestampMixin, Base):
     __tablename__ = "comment"
 
     id: Column = Column(Integer, primary_key=True, index=True)
-    contents = Column(UnicodeText)
-    writer = Column(String)
-    article_id = Column(Integer, index=True)
+    contents = Column(UnicodeText, nullable=False)
+    writer = Column(String, nullable=False)
+    article_id = Column(Integer, index=True, nullable=False)
