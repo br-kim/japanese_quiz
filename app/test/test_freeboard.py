@@ -42,7 +42,6 @@ def session():
         finally:
             db.close()
 
-    client = TestClient(app)
     app.dependency_overrides[dependencies.check_user] = check_user
     app.dependency_overrides[dependencies.get_db] = override_get_db
     db = TestingSessionLocal()
@@ -93,6 +92,6 @@ def test_api_article(session, client):
     res = client.get('/for_test')
     res = client.post('/freeboard/write/article', json=data)
     assert res.status_code == 201
-    res = client.get('/freeboard/1')
-    print(res.json())
-    assert res
+    res = client.get('/freeboard/2')
+    res_json = res.json()
+    assert res_json['title'] == data['title'] and res_json['contents'] == data['contents']
