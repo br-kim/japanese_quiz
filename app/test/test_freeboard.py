@@ -13,12 +13,8 @@ import crud
 import models
 
 
-# @pytest.mark.skip(reason="for dependency override")
 def check_user():
     return True
-
-
-# @pytest.mark.skip(reason="for dependency override")
 
 
 @pytest.fixture(scope="session")
@@ -51,27 +47,21 @@ def session():
     app.dependency_overrides[dependencies.get_db] = override_get_db
     db = TestingSessionLocal()
     crud.create_user(db, models.User(email='idle947@gmail.com'))
-
-    yield (db, client)
+    yield db
     db.close()
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
     conn = engine.connect()
     conn.execute('commit')
     conn.execute("drop database test_db with (force)")
-    # Base.metadata.drop_all(bind=engine)
 
 
-# @pytest.fixture(scope="session")
-# def client():
-#     with TestClient(app) as c:
-#         c.get('/for_test')
-#         yield c
-
-# client = TestClient(app)
-# app.dependency_overrides[dependencies.check_user] = test_check_user
+@pytest.fixture(scope="session")
+def client():
+    with TestClient(app) as c:
+        c.get('/for_test')
+        yield c
 
 
-# app.dependency_overrides[dependencies.get_db] = test_get_db
 @app.get('/for_test')
 async def for_test(request: Request):
     request.session['user_email'] = 'idle947@gmail.com'
@@ -79,7 +69,7 @@ async def for_test(request: Request):
 
 
 def test_db_insert_and_get_article(session):
-    session = session[0]
+    session = session
     fixture = {'id': 1, 'contents': 'hello', 'writer': 'test@test.com', 'title': 'test-title'}
     article = models.FreeBoard(**fixture)
     crud.create_article(session, article)
@@ -89,7 +79,7 @@ def test_db_insert_and_get_article(session):
 
 
 def test_db_inset_and_get_comment(session):
-    session = session[0]
+    session = session
     fixture = {'id': 1, 'contents': 'hello', 'writer': 'test@test.com', 'article_id': 1}
     comment = models.Comment(**fixture)
     crud.create_comment(session, comment)
@@ -98,9 +88,7 @@ def test_db_inset_and_get_comment(session):
            comment.writer == fixture['writer']
 
 
-def test_api_article(session):
-    # session = session
-    client = session[1]
+def test_api_article(session, client):
     data = {'title': 'hello', 'contents': 'hello'}
     res = client.get('/for_test')
     res = client.post('/freeboard/write/article', json=data)
