@@ -43,4 +43,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        echo $DATABASE_URL
+        echo $PORT
+        echo $JPN_QUIZ_SESSION_KEY
         PYTHONPATH=./app pytest $(pwd)/app/test -q
