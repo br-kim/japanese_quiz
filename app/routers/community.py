@@ -57,7 +57,7 @@ async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
 async def write_article(request: Request, article: Article, db=Depends(get_db)):
     writer = request.session.get('user_email')
-    if not (article.dict().get('title') and article.dict().get('contents')):
+    if not (writer and article.dict().get('title') and article.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     db_article = schemas.ArticleCreate(writer=writer, title=html.escape(article.title),
                                        contents=html.escape(article.contents))
@@ -68,7 +68,7 @@ async def write_article(request: Request, article: Article, db=Depends(get_db)):
 @community_router.post('/freeboard/write/comment', status_code=status.HTTP_201_CREATED)
 async def write_comment(request: Request, comment: Comment, db=Depends(get_db)):
     writer = request.session.get('user_email')
-    if not comment.dict().get('contents'):
+    if not (writer and comment.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     db_comment = schemas.CommentCreate(writer=writer, contents=comment.contents, article_id=comment.article_id)
     created_comment = crud.create_comment(db, db_comment)
