@@ -38,5 +38,4 @@ jobs:
     - name: Test with pytest
       run: |
         cd app
-        ls
-        pytest
+        pytest /test -q
