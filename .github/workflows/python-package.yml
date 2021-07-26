@@ -32,7 +32,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        echo $DATABASE_URL
+        echo ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_ID }}
         echo $JPN_QUIZ_GOOGLE_CLIENT_ID
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
