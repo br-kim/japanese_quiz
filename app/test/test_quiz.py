@@ -6,12 +6,11 @@ from ..apps import app
 import dependencies
 
 
-@pytest.mark.skip(reason="for dependency override")
-def test_check_user():
+def check_user():
     return True
 
 
-app.dependency_overrides[dependencies.check_user] = test_check_user
+app.dependency_overrides[dependencies.check_user] = check_user
 
 client = TestClient(app)
 
