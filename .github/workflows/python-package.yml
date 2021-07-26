@@ -45,4 +45,4 @@ jobs:
     - name: Test with pytest
       run: |
         cd app
-        PYTHONPATH=./app pytest $(pwd)/app/test -q
+        PYTHONPATH=. pytest $(pwd)/test -q
