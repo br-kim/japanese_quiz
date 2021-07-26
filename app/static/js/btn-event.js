@@ -69,6 +69,26 @@ let btnFunction = {
         } else {
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
+            // table = document.getElementById('incorrect-sheet-table');
+            // if (table !== null){
+            //     cellList = [];
+            //     begin = table.rows.length - 2;
+            //     cellsLength = table.rows[begin].cells.length;
+            //     if (cellsLength > 4) {
+            //         f = Math.floor(cellsLength / 4);
+            //         begin += 2 * f;
+            //         table.insertRow();
+            //         table.insertRow();
+            //     }
+            //
+            //     for (let i = begin; i < begin + 2; i++) {
+            //         cellList.push(table.rows[i].insertCell(-1));
+            //     }
+            //     cellList[0].innerHTML =
+            //         "<img alt='image' src=" + document.getElementById('quiz').src + ">";
+            //
+            //     cellList[1].innerText =
+            //         document.getElementById('contain-answer').title;
              if(location.pathname === '/quiz') {
                  await btnFunction.getRandomImageUrl();
              }else {
