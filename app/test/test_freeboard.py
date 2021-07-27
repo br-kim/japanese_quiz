@@ -9,24 +9,25 @@ from ..apps import app
 import dependencies
 import crud
 import models
+import osenv
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@127.0.0.1"
+SQLALCHEMY_DATABASE_URL = osenv.HEROKU_POSTGRESQL_GREEN_URL#"postgresql://postgres:1234@127.0.0.1"
 
 
 @pytest.fixture(scope="session")
 def session():
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-    conn = engine.connect()
-    conn.execute('commit')
-    try:
-        conn.execute("create database test_db")
-    except:
-        pass
-    finally:
-        conn.close()
-
-    engine = create_engine(SQLALCHEMY_DATABASE_URL + "/test_db")
+    # engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    # conn = engine.connect()
+    # conn.execute('commit')
+    # try:
+    #     conn.execute("create database test_db")
+    # except:
+    #     pass
+    # finally:
+    #     conn.close()
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)# + "/test_db")
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    models.Base.metadata.drop_all(bind=engine)
     models.Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
 
@@ -45,10 +46,11 @@ def session():
     crud.create_user(db, models.User(email='idle947@gmail.com'))
     yield db
     db.close()
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-    conn = engine.connect()
-    conn.execute('commit')
-    conn.execute("drop database test_db with (force)")
+
+    # engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    # conn = engine.connect()
+    # conn.execute('commit')
+    # conn.execute("drop database test_db with (force)")
 
 
 @pytest.fixture(scope="session")
