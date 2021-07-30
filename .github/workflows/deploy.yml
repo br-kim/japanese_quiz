@@ -7,36 +7,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-#     env:
-#       GOOGLE_CLIENT_ID: ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_ID }}
-#       GOOGLE_CLIENT_SECRET: ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_SECRET }}
-#       SESSION_KEY: ${{ secrets.JPN_QUIZ_SESSION_KEY }}
-#       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-#       HEROKU_POSTGRESQL_GREEN_URL: ${{ secrets.HEROKU_POSTGRESQL_GREEN_URL }}
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip install flake8 pytest
-#         if [ -f ./app/requirements.txt ]; then pip install -r ./app/requirements.txt; fi
-        
-#     - name: Lint with flake8
-#       run: |
-#         # stop the build if there are Python syntax errors or undefined names
-#         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-#         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
-#     - name: Test with pytest
-#       run: |
-#         cd app
-#         PYTHONPATH=. pytest $(pwd)/test -q
-        
+
     - name: Deploy to Heroku
       # You may pin to the exact commit or the version.
       # uses: AkhileshNS/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820
