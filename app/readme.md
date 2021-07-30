@@ -1,1 +1,1 @@
-GitHub Actions PR / Push Test
+GitHub Actions PR Test
