@@ -24,6 +24,7 @@ def test_get_quiz_path_only_hiragana():
 
 
 def test_get_quiz_path_only_katakana():
+    assert False
     payload = {'kind': 'katakana'}
     response = client.get('/quizdata/path', params=payload)
     json = response.json()
