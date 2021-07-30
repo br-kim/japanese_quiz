@@ -32,7 +32,6 @@ def test_get_quiz_path_only_katakana():
 
 
 def test_get_quiz_path_both():
-    assert False
     payload = {'kind': 'all'}
     response = client.get('/quizdata/path', params=payload)
     json = response.json()
