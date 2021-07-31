@@ -11,7 +11,7 @@ import crud
 import models
 import osenv
 
-SQLALCHEMY_DATABASE_URL = osenv.HEROKU_POSTGRESQL_GREEN_URL#"postgresql://postgres:1234@127.0.0.1"
+SQLALCHEMY_DATABASE_URL = osenv.HEROKU_POSTGRESQL_GREEN_URL
 
 
 @pytest.fixture(scope="session")
