@@ -90,7 +90,6 @@ async def score_update(request: Request, response: AnswerRes, db: Session = Depe
     token = request.session.get('csrf_token')
     if token is not None and response.quiz_type != '/newquiz':
         request.session.pop('csrf_token')
-        print(request.session)
     if response.csrf_token == token:
         char_data = response.character.split('/')[-2:]
         char_type = char_data[0]
@@ -101,6 +100,5 @@ async def score_update(request: Request, response: AnswerRes, db: Session = Depe
         if result is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
     else:
-        print(response.csrf_token, request.session.get('csrf_token'))
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Access")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
