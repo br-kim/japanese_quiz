@@ -56,7 +56,7 @@ let btnFunction = {
             }).then(async function(response){
                 if(response.status === 403){
                     alert('csrf 오류입니다.');
-                } else{
+                }else{
                      if(location.pathname === '/quiz') {
                          await btnFunction.getRandomImageUrl();
                      } else{
@@ -136,12 +136,13 @@ let btnFunction = {
     getTableData : function () {
         let table = document.getElementById('incorrect-sheet-table');
         let arr = [];
+        let get_url = (elem) => {
+            let url = elem.firstChild.src;
+            arr.push(url);
+        };
         for (let i = 0; i < table.rows.length; i += 2) {
-            buffer = Array.from(table.rows[i].cells);
-            buffer.forEach((elem) => {
-                let url = elem.firstChild.src;
-                arr.push(url);
-            });
+            let buffer = Array.from(table.rows[i].cells);
+            buffer.forEach(get_url);
         }
         return arr;
     },

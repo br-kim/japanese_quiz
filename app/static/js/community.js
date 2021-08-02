@@ -124,7 +124,7 @@ let articleFunction = {
         document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(`comment-edit-button-${ele.id}`)
             .addEventListener('click',()=>{
-                articleFunction.toggleComment(document.getElementById(inputLabel.id))
+                articleFunction.toggleComment(document.getElementById(inputLabel.id));
             },false);
         document.getElementById(button.id).classList.add('comment-edit-button');
         document.getElementById(editSubmitButton.id).addEventListener(
@@ -140,16 +140,16 @@ let articleFunction = {
     loadComments : async () => {
         params = articleFunction.getSearchParam();
         res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
-        comments = await res.json()
+        comments = await res.json();
         comments.forEach(ele => {
             articleFunction.buildComment(ele);
-        })
+        });
     },
 
     sendEditComment : async (elem) =>{
         params = articleFunction.getSearchParam();
         let commentId = elem.id.split("-")[elem.id.split("-").length-1];
-        console.log(elem.id.split("-"))
+        console.log(elem.id.split("-"));
         data = {
             contents: elem.value,
             article_id: Number(params.pagenum)
@@ -157,8 +157,8 @@ let articleFunction = {
 
         console.log(data);
         if (!data.article_id || !data.contents){
-            alert('내용을 입력해주세요.')
-            return
+            alert('내용을 입력해주세요.');
+            return;
         }
         res = await fetch(`/freeboard/edit/comment/${commentId}`,{
             method:'PATCH',
@@ -166,8 +166,8 @@ let articleFunction = {
                 'Content-Type':'application/json'
             },
             body: JSON.stringify(data)
-        })
-        window.location.href = location.origin + '/article?pagenum='+params.pagenum
+        });
+        window.location.href = location.origin + '/article?pagenum='+params.pagenum;
     },
 
     sendComment : async () => {
@@ -177,8 +177,8 @@ let articleFunction = {
             article_id: Number(params.pagenum)
         };
         if (!data.article_id || !data.contents){
-            alert('내용을 입력해주세요.')
-            return
+            alert('내용을 입력해주세요.');
+            return;
         }
         res = await fetch('/freeboard/write/comment',{
             method:'POST',
@@ -186,37 +186,37 @@ let articleFunction = {
                 'Content-Type':'application/json'
             },
             body: JSON.stringify(data)
-        })
-        window.location.href = location.origin + '/article?pagenum='+params.pagenum
+        });
+        window.location.href = location.origin + '/article?pagenum='+params.pagenum;
     },
 
     deleteArticle: async () => {
         let data = {
             content_id: Number(articleFunction.getSearchParam().pagenum)
-        }
+        };
         await fetch(`/freeboard/delete/article`,{
             method:'DELETE',
             body: JSON.stringify(data)
-        })
+        });
         window.location.href = document.referrer;
     },
 
     deleteComment: async (commentId) =>{
         let data = {
             content_id: commentId
-        }
+        };
         await fetch('/freeboard/delete/comment',{
             method:'DELETE',
             body: JSON.stringify(data)
-        })
+        });
         window.location.reload();
     },
 
     loadArticleList : async () => {
         let params = articleFunction.getSearchParam();
-        let pagenum = params.page
+        let pagenum = params.page;
         if (!pagenum){
-            pagenum = 1
+            pagenum = 1;
         }
         let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
         let data = {'page': pagenum};
@@ -236,9 +236,9 @@ let articleFunction = {
             let dateCell = newRow.insertCell();
             titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
-            let date = new Date(elem.created_at)
+            let date = new Date(elem.created_at);
             dateCell.textContent = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
-        })
+        });
     },
 
     buildPageIndex: (totalPage,nowPage) => {
