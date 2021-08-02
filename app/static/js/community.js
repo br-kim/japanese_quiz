@@ -67,7 +67,8 @@ let articleFunction = {
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('article-content').innerText = article.contents;
         document.getElementById('article-writer').innerText = article.writer;
-        document.getElementById('article-created').innerText = article.created_at.split('.')[0];
+        let date = new Date(article.created_at);
+        document.getElementById('article-created').innerText = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
     },
 
     toggleComment : (target) => {
@@ -235,7 +236,8 @@ let articleFunction = {
             let dateCell = newRow.insertCell();
             titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
-            dateCell.textContent = elem.created_at.split('.')[0];
+            let date = new Date(elem.created_at)
+            dateCell.textContent = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
         })
     },
 
