@@ -232,8 +232,10 @@ let articleFunction = {
             let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
             let titleCell = newRow.insertCell();
             let writerCell = newRow.insertCell();
+            let dateCell = newRow.insertCell();
             titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
+            dateCell.textContent = elem.created_at.split('.')[0];
         })
     },
 
