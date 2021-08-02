@@ -49,14 +49,12 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
             score_values = []
             if kind == 'hiragana' or kind == 'all':
                 hira_score_db = crud.get_user_hiragana_score(db=db, user_id=cur_user.id)
-                hira_score = hira_score_db.score
-                score_dict = json.loads(hira_score)
+                score_dict = json.loads(hira_score_db.score)
                 score_values += list(score_dict.values())
                 total_score += sum(score_values)
             if kind == 'katakana' or kind == 'all':
                 kata_score_db = crud.get_user_katakana_score(db=db, user_id=cur_user.id)
-                kata_score = kata_score_db.score
-                score_dict = json.loads(kata_score)
+                score_dict = json.loads(kata_score_db.score)
                 score_values += list(score_dict.values())
                 total_score += sum(score_dict.values())
             weight += [total_score - i for i in score_values]
@@ -69,7 +67,7 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
         random.shuffle(result)
         return {"order": result, "csrf_token": csrf_token}
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Kind")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Type")
 
 
 @quiz_router.get('/scoreboard')
