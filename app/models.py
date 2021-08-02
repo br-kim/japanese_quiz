@@ -13,7 +13,7 @@ class TimestampMixin(object):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    created_at = Column(DateTime, default=func.now())
+    created_at = Column(DateTime(timezone=True), default=func.now())
 
 
 class User(TimestampMixin, Base):
