@@ -106,6 +106,7 @@ let articleFunction = {
         let contentsDiv = document.createElement('div');
         let editButton = document.createElement('button');
         let deleteButton = document.createElement('input');
+        let createAtDiv = document.createElement('div');
 
         editButton.innerText = '수정';
         editButton.id = `comment-edit-button-${comment.id}`;
@@ -118,17 +119,26 @@ let articleFunction = {
         commentDiv.classList.add('contain-comment');
         writerDiv.id = 'comment-writer';
         contentsDiv.id = 'comment-contents';
+        createAtDiv.id = 'comment-created-at';
         writerDiv.innerText += comment.writer;
         contentsDiv.innerText += comment.contents;
+        let date = new Date(comment.created_at);
+        createAtDiv.innerText += date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
 
         let inputLabel = articleFunction.buildCommentEdit(comment);
 
         commentDiv.appendChild(writerDiv);
+        commentDiv.appendChild(createAtDiv);
+        commentDiv.innerHTML += '<br>';
+
         commentDiv.appendChild(editButton);
         commentDiv.appendChild(deleteButton);
         commentDiv.appendChild(contentsDiv);
+        commentDiv.innerHTML += '<br>';
         commentDiv.appendChild(inputLabel);
         commentDiv.innerHTML += '<br>';
+        commentDiv.innerHTML += '<br>';
+
         document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(editButton.id).classList.add('comment-edit-button');
         document.getElementById(`comment-edit-button-${comment.id}`)
@@ -181,7 +191,7 @@ let articleFunction = {
     sendComment : async () => {
         let pagenum = articleFunction.getSearchParamPagenum();
         let data = {
-            contents: document.getElementById('comment-contents').value,
+            contents: document.getElementById('write-comment-input').value,
             article_id: Number(pagenum)
         };
         if (!data.article_id || !data.contents){
