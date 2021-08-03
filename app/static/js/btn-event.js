@@ -52,31 +52,28 @@ let btnFunction = {
                 headers:{
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(req_data)
-            }).then(async function(response){
-                if(response.status === 403){
-                    alert('csrf 오류입니다.');
-                }else{
-                     if(location.pathname === '/quiz') {
-                         await btnFunction.getRandomImageUrl();
-                     } else{
-                         if(!btnFunction.functionContain) {
-                             btnFunction.functionContain = await btnFunction.getNextImage();
-                         }
-                         else{
-                             btnFunction.functionContain();
-                         }}}});
-        } else {
+                body: JSON.stringify(req_data)}).then(async function(response){
+                    if(response.status === 403){
+                        alert('csrf 오류입니다.');
+                    }else{
+                        if(location.pathname === '/quiz') {
+                            await btnFunction.getRandomImageUrl();
+                        }else{
+                            if(!btnFunction.functionContain) {
+                                btnFunction.functionContain = await btnFunction.getNextImage();
+                            }else{
+                                btnFunction.functionContain();
+                            }}}});
+        }else{
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
              if(location.pathname === '/quiz') {
                  await btnFunction.getRandomImageUrl();
-             }else {
+             }else{
                  btnFunction.buildIncorrectSheetTable();
                  if(!btnFunction.functionContain){
                      btnFunction.functionContain = await btnFunction.getNextImage();
-                 }
-                 else{
+                 }else{
                      btnFunction.functionContain();
                  }
              }
@@ -100,11 +97,9 @@ let btnFunction = {
         let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz, window.location.origin);
         if (hira.checked && kata.checked){
             url.searchParams.append('kind','all');
-        }
-        else if(hira.checked){
+        }else if(hira.checked){
             url.searchParams.append('kind','hiragana');
-        }
-        else if(kata.checked){
+        }else if(kata.checked){
             url.searchParams.append('kind','katakana');
         }
         if (weighted.checked){
@@ -182,6 +177,7 @@ let btnFunction = {
         let chars = res.order;
         csrf_token = res.csrf_token;
         btnFunction.changeTitleSrc(chars,arrayNum);
+        btnFunction.answerClear();
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
@@ -232,23 +228,19 @@ if (toggleBtn !== null){
 const getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
     (async() => {
-        func1 = await btnFunction.getNextImage();
+        await btnFunction.getNextImage().then(func =>{
+            getNextImageBtn.addEventListener('click', async () => {func();}, false);
+        });
     })();
-    getNextImageBtn.addEventListener('click', async () => {
-        func1();
-    }, false);
 }
 
 const incorrectQuizBtn = document.getElementById('incorrectQuizBtn');
 if (incorrectQuizBtn !== null){
     incorrectQuizBtn.addEventListener('click', function () {
-        func2 = btnFunction.getNextImageIncorrect();
-    },{once:true});
-}
-
-const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
-if (incorrectQuizNextBtn !== null){
-    incorrectQuizNextBtn.addEventListener('click', function () {
-        func2();
-    },false);
+        let func = btnFunction.getNextImageIncorrect();
+        const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
+        if (incorrectQuizNextBtn !== null){
+            incorrectQuizNextBtn.addEventListener('click', function () {
+                func();},false);}
+        },{once:true});
 }
