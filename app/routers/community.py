@@ -30,6 +30,7 @@ class CommentEdit(BaseModel):
 
 class DeleteContent(BaseModel):
     content_id: int
+    content_writer: str
 
 
 @community_router.get('/fb')
@@ -96,14 +97,17 @@ async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, 
 
 
 @community_router.delete('/freeboard/delete/{content_type}')
-async def delete_content(content_type: str, content: DeleteContent, db=Depends(get_db)):
-    if content_type == 'article':
-        crud.delete_article(db=db, article_id=content.content_id)
-    elif content_type == 'comment':
-        crud.delete_comment(db=db, comment_id=content.content_id)
+async def delete_content(request: Request, content_type: str, content: DeleteContent, db=Depends(get_db)):
+    if request.session.get('user_email') == content.content_writer:
+        if content_type == 'article':
+            crud.delete_article(db=db, article_id=content.content_id)
+        elif content_type == 'comment':
+            crud.delete_comment(db=db, comment_id=content.content_id)
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
 
 @community_router.get('/write')
