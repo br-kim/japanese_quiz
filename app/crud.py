@@ -98,7 +98,7 @@ def get_comment(db: Session, comment_id: int):
 
 
 def get_comments_by_article_id(db: Session, article_id: int):
-    return db.query(models.Comment).filter(models.Comment.article_id == article_id).all()
+    return db.query(models.Comment).filter(models.Comment.article_id == article_id).order_by(models.Comment.id).all()
 
 
 def update_comment(db: Session, comment_id: int, contents: str):
