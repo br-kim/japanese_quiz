@@ -19,15 +19,25 @@
     width: 100vh;
 }
 
+#write-comment{
+    border: black solid 2px;
+    /*display: block;*/
+    display: inline-block;
+    width: 100vh;
+    justify-content: center;
+    /*float: right;*/
+}
+#write-label{
+    display: block;
+    justify-content: center;
+    /*width:50vh;*/
+}
+
 #comment-writer{
     width: 30%;
     text-align: left;
 }
 
-#comment-contents{
-    width:30%;
-    text-align: left;
-}
 
 #article-title{
     float:left;
@@ -40,13 +50,31 @@
     float:right;
     text-align: right;
     margin-right: 2vw;
-    margin-top: 1vh
+    margin-top: 1vh;
 }
 
-#article-writer, #comment-contents, #comment-writer{
+#article-writer{
+    float: left;
+    display: block;
     text-align: left;
     margin-left: 2vw;
-    margin-top: 1vh
+    margin-top: 1vh;
+}
+
+#comment-contents, #comment-writer, .input-label{
+    display: block;
+    float: left;
+    text-align: left;
+    /*margin-left: 2vw;*/
+    /*margin-top: 1vh*/
+}
+.contain-comment{
+    margin: 1vh;
+    border-bottom: black dashed;
+}
+#comment-created-at{
+    float:right;
+    display: block;
 }
 
 #article-content{
@@ -58,7 +86,7 @@
 
 .comment-edit-button{
     /*width:30%;*/
-    float:right;
+    float: right;
     display: block;
 }
 
