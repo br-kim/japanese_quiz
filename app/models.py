@@ -53,3 +53,4 @@ class Comment(TimestampMixin, Base):
     contents = Column(UnicodeText)
     writer = Column(String)
     article_id = Column(Integer, index=True)
+    parent_id = Column(Integer)
