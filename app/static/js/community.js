@@ -13,14 +13,14 @@ let articleFunction = {
             alert('제목과 내용을 입력해주세요.');
             return;
         }
-        res = await fetch('/freeboard/write/article',{
+        let res = await fetch('/freeboard/write/article',{
             method:'POST',
             headers: {
                 'Content-Type':'application/json'
             },
             body: JSON.stringify(data)
         });
-        article_num = await res.text();
+        let article_num = await res.text();
         window.location.href = location.origin + '/article?pagenum='+article_num;
     },
 
@@ -35,7 +35,7 @@ let articleFunction = {
             alert('제목과 내용을 입력해주세요.');
             return;
         }
-        res = await fetch(`/freeboard/edit/article/${articleId}`,{
+        let res = await fetch(`/freeboard/edit/article/${articleId}`,{
             method:'PATCH',
             headers: {
                 'Content-Type':'application/json'
@@ -138,19 +138,19 @@ let articleFunction = {
     },
 
     loadComments : async () => {
-        params = articleFunction.getSearchParam();
-        res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
-        comments = await res.json();
+        let params = articleFunction.getSearchParam();
+        let res = await fetch(location.origin+'/freeboard/'+params.pagenum+'/comment');
+        let comments = await res.json();
         comments.forEach(ele => {
             articleFunction.buildComment(ele);
         });
     },
 
     sendEditComment : async (elem) =>{
-        params = articleFunction.getSearchParam();
+        let params = articleFunction.getSearchParam();
         let commentId = elem.id.split("-")[elem.id.split("-").length-1];
         console.log(elem.id.split("-"));
-        data = {
+        let data = {
             contents: elem.value,
             article_id: Number(params.pagenum)
         };
@@ -160,7 +160,7 @@ let articleFunction = {
             alert('내용을 입력해주세요.');
             return;
         }
-        res = await fetch(`/freeboard/edit/comment/${commentId}`,{
+        let res = await fetch(`/freeboard/edit/comment/${commentId}`,{
             method:'PATCH',
             headers: {
                 'Content-Type':'application/json'
@@ -171,8 +171,8 @@ let articleFunction = {
     },
 
     sendComment : async () => {
-        params = articleFunction.getSearchParam();
-        data = {
+        let params = articleFunction.getSearchParam();
+        let data = {
             contents: document.getElementById('comment-contents').value,
             article_id: Number(params.pagenum)
         };
@@ -180,7 +180,7 @@ let articleFunction = {
             alert('내용을 입력해주세요.');
             return;
         }
-        res = await fetch('/freeboard/write/comment',{
+        let res = await fetch('/freeboard/write/comment',{
             method:'POST',
             headers: {
                 'Content-Type':'application/json'
@@ -211,7 +211,6 @@ let articleFunction = {
         });
         window.location.reload();
     },
-
     loadArticleList : async () => {
         let params = articleFunction.getSearchParam();
         let pagenum = params.page;
@@ -221,8 +220,12 @@ let articleFunction = {
         let url = new URL(location.origin + '/freeboard'+ '?/page='+pagenum);
         let data = {'page': pagenum};
         url.search = new URLSearchParams(data).toString();
-        let req = await fetch(url);
+        let req = await fetch(url.toString());
         let res_json = await req.json();
+        /** @param res_json
+         *  @param res_json.articles
+         *  @param res_json.articles_length
+         *  **/
         articleFunction.buildArticleHead(res_json.articles);
         articleFunction.buildPageIndex(res_json.articles_length,pagenum);
     },

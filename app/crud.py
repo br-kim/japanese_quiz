@@ -42,7 +42,6 @@ def create_user_scoreboard(db: Session, user_id: int):
 
 
 def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name: str):
-    db_scoreboard = None
     if char_type == 'hiragana':
         db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
     elif char_type == 'katakana':
@@ -94,7 +93,7 @@ def create_comment(db: Session, comment: schemas.CommentCreate):
     return db_comment
 
 
-def get_comment(db: Session, comment_id:int):
+def get_comment(db: Session, comment_id: int):
     return db.query(models.Comment).filter(models.Comment.id == comment_id).first()
 
 
@@ -117,7 +116,7 @@ def delete_article(db: Session, article_id: int):
     return
 
 
-def delete_comment(db: Session, comment_id:int):
+def delete_comment(db: Session, comment_id: int):
     db_comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
     db.delete(db_comment)
     db.commit()

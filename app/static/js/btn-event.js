@@ -37,8 +37,8 @@ let btnFunction = {
     },
 
     isCorrect : async function () {
-        answer = document.getElementById('answer').value;
-        quiz = document.getElementById('contain-answer').title;
+        let answer = document.getElementById('answer').value;
+        let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
@@ -110,7 +110,7 @@ let btnFunction = {
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        let new_url = await fetch(url,{
+        let new_url = await fetch(url.toString(),{
             method: 'GET',
         });
         let data = new_url.text();
@@ -155,7 +155,7 @@ let btnFunction = {
             ganaType = 'all';
         }
         url.searchParams.append('kind',ganaType);
-        let r = await fetch(url);
+        let r = await fetch(url.toString());
         return await r.json();
     },
 
