@@ -86,7 +86,8 @@ def update_article(db: Session, article_id: int, title: str, contents: str):
 
 
 def create_comment(db: Session, comment: schemas.CommentCreate):
-    db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id)
+    db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id,
+                                parent_id=comment.parent_id)
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
