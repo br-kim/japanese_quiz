@@ -72,6 +72,12 @@
     margin: 1vh;
     border-bottom: black dashed;
 }
+.selected-comment{
+    margin: 1vh;
+    border-bottom: black dashed;
+    background-color: gray;
+}
+
 #comment-created-at{
     float:right;
     display: block;
