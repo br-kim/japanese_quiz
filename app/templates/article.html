@@ -17,23 +17,28 @@
     </div>
 </div>
     <br><br>
+
+<div id="contain-comments">
+    <div id="show-comments">
+    </div>
+</div>
+    <br><br><br>
 <div id="write-comment">
     <br>
     <label id="write-label">
         <input type="text" size="100px" id="write-comment-input">
-        <input type="button" value="등록" onclick="articleFunction.sendComment()"><br><br>
+        <input type="button" id="write-comment-submit" value="등록">
+        <input type="hidden" id="state-childcomment" value=true><br><br>
     </label>
-</div>
-    <br><br><br>
-<div id="contain-comments">
-    <div id="show-comments">
-    </div>
 </div>
 
 {% endblock %}
 {% block scripts %}
     {{ super() }}
     <script>
+        document.getElementById("write-comment-submit").addEventListener('click',()=>{
+            articleFunction.sendComment();
+        });
         document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit);
         document.getElementById('article-delete-button').addEventListener('click',articleFunction.deleteArticle);
         window.onload = articleFunction.loadArticle();

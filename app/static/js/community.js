@@ -107,6 +107,11 @@ let articleFunction = {
         let editButton = document.createElement('button');
         let deleteButton = document.createElement('input');
         let createAtDiv = document.createElement('div');
+        let childCommentButton = document.createElement('input');
+
+        childCommentButton.type = 'button';
+        childCommentButton.value = '대댓글';
+        childCommentButton.id = `child-comment-button-${comment.id}`;
 
         editButton.innerText = '수정';
         editButton.id = `comment-edit-button-${comment.id}`;
@@ -123,9 +128,12 @@ let articleFunction = {
         writerDiv.innerText += comment.writer;
         contentsDiv.innerText += comment.contents;
         let date = new Date(comment.created_at);
-        createAtDiv.innerText += date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
-
+        createAtDiv.innerText += date.toLocaleString("jpn",{
+            dateStyle:'medium', timeStyle:'medium', hour12:false});
         let inputLabel = articleFunction.buildCommentEdit(comment);
+        childCommentButton.classList.add('comment-edit-button');
+        editButton.classList.add('comment-edit-button');
+        deleteButton.classList.add('comment-edit-button');
 
         commentDiv.appendChild(writerDiv);
         commentDiv.appendChild(createAtDiv);
@@ -133,6 +141,9 @@ let articleFunction = {
 
         commentDiv.appendChild(editButton);
         commentDiv.appendChild(deleteButton);
+        if(comment.id === comment.parent_id) {
+            commentDiv.append(childCommentButton);
+        }
         commentDiv.appendChild(contentsDiv);
         commentDiv.innerHTML += '<br>';
         commentDiv.appendChild(inputLabel);
@@ -140,26 +151,67 @@ let articleFunction = {
         commentDiv.innerHTML += '<br>';
 
         document.getElementById('show-comments').appendChild(commentDiv);
-        document.getElementById(editButton.id).classList.add('comment-edit-button');
         document.getElementById(`comment-edit-button-${comment.id}`)
             .addEventListener('click',()=>{
                 articleFunction.toggleComment(document.getElementById(`comment-edit-label-${comment.id}`));
             },false);
         document.getElementById(`comment-edit-submit-${comment.id}`).addEventListener(
             'click', async ()=>{
-                console.log(comment.id);
                 await articleFunction.sendEditComment(document.getElementById(`comment-edit-input-${comment.id}`));
             },false);
-        document.getElementById(deleteButton.id).classList.add('comment-edit-button');
+        if (document.getElementById(`child-comment-button-${comment.id}`)) {
+            document.getElementById(`child-comment-button-${comment.id}`)
+                .addEventListener("click", async () => {
+                    articleFunction.changeChildComment(comment.id);
+                });
+        }
         document.getElementById(deleteButton.id).addEventListener('click',async () =>{
             await articleFunction.deleteComment(comment);
         }, false);
     },
-
+    changeChildComment : (commentId) => {
+        let state = document.getElementById("state-childcomment").value;
+        if (state === "true"){
+            let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
+            comment.classList.replace('contain-comment','selected-comment');
+            document.getElementById("state-childcomment").value = 'false';
+            const oriElement = document.getElementById('write-comment-submit');
+            let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
+            document.getElementById('write-comment-submit').replaceWith(cloneElement);
+            document.getElementById('write-comment-submit')
+                .addEventListener('click',()=> {
+                    articleFunction.sendComment(commentId);
+                    let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
+                    document.getElementById('write-comment-submit').replaceWith(cloneElement);
+                    document.body.querySelector('#write-comment-submit').replaceWith(oriElement);
+                });
+        }else{
+            let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
+            comment.classList.replace('selected-comment','contain-comment');
+            document.getElementById("state-childcomment").value = 'true';
+            let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
+            document.getElementById('write-comment-submit').replaceWith(cloneElement);
+            document.getElementById("write-comment-submit").addEventListener('click',()=>{
+                articleFunction.sendComment();
+            });
+        }
+    },
     loadComments : async () => {
         let res = await fetch(location.origin+'/freeboard/'+articleFunction.getSearchParamPagenum()+'/comment');
         let comments = await res.json();
-        comments.forEach(comment => {
+        comments.forEach((comment)=>{
+            if (!comment.parent_id){
+                comment.parent_id = comment.id;
+            }else{
+                comment.contents = "(대댓글)"+comment.contents ;
+            }
+        });
+        comments.sort((a,b)=>{
+            if(a.parent_id > b.parent_id) return 1;
+            if(a.parent_id === b.parent_id) return a.id-b.id;
+            if(a.parent_id < b.parent_id) return -1;
+        });
+        comments.forEach((comment)=>{
             articleFunction.buildComment(comment);
         });
     },
@@ -188,23 +240,25 @@ let articleFunction = {
         window.location.href = location.origin + '/article?pagenum='+pagenum;
     },
 
-    sendComment : async () => {
+    sendComment : async (parentId) => {
         let pagenum = articleFunction.getSearchParamPagenum();
         let data = {
             contents: document.getElementById('write-comment-input').value,
-            article_id: Number(pagenum)
+            article_id: Number(pagenum),
+            parent_id: parentId
         };
-        if (!data.article_id || !data.contents){
+        if (!data.article_id || !data.contents) {
             alert('내용을 입력해주세요.');
             return;
         }
-        await fetch('/freeboard/write/comment',{
-            method:'POST',
+        await fetch('/freeboard/write/comment', {
+            method: 'POST',
             headers: {
-                'Content-Type':'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
+
         window.location.href = location.origin + '/article?pagenum='+pagenum;
     },
 
