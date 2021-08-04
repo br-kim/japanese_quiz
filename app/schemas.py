@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -71,6 +73,7 @@ class CommentBase(BaseModel):
     writer: str
     contents: str
     article_id: int
+    parent_id: Optional[int]
 
 
 class CommentCreate(CommentBase):

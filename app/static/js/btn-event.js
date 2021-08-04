@@ -37,8 +37,8 @@ let btnFunction = {
     },
 
     isCorrect : async function () {
-        answer = document.getElementById('answer').value;
-        quiz = document.getElementById('contain-answer').title;
+        let answer = document.getElementById('answer').value;
+        let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd('correct');
@@ -52,31 +52,28 @@ let btnFunction = {
                 headers:{
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(req_data)
-            }).then(async function(response){
-                if(response.status === 403){
-                    alert('csrf 오류입니다.');
-                } else{
-                     if(location.pathname === '/quiz') {
-                         await btnFunction.getRandomImageUrl();
-                     } else{
-                         if(!btnFunction.functionContain) {
-                             btnFunction.functionContain = await btnFunction.getNextImage();
-                         }
-                         else{
-                             btnFunction.functionContain();
-                         }}}});
-        } else {
+                body: JSON.stringify(req_data)}).then(async function(response){
+                    if(response.status === 403){
+                        alert('csrf 오류입니다.');
+                    }else{
+                        if(location.pathname === '/quiz') {
+                            await btnFunction.getRandomImageUrl();
+                        }else{
+                            if(!btnFunction.functionContain) {
+                                btnFunction.functionContain = await btnFunction.getNextImage();
+                            }else{
+                                btnFunction.functionContain();
+                            }}}});
+        }else{
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
              if(location.pathname === '/quiz') {
                  await btnFunction.getRandomImageUrl();
-             }else {
+             }else{
                  btnFunction.buildIncorrectSheetTable();
                  if(!btnFunction.functionContain){
                      btnFunction.functionContain = await btnFunction.getNextImage();
-                 }
-                 else{
+                 }else{
                      btnFunction.functionContain();
                  }
              }
@@ -100,17 +97,15 @@ let btnFunction = {
         let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz, window.location.origin);
         if (hira.checked && kata.checked){
             url.searchParams.append('kind','all');
-        }
-        else if(hira.checked){
+        }else if(hira.checked){
             url.searchParams.append('kind','hiragana');
-        }
-        else if(kata.checked){
+        }else if(kata.checked){
             url.searchParams.append('kind','katakana');
         }
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        let new_url = await fetch(url,{
+        let new_url = await fetch(url.toString(),{
             method: 'GET',
         });
         let data = new_url.text();
@@ -136,12 +131,13 @@ let btnFunction = {
     getTableData : function () {
         let table = document.getElementById('incorrect-sheet-table');
         let arr = [];
+        let get_url = (elem) => {
+            let url = elem.firstChild.src;
+            arr.push(url);
+        };
         for (let i = 0; i < table.rows.length; i += 2) {
-            buffer = Array.from(table.rows[i].cells);
-            buffer.forEach((elem) => {
-                let url = elem.firstChild.src;
-                arr.push(url);
-            });
+            let buffer = Array.from(table.rows[i].cells);
+            buffer.forEach(get_url);
         }
         return arr;
     },
@@ -154,7 +150,7 @@ let btnFunction = {
             ganaType = 'all';
         }
         url.searchParams.append('kind',ganaType);
-        let r = await fetch(url);
+        let r = await fetch(url.toString());
         return await r.json();
     },
 
@@ -181,6 +177,7 @@ let btnFunction = {
         let chars = res.order;
         csrf_token = res.csrf_token;
         btnFunction.changeTitleSrc(chars,arrayNum);
+        btnFunction.answerClear();
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
@@ -231,23 +228,19 @@ if (toggleBtn !== null){
 const getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
     (async() => {
-        func1 = await btnFunction.getNextImage();
+        await btnFunction.getNextImage().then(func =>{
+            getNextImageBtn.addEventListener('click', async () => {func();}, false);
+        });
     })();
-    getNextImageBtn.addEventListener('click', async () => {
-        func1();
-    }, false);
 }
 
 const incorrectQuizBtn = document.getElementById('incorrectQuizBtn');
 if (incorrectQuizBtn !== null){
     incorrectQuizBtn.addEventListener('click', function () {
-        func2 = btnFunction.getNextImageIncorrect();
-    },{once:true});
-}
-
-const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
-if (incorrectQuizNextBtn !== null){
-    incorrectQuizNextBtn.addEventListener('click', function () {
-        func2();
-    },false);
+        let func = btnFunction.getNextImageIncorrect();
+        const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
+        if (incorrectQuizNextBtn !== null){
+            incorrectQuizNextBtn.addEventListener('click', function () {
+                func();},false);}
+        },{once:true});
 }

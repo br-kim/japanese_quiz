@@ -42,7 +42,6 @@ def create_user_scoreboard(db: Session, user_id: int):
 
 
 def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name: str):
-    db_scoreboard = None
     if char_type == 'hiragana':
         db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
     elif char_type == 'katakana':
@@ -87,19 +86,20 @@ def update_article(db: Session, article_id: int, title: str, contents: str):
 
 
 def create_comment(db: Session, comment: schemas.CommentCreate):
-    db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id)
+    db_comment = models.Comment(writer=comment.writer, contents=comment.contents, article_id=comment.article_id,
+                                parent_id=comment.parent_id)
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
     return db_comment
 
 
-def get_comment(db: Session, comment_id:int):
+def get_comment(db: Session, comment_id: int):
     return db.query(models.Comment).filter(models.Comment.id == comment_id).first()
 
 
 def get_comments_by_article_id(db: Session, article_id: int):
-    return db.query(models.Comment).filter(models.Comment.article_id == article_id).all()
+    return db.query(models.Comment).filter(models.Comment.article_id == article_id).order_by(models.Comment.id).all()
 
 
 def update_comment(db: Session, comment_id: int, contents: str):
@@ -117,7 +117,7 @@ def delete_article(db: Session, article_id: int):
     return
 
 
-def delete_comment(db: Session, comment_id:int):
+def delete_comment(db: Session, comment_id: int):
     db_comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
     db.delete(db_comment)
     db.commit()

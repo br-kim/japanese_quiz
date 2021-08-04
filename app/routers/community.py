@@ -22,6 +22,7 @@ class Article(BaseModel):
 class Comment(BaseModel):
     contents: str
     article_id: int
+    parent_id: Optional[int]
 
 
 class CommentEdit(BaseModel):
@@ -30,6 +31,7 @@ class CommentEdit(BaseModel):
 
 class DeleteContent(BaseModel):
     content_id: int
+    content_writer: str
 
 
 @community_router.get('/fb')
@@ -70,7 +72,8 @@ async def write_comment(request: Request, comment: Comment, db=Depends(get_db)):
     writer = request.session.get('user_email')
     if not (writer and comment.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-    db_comment = schemas.CommentCreate(writer=writer, contents=comment.contents, article_id=comment.article_id)
+    db_comment = schemas.CommentCreate(writer=writer, contents=comment.contents, article_id=comment.article_id,
+                                       parent_id=comment.parent_id)
     created_comment = crud.create_comment(db, db_comment)
     return created_comment.id
 
@@ -96,14 +99,17 @@ async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, 
 
 
 @community_router.delete('/freeboard/delete/{content_type}')
-async def delete_content(content_type: str, content: DeleteContent, db=Depends(get_db)):
-    if content_type == 'article':
-        crud.delete_article(db=db, article_id=content.content_id)
-    elif content_type == 'comment':
-        crud.delete_comment(db=db, comment_id=content.content_id)
+async def delete_content(request: Request, content_type: str, content: DeleteContent, db=Depends(get_db)):
+    if request.session.get('user_email') == content.content_writer:
+        if content_type == 'article':
+            crud.delete_article(db=db, article_id=content.content_id)
+        elif content_type == 'comment':
+            crud.delete_comment(db=db, comment_id=content.content_id)
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
 
 @community_router.get('/write')
