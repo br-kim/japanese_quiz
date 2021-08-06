@@ -2,6 +2,7 @@ import random
 import base64
 import os
 import json
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
@@ -35,7 +36,7 @@ async def new_quiz(request: Request):
 
 
 @quiz_router.get(urls.QUIZ_DATA_BASE_URL + '/{data_type}')
-async def path_data(request: Request, data_type: str, kind: str = 'all', is_weighted: str = '',
+async def path_data(request: Request, data_type: str, kind: str = 'all', is_weighted: Optional[str] = None,
                     db: Session = Depends(get_db)):
     result = utils.gen_img_path_list(kind)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
