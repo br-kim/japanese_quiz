@@ -51,6 +51,8 @@ async def show_edit_article_template(request: Request):
 
 @community_router.get('/freeboard')
 async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
+    if page < 1:
+        page = 1
     total_size = crud.get_all_article_size(db=db)
     offset = 3 * (page - 1)
     return {'articles_length': (total_size - 1) // 3, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
