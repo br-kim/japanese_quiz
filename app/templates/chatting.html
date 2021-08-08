@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %} 자유 게시판 {% endblock %}
+{% block content %}
+        <h1>WebSocket Chat</h1>
+        <h2>Your ID: <span id="ws-id"></span></h2>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <input type="text" id="sendTo" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages' style="overflow:scroll; width:500px; height:150px;">
+        </ul>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script src="../static/js/ws-chatting.js"></script>
+{% endblock %}
