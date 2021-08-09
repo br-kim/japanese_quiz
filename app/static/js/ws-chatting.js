@@ -11,9 +11,21 @@ ws.onmessage = function (event) {
      * @param data.message
      * @param data.type
      * @param data.sender
+     * @param data.detail
      * **/
     let content = document.createTextNode(data.message);
     let userId = "";
+    // console.log(data)
+    if (data.type === 'list'){
+        console.log(data.message);
+        data.message.forEach((elem)=>{
+            let node = document.createElement('div');
+            node.textContent = elem;
+            node.id = elem;
+            document.getElementById('chatting-users-div').append(node);
+        });
+        return;
+    }
     if (data.client_id === client_id) {
         if (data.type === 'whisper'){
             userId = document.createTextNode("from " + data.sender);
@@ -25,12 +37,23 @@ ws.onmessage = function (event) {
     }
     if (data.type === 'alert') {
         message.append(data.client_id, " ", content);
+        if (data.detail === 'enter'){
+            let node = document.createElement('div');
+            node.textContent = data.client_id;
+            node.id = data.client_id;
+            if (!document.getElementById(node.id)) {
+                document.getElementById('chatting-users-div').append(node);
+            }
+        }
+        else if(data.detail ==='leave'){
+            document.getElementById(data.client_id).remove();
+        }
     } else {
         message.append(userId, ": ", content);
     }
     messages.appendChild(message);
-    document.querySelector("#messages").scrollTop =
-        document.querySelector("#messages").scrollHeight;
+    document.querySelector("#messages-div").scrollTop =
+        document.querySelector("#messages-div").scrollHeight;
 };
 
 function sendMessage(event) {
