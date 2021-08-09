@@ -1,17 +1,25 @@
 {% extends "layout.html" %}
 {% block title %} 자유 게시판 {% endblock %}
 {% block content %}
-        <h1>WebSocket Chat</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <input type="text" id="sendTo" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages' style="overflow:scroll; width:500px; height:150px;">
-        </ul>
+<h1>WebSocket Chat</h1>
+<h2>Your ID: <span id="ws-id"></span></h2>
+<div id="chatting-div">
+<div id="messages-div">
+    <ul id='messages'></ul>
+</div>
+<div id="chatting-users-div"></div>
+    </div>
+<form id="chatting-input-form">
+    <input type="text" id="messageText" autocomplete="off"/>
+    <input type="text" id="sendTo" autocomplete="off"/>
+    <button>Send</button>
+</form>
+
 {% endblock %}
 {% block scripts %}
     {{ super() }}
+    <script>
+    document.getElementById("chatting-input-form").addEventListener('submit', (e)=>{sendMessage(e)});
+    </script>
     <script src="../static/js/ws-chatting.js"></script>
 {% endblock %}

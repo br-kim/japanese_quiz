@@ -1,3 +1,4 @@
+import json
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
@@ -35,6 +36,10 @@ class ConnectionManager:
             if connection.session['client_id'] == message['client_id']:
                 await connection.send_json(message)
 
+    async def send_connections(self, websocket: WebSocket):
+        connection_id_list = [i.session['client_id'] for i in self.active_connections]
+        await websocket.send_json({'type': 'list', 'message': connection_id_list})
+
 
 manager = ConnectionManager()
 
@@ -49,13 +54,19 @@ async def websocket_chatting(websocket: WebSocket, client_id: str):
     await manager.connect(websocket)
     try:
         websocket.session['client_id'] = client_id
-        await manager.broadcast({'type': 'alert', 'client_id': client_id, 'message': "enter the chatting room."})
+        await manager.send_connections(websocket)
+        await manager.broadcast(
+            {'type': 'alert', 'detail': 'enter', 'client_id': client_id, 'message': "enter the chatting room."})
         while True:
             data = await websocket.receive_json()
-            if data['receiver']:
-                await manager.send_whisper({'type': 'whisper','sender': client_id, 'client_id': data['receiver'], 'message': data['message']})
-            else:
-                await manager.broadcast({'type': 'message', 'client_id': client_id, 'message': data['message']})
+            if data.get('receiver'):
+                await manager.send_whisper(
+                    {'type': 'whisper', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']})
+                continue
+
+            await manager.broadcast({'type': 'message', 'client_id': client_id, 'message': data['message']})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast({'type': 'alert', 'client_id': client_id, 'message': "leave the chatting room."})
+        await manager.broadcast(
+            {'type': 'alert', 'detail': 'leave', 'client_id': client_id, 'message': "leave the chatting room."})
+
