@@ -47,7 +47,11 @@ header{
 }
 
 #content{
+    display: flex;
     text-align: center;
+    flex-flow: column nowrap ;
+    /*margin: 0 auto;*/
+    justify-content: center;
 }
 
 #incorrect-sheet-table{
