@@ -3,7 +3,7 @@
 {% block content %}
 <h1><a href="/fb">자유 게시판</a></h1>
 <br>
-
+<div id="wrap-freeboard-content">
 <div id="contain-article">
 <div>
     <input class="article-button" id="article-edit-button" type="button" value="수정">
@@ -31,7 +31,7 @@
         <input type="hidden" id="state-childcomment" value=true><br><br>
     </label>
 </div>
-
+</div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
