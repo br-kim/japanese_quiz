@@ -4,7 +4,7 @@ import os
 
 import requests
 import jwt
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -40,7 +40,7 @@ async def login(request: Request):
 @login_router.get("/forredirect")
 async def forredirect(request: Request, db: Session = Depends(get_db)):
     if request.query_params["state"] != request.session["state"]:
-        return "error"
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
     code = request.query_params["code"]
     params = {
