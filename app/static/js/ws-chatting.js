@@ -1,6 +1,6 @@
 let my_client_id = String(Date.now());
 document.querySelector("#ws-id").textContent = String(my_client_id);
-let ws = new WebSocket(`ws://127.0.0.1:8000/chatting/${my_client_id}`);
+let ws = new WebSocket(`ws://${document.location.host}/chatting/${my_client_id}`);
 ws.onmessage = function (event) {
     let messages = document.getElementById('messages');
     let message = document.createElement('li');
