@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 import osenv
-from routers import quiz, login, community
+from routers import quiz, login, community, chatting
 import models
 from database import engine
 
@@ -17,6 +17,7 @@ templates = Jinja2Templates(directory='templates')
 app.include_router(quiz.quiz_router)
 app.include_router(login.login_router)
 app.include_router(community.community_router)
+app.include_router(chatting.chatting_router)
 app.add_middleware(SessionMiddleware, secret_key=osenv.SESSION_KEY)
 
 

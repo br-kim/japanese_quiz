@@ -1,4 +1,9 @@
 let articleFunction = {
+    datePreProcess: (timeStamp) =>{
+        let date = new Date(timeStamp);
+        return date.toLocaleString("jpn", {dateStyle: 'medium', timeStyle: 'medium', hour12: false});
+    },
+
     getSearchParamPagenum: () => {
         let urlSearchParams = new URLSearchParams(window.location.search);
         let result = Object.fromEntries(urlSearchParams.entries());
@@ -41,7 +46,10 @@ let articleFunction = {
                 'Content-Type':'application/json'
             },
             body: JSON.stringify(data)
-        });
+        }).then(res=>{
+            if(res.status === 403){
+                alert("다른 사람의 글은 수정할 수 없습니다.");
+            }});
         window.location.href = location.origin + '/article?pagenum='+articleId;
     },
 
@@ -70,9 +78,11 @@ let articleFunction = {
         document.getElementById('article-title').innerText = article.title;
         document.getElementById('article-content').innerText = article.contents;
         document.getElementById('article-writer').innerText = article.writer;
-        let date = new Date(article.created_at);
         document.getElementById('article-created').innerText =
-            date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
+            articleFunction.datePreProcess(article.created_at);
+        // let date = new Date(article.created_at);
+        // document.getElementById('article-created').innerText =
+        //     date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
     },
 
     toggleComment : (target) => {
@@ -102,11 +112,13 @@ let articleFunction = {
 
     buildComment : (comment) => {
         let commentDiv = document.createElement('div');
+
         let writerDiv = document.createElement('div');
         let contentsDiv = document.createElement('div');
+        let createAtDiv = document.createElement('div');
+
         let editButton = document.createElement('button');
         let deleteButton = document.createElement('input');
-        let createAtDiv = document.createElement('div');
         let childCommentButton = document.createElement('input');
 
         childCommentButton.type = 'button';
@@ -127,28 +139,25 @@ let articleFunction = {
         createAtDiv.id = 'comment-created-at';
         writerDiv.innerText += comment.writer;
         contentsDiv.innerText += comment.contents;
-        let date = new Date(comment.created_at);
-        createAtDiv.innerText += date.toLocaleString("jpn",{
-            dateStyle:'medium', timeStyle:'medium', hour12:false});
+        createAtDiv.innerText += articleFunction.datePreProcess(comment.created_at);
+        // let date = new Date(comment.created_at);
+        // createAtDiv.innerText += date.toLocaleString("jpn",{
+        //     dateStyle:'medium', timeStyle:'medium', hour12:false});
         let inputLabel = articleFunction.buildCommentEdit(comment);
         childCommentButton.classList.add('comment-edit-button');
         editButton.classList.add('comment-edit-button');
         deleteButton.classList.add('comment-edit-button');
 
-        commentDiv.appendChild(writerDiv);
-        commentDiv.appendChild(createAtDiv);
+        commentDiv.append(writerDiv, createAtDiv);
         commentDiv.innerHTML += '<br>';
-
-        commentDiv.appendChild(editButton);
-        commentDiv.appendChild(deleteButton);
+        commentDiv.append(editButton, deleteButton);
         if(comment.id === comment.parent_id) {
             commentDiv.append(childCommentButton);
         }
         commentDiv.appendChild(contentsDiv);
         commentDiv.innerHTML += '<br>';
         commentDiv.appendChild(inputLabel);
-        commentDiv.innerHTML += '<br>';
-        commentDiv.innerHTML += '<br>';
+        commentDiv.innerHTML += '<br> <br>';
 
         document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(`comment-edit-button-${comment.id}`)
@@ -171,10 +180,10 @@ let articleFunction = {
     },
     changeChildComment : (commentId) => {
         let state = document.getElementById("state-childcomment").value;
+        let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
         if (state === "true"){
-            let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
-            comment.classList.replace('contain-comment','selected-comment');
             document.getElementById("state-childcomment").value = 'false';
+            comment.classList.replace('contain-comment','selected-comment');
             const oriElement = document.getElementById('write-comment-submit');
             let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
             document.getElementById('write-comment-submit').replaceWith(cloneElement);
@@ -182,13 +191,12 @@ let articleFunction = {
                 .addEventListener('click',()=> {
                     articleFunction.sendComment(commentId);
                     let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
-                    document.getElementById('write-comment-submit').replaceWith(cloneElement);
+                    // document.getElementById('write-comment-submit').replaceWith(cloneElement);
                     document.body.querySelector('#write-comment-submit').replaceWith(oriElement);
                 });
         }else{
-            let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
-            comment.classList.replace('selected-comment','contain-comment');
             document.getElementById("state-childcomment").value = 'true';
+            comment.classList.replace('selected-comment','contain-comment');
             let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
             document.getElementById('write-comment-submit').replaceWith(cloneElement);
             document.getElementById("write-comment-submit").addEventListener('click',()=>{
@@ -236,7 +244,10 @@ let articleFunction = {
                 'Content-Type':'application/json'
             },
             body: JSON.stringify(data)
-        });
+        }).then(res=>{
+            if(res.status === 403){
+                alert("다른 사람의 댓글은 수정할 수 없습니다.");
+            }});
         window.location.href = location.origin + '/article?pagenum='+pagenum;
     },
 
@@ -282,7 +293,10 @@ let articleFunction = {
         await fetch('/freeboard/delete/comment',{
             method:'DELETE',
             body: JSON.stringify(data)
-        });
+        }).then(res=>{
+            if(res.status === 403){
+                alert("다른 사람의 댓글은 삭제할 수 없습니다.");
+            }});
         window.location.reload();
     },
     loadArticleList : async () => {
@@ -304,7 +318,7 @@ let articleFunction = {
     },
 
     buildArticleHead : (articleJsonArray) => {
-        document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
+        // document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
         articleJsonArray.forEach(elem => {
             let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
             let titleCell = newRow.insertCell();
@@ -312,14 +326,27 @@ let articleFunction = {
             let dateCell = newRow.insertCell();
             titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
-            let date = new Date(elem.created_at);
-            dateCell.textContent = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
+            // let date = new Date(elem.created_at);
+            // dateCell.textContent = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
+            dateCell.textContent = articleFunction.datePreProcess(elem.created_at);
         });
     },
 
-    buildPageIndex: (totalPage) => {
+    buildPageIndex: (totalPage, nowPage=1) => {
+        nowPage = Number(nowPage);
+        let begin = nowPage;
+        if (nowPage > 1){
+            begin = nowPage-2;
+            if(begin < 1){
+                begin = 1;
+            }
+        }
+        let end = begin+5;
+        if (end > totalPage){
+            end = totalPage;
+        }
         document.getElementById('pages').innerHTML ="";
-        for(let i = 1; i < totalPage+2; i++){
+        for(let i = begin; i < end; i++){
             document.getElementById('pages').innerHTML +=
                 `<a href='/fb?pagenum=${i}'>${i}</a> `;
         }

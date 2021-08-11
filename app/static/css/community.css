@@ -6,7 +6,8 @@
 }
 
 #contain-article-write{
-    display: inline-block;
+    display: flex;
+    justify-content: center;
 }
 
 #input-content{
@@ -102,4 +103,19 @@
 
 .article-button{
     float:right
+}
+
+#result{
+    /*width: 50vw;*/
+}
+
+#contain-table{
+    margin: 0 auto;
+    display: block;
+    width: 50vw;
+    justify-content: center;
+}
+
+#wrap-freeboard-content{
+     margin: 0 auto;
 }
