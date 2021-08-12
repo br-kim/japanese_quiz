@@ -66,7 +66,8 @@ async def websocket_chatting(websocket: WebSocket, client_id: str):
                     {'type': 'message', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']},
                     websocket)
                 continue
-
+            if data.get('keepalive'):
+                continue
             await manager.broadcast({'type': 'message', 'client_id': client_id, 'message': data['message']})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
