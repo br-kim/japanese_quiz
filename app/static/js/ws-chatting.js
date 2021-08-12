@@ -26,6 +26,9 @@ ws.onmessage = function (event) {
      * **/
     let content = document.createTextNode(data.message);
     let messageHeader = "";
+    if (data.type === 'keepalive'){
+        return;
+    }
     if (data.type === 'list'){
         console.log(data.message);
         data.message.forEach((elem)=>{
