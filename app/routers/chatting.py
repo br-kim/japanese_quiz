@@ -30,6 +30,7 @@ class SingletonInstance:
 
 active_connections: List[WebSocket] = []
 
+
 class ConnectionManager(SingletonInstance):
     def __init__(self):
         pass
@@ -51,7 +52,6 @@ class ConnectionManager(SingletonInstance):
         # for connection in self.active_connections:
         for connection in active_connections:
             await connection.send_json(message)
-
 
     async def send_whisper(self, message: dict):
         # for connection in self.active_connections:
