@@ -23,11 +23,12 @@ app.add_middleware(SessionMiddleware, secret_key=osenv.SESSION_KEY)
 
 @app.get("/")
 async def read_root(request: Request):
+    print(app)
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 if __name__ == "__main__":
     print('run server')
-    uvicorn.run("apps:app", host="0.0.0.0", port=osenv.PORT_NUMBER)
+    uvicorn.run("apps:app", host="0.0.0.0", port=osenv.PORT_NUMBER, workers=1)
 
 
