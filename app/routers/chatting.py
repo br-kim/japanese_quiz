@@ -14,7 +14,21 @@ chatting_router = APIRouter(dependencies=[Depends(check_user)])
 templates = Jinja2Templates(directory='templates')
 
 
-class ConnectionManager:
+class SingletonInstance:
+    __instance = None
+
+    @classmethod
+    def __getInstance(cls):
+        return cls.__instance
+
+    @classmethod
+    def instance(cls, *args, **karg):
+        cls.__instance = cls(*args, **karg)
+        cls.instance = cls.__getInstance
+        return cls.__instance
+
+
+class ConnectionManager(SingletonInstance):
     def __init__(self):
         self.active_connections: List[WebSocket] = []
 
