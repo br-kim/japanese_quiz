@@ -23,6 +23,7 @@ app.add_middleware(SessionMiddleware, secret_key=osenv.SESSION_KEY)
 
 @app.get("/")
 async def read_root(request: Request):
+    print(app)
     return templates.TemplateResponse("index.html", {"request": request})
 
 
