@@ -1,6 +1,7 @@
 import json
 from typing import Optional, List
 
+import requests
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -53,10 +54,11 @@ async def get(request: Request):
 async def websocket_chatting(websocket: WebSocket, client_id: str):
     await manager.connect(websocket)
     try:
+        res = requests.get("https://ipinfo.io?callback=callback")
         websocket.session['client_id'] = client_id
         await manager.send_connections(websocket)
         await manager.broadcast(
-            {'type': 'alert', 'detail': 'enter', 'client_id': client_id, 'message': "enter the chatting room."})
+            {'type': 'alert', 'detail': 'enter', 'client_id': client_id, 'message': res.text})
         while True:
             data = await websocket.receive_json()
             if data.get('receiver'):
