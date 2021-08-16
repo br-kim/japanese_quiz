@@ -28,31 +28,40 @@ class SingletonInstance:
         return cls.__instance
 
 
+active_connections: List[WebSocket] = []
+
 class ConnectionManager(SingletonInstance):
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        pass
+        # self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        # self.active_connections.append(websocket)
+        active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+        # self.active_connections.remove(websocket)
+        active_connections.remove(websocket)
 
     async def send_personal_message(self, message: dict, websocket: WebSocket):
         await websocket.send_json(message)
 
     async def broadcast(self, message: dict):
-        for connection in self.active_connections:
+        # for connection in self.active_connections:
+        for connection in active_connections:
             await connection.send_json(message)
 
+
     async def send_whisper(self, message: dict):
-        for connection in self.active_connections:
+        # for connection in self.active_connections:
+        for connection in active_connections:
             if connection.session['client_id'] == message['client_id']:
                 await connection.send_json(message)
 
     async def send_connections(self, websocket: WebSocket):
-        connection_id_list = [i.session['client_id'] for i in self.active_connections]
+        # connection_id_list = [i.session['client_id'] for i in self.active_connections]
+        connection_id_list = [i.session['client_id'] for i in active_connections]
         await websocket.send_json({'type': 'list', 'message': connection_id_list})
 
 
