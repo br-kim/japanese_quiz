@@ -80,9 +80,6 @@ let articleFunction = {
         document.getElementById('article-writer').innerText = article.writer;
         document.getElementById('article-created').innerText =
             articleFunction.datePreProcess(article.created_at);
-        // let date = new Date(article.created_at);
-        // document.getElementById('article-created').innerText =
-        //     date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
     },
 
     toggleComment : (target) => {
@@ -140,9 +137,7 @@ let articleFunction = {
         writerDiv.innerText += comment.writer;
         contentsDiv.innerText += comment.contents;
         createAtDiv.innerText += articleFunction.datePreProcess(comment.created_at);
-        // let date = new Date(comment.created_at);
-        // createAtDiv.innerText += date.toLocaleString("jpn",{
-        //     dateStyle:'medium', timeStyle:'medium', hour12:false});
+
         let inputLabel = articleFunction.buildCommentEdit(comment);
         childCommentButton.classList.add('comment-edit-button');
         editButton.classList.add('comment-edit-button');
@@ -318,7 +313,6 @@ let articleFunction = {
     },
 
     buildArticleHead : (articleJsonArray) => {
-        // document.getElementById('result').getElementsByTagName('tbody')[0].innerHTML = "";
         articleJsonArray.forEach(elem => {
             let newRow = document.getElementById('result').getElementsByTagName('tbody')[0].insertRow();
             let titleCell = newRow.insertCell();
@@ -326,8 +320,6 @@ let articleFunction = {
             let dateCell = newRow.insertCell();
             titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
-            // let date = new Date(elem.created_at);
-            // dateCell.textContent = date.toLocaleString("jpn",{dateStyle:'medium', timeStyle:'medium', hour12:false});
             dateCell.textContent = articleFunction.datePreProcess(elem.created_at);
         });
     },
