@@ -27,4 +27,4 @@ async def read_root(request: Request):
 
 
 if __name__ == "__main__":
-    uvicorn.run("apps:app", host="0.0.0.0", port=osenv.PORT_NUMBER, workers=1)
+    uvicorn.run("apps:app", host="0.0.0.0", port=osenv.PORT_NUMBER, workers=1, reload=True)
