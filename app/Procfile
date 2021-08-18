@@ -1,1 +1,1 @@
-web: gunicorn --workers=2 apps:app -k uvicorn.workers.UvicornWorker
+web: gunicorn --workers=2 --preload apps:app -k uvicorn.workers.UvicornWorker
