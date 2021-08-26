@@ -2,6 +2,8 @@ from typing import List
 
 from fastapi import WebSocket
 
+from redisconnection import redis_connection
+
 
 class ConnectionManager:
     def __init__(self):
@@ -10,17 +12,20 @@ class ConnectionManager:
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        if websocket not in self.active_connections:
+            self.active_connections.append(websocket)
+            await redis_connection.sadd('users', websocket.session['client_id'])
 
-    def disconnect(self, websocket: WebSocket):
+    async def disconnect(self, websocket: WebSocket):
+        await redis_connection.srem('users', websocket.session['client_id'])
         self.active_connections.remove(websocket)
 
     async def send_personal_message(self, message: dict, websocket: WebSocket):
         await websocket.send_json(message)
 
-    async def broadcast(self, message: dict):
-        for connection in self.active_connections:
-            await connection.send_json(message)
+    # async def broadcast(self, message: dict):
+    #     for connection in self.active_connections:
+    #         await connection.send_json(message)
 
     async def send_whisper(self, message: dict):
         for connection in self.active_connections:
@@ -28,8 +33,9 @@ class ConnectionManager:
                 await connection.send_json(message)
 
     async def send_connections(self, websocket: WebSocket):
-        connection_id_list = [i.session['client_id'] for i in self.active_connections]
-        await websocket.send_json({'type': 'list', 'message': connection_id_list})
+        # connection_id_list = [i.session['client_id'] for i in self.active_connections]
+        user_list = await redis_connection.smembers('users')
+        await websocket.send_json({'type': 'list', 'message': [i.decode() for i in user_list]})
 
 
 manager = ConnectionManager()

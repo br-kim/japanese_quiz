@@ -13,3 +13,6 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 HEROKU_POSTGRESQL_GREEN_URL = os.getenv('HEROKU_POSTGRESQL_GREEN_URL')
 if HEROKU_POSTGRESQL_GREEN_URL and HEROKU_POSTGRESQL_GREEN_URL.startswith("postgres://"):
     HEROKU_POSTGRESQL_GREEN_URL = HEROKU_POSTGRESQL_GREEN_URL.replace("postgres://", "postgresql://", 1)
+
+REDIS_TLS_URL = os.getenv('REDIS_TLS_URL')
+REDIS_URL = os.getenv('REDIS_URL')

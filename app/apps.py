@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
+from redisconnection import redis_connection
 import osenv
 from routers import quiz, login, community, chatting
 import models
@@ -24,6 +25,11 @@ app.add_middleware(SessionMiddleware, secret_key=osenv.SESSION_KEY)
 @app.get("/")
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.on_event("startup")
+async def startup_event():
+    await redis_connection.delete("users")
 
 
 if __name__ == "__main__":

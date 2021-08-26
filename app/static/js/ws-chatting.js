@@ -1,18 +1,13 @@
 let my_client_id = String(Date.now());
 document.querySelector("#ws-id").textContent = String(my_client_id);
 let websocketScheme = (document.location.protocol === 'http:') ? 'ws' : 'wss';
-let ws = new WebSocket(`${websocketScheme}://${document.location.host}/chatting/${my_client_id}`,);
-ws.onopen = ()=>{
-    let a = function () {
-        setTimeout(a,40000);
-        ws.send(JSON.stringify({
-            keepalive: true
-        }));
-    };
-    a();
+let ws_send = new WebSocket(`${websocketScheme}://${document.location.host}/chatting/${my_client_id}/send`,);
+let ws_receive = new WebSocket(`${websocketScheme}://${document.location.host}/chatting/${my_client_id}/receive`,);
+ws_receive.onclose = function () {
+    ws_receive.send("disconnected");
 };
 
-ws.onmessage = function (event) {
+ws_receive.onmessage = function (event) {
     let messages = document.getElementById('messages');
     let message = document.createElement('li');
     let data = JSON.parse(event.data);
@@ -30,7 +25,6 @@ ws.onmessage = function (event) {
         return;
     }
     if (data.type === 'list'){
-        console.log(data.message);
         data.message.forEach((elem)=>{
             let node = createUserName(elem);
             document.getElementById('chatting-users-div').append(node);
@@ -38,27 +32,89 @@ ws.onmessage = function (event) {
         return;
     }
     if (data.type === 'whisper'){
-        messageHeader = document.createTextNode("from " + data.sender + " : ");
+        if (data.sender === my_client_id){
+            messageHeader = document.createTextNode("to " + data.sender + " : ");
+        }else{
+            messageHeader = document.createTextNode("from " + data.sender + " : ");
+        }
+
     }
 
     if (data.type === 'message'){
-        if (data.client_id === my_client_id){
+        if (data.sender === my_client_id){
             messageHeader = document.createTextNode("Your Message"+ " : ");
-        } else if (data.sender === my_client_id){
-            messageHeader = document.createTextNode("to " + data.client_id + " : ");
-        } else {
-            messageHeader = document.createTextNode(data.client_id + " : ");
+        }else{
+            messageHeader = document.createTextNode(data.sender + " : ");
         }
     }
     if (data.type === 'alert') {
         processAlert(data);
-        messageHeader = data.client_id+" ";
+        messageHeader = data.sender+" ";
     }
     message.append(messageHeader, content);
     messages.appendChild(message);
     document.querySelector("#messages-div").scrollTop =
         document.querySelector("#messages-div").scrollHeight;
 };
+
+ws_send.onopen = ()=>{
+    let a = function () {
+        setTimeout(a,40000);
+        ws_send.send(JSON.stringify({
+            keepalive: true
+        }));
+    };
+    a();
+};
+
+// ws_send.onmessage = function (event) {
+//     let messages = document.getElementById('messages');
+//     let message = document.createElement('li');
+//     let data = JSON.parse(event.data);
+//     /**
+//      * @param data
+//      * @param data.client_id
+//      * @param data.message
+//      * @param data.type
+//      * @param data.sender
+//      * @param data.detail
+//      * **/
+//     let content = document.createTextNode(data.message);
+//     let messageHeader = "";
+//     if (data.type === 'keepalive'){
+//         return;
+//     }
+//     if (data.type === 'list'){
+//         console.log(data.message);
+//         data.message.forEach((elem)=>{
+//             let node = createUserName(elem);
+//             document.getElementById('chatting-users-div').append(node);
+//         });
+//         return;
+//     }
+//     if (data.type === 'whisper'){
+//         messageHeader = document.createTextNode("from " + data.sender + " : ");
+//     }
+//
+//     if (data.type === 'message'){
+//         if (data.client_id === my_client_id){
+//             messageHeader = document.createTextNode("Your Message"+ " : ");
+//         } else if (data.sender === my_client_id){
+//             messageHeader = document.createTextNode("to " + data.client_id + " : ");
+//         } else {
+//             messageHeader = document.createTextNode(data.client_id + " : ");
+//         }
+//     }
+//     if (data.type === 'alert') {
+//         processAlert(data);
+//         messageHeader = data.client_id+" ";
+//     }
+//     message.append(messageHeader, content);
+//     messages.appendChild(message);
+//     document.querySelector("#messages-div").scrollTop =
+//         document.querySelector("#messages-div").scrollHeight;
+// };
+
 
 function createUserName(client_id){
     let node = document.createElement('div');
@@ -75,21 +131,27 @@ function createUserName(client_id){
 
 function processAlert(data){
     if (data.detail === 'enter'){
-        let node = createUserName(data.client_id);
+        let node = createUserName(data.sender);
         if (!document.getElementById(node.id)) {
             document.getElementById('chatting-users-div').append(node);
         }
     }
     else if(data.detail ==='leave'){
-        document.getElementById(data.client_id).remove();
+        if(document.getElementById(data.sender)) {
+            document.getElementById(data.sender).remove();
+        }
+        if(data.sender === my_client_id){
+            ws_receive.close();
+        }
     }
 }
 
 function sendMessage(event) {
     let input = document.getElementById("messageText");
     let target = document.getElementById("sendTo");
-    ws.send(
+    ws_send.send(
         JSON.stringify({
+            type: "message",
             sender: my_client_id,
             message: input.value,
             receiver: target.value
