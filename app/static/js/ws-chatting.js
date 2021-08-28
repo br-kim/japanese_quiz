@@ -67,55 +67,6 @@ ws_send.onopen = ()=>{
     a();
 };
 
-// ws_send.onmessage = function (event) {
-//     let messages = document.getElementById('messages');
-//     let message = document.createElement('li');
-//     let data = JSON.parse(event.data);
-//     /**
-//      * @param data
-//      * @param data.client_id
-//      * @param data.message
-//      * @param data.type
-//      * @param data.sender
-//      * @param data.detail
-//      * **/
-//     let content = document.createTextNode(data.message);
-//     let messageHeader = "";
-//     if (data.type === 'keepalive'){
-//         return;
-//     }
-//     if (data.type === 'list'){
-//         console.log(data.message);
-//         data.message.forEach((elem)=>{
-//             let node = createUserName(elem);
-//             document.getElementById('chatting-users-div').append(node);
-//         });
-//         return;
-//     }
-//     if (data.type === 'whisper'){
-//         messageHeader = document.createTextNode("from " + data.sender + " : ");
-//     }
-//
-//     if (data.type === 'message'){
-//         if (data.client_id === my_client_id){
-//             messageHeader = document.createTextNode("Your Message"+ " : ");
-//         } else if (data.sender === my_client_id){
-//             messageHeader = document.createTextNode("to " + data.client_id + " : ");
-//         } else {
-//             messageHeader = document.createTextNode(data.client_id + " : ");
-//         }
-//     }
-//     if (data.type === 'alert') {
-//         processAlert(data);
-//         messageHeader = data.client_id+" ";
-//     }
-//     message.append(messageHeader, content);
-//     messages.appendChild(message);
-//     document.querySelector("#messages-div").scrollTop =
-//         document.querySelector("#messages-div").scrollHeight;
-// };
-
-
 function createUserName(client_id){
     let node = document.createElement('div');
     node.textContent = client_id;
