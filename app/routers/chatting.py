@@ -65,9 +65,12 @@ async def websocket_chatting_receive(websocket: WebSocket, client_id: str):
             before_len = len(msg_list)
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
-        await redis_connection.lpush('chat', json.dumps(
-            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "leave the chatting room."}
-        ))
+        await redis_connection.lpush('chat', json.dumps({
+            'type': 'alert',
+            'detail': 'enter',
+            'sender': client_id,
+            'receiver': 'all',
+            'message': "leave the chatting room."}))
 
 
 @chatting_router.websocket('/chatting/{client_id}/send')
