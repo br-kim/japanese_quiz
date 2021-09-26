@@ -61,6 +61,7 @@ async def websocket_chatting_receive(websocket: WebSocket, client_id: str):
                             'message': data.get('message'),
                             'receiver': data.get('receiver'),
                             'detail': data.get('detail')}, websocket)
+
             await asyncio.sleep(0.01)
             before_len = len(msg_list)
     except WebSocketDisconnect:
