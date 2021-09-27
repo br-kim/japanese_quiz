@@ -1,14 +1,12 @@
 import asyncio
 import json
-from typing import Optional
 
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
 from fastapi.templating import Jinja2Templates
 
 from dependencies import check_user
-from connectionmanager import manager
-from redisconnection import redis_connection
+from connectionmanager import manager, redis_connection
 
 chatting_router = APIRouter(dependencies=[Depends(check_user)])
 templates = Jinja2Templates(directory='templates')
@@ -34,11 +32,9 @@ async def websocket_chatting_receive(websocket: WebSocket, client_id: str):
     await manager.connect(websocket)
     try:
         await manager.send_connections(websocket)
-        # await manager.broadcast(
-        #     {'type': 'alert', 'detail': 'enter', 'client_id': client_id, 'message': "enter the chatting room."})
-        await redis_connection.lpush('chat', json.dumps(
-             {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "enter the chatting room."}
-        ))
+        await manager.broadcast(
+            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "enter the chatting room."})
+
         while True:
             if await redis_connection.sismember("users", client_id.encode()) is False:
                 break
@@ -47,44 +43,23 @@ async def websocket_chatting_receive(websocket: WebSocket, client_id: str):
             if before_len != len(msg_list) and send_msg_list:
                 for data in send_msg_list:
                     data = json.loads(data.decode())
-                    await manager.send_personal_message({
-                        'type': data.get('type'),
-                        'sender': data.get('sender'),
-                        'message': data['message'],
-                        'detail': data.get('detail')}, websocket)
+                    if data.get('type') == 'whisper':
+                        if data.get('receiver') == client_id:
+                            await manager.send_personal_message(data, websocket)
+
+                    elif data.get('type') == 'message' or data.get('type') == 'alert':
+                        await manager.send_personal_message(data, websocket)
+
             await asyncio.sleep(0.01)
             before_len = len(msg_list)
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
-        await redis_connection.lpush('chat', json.dumps(
-             {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "leave the chatting room."}
-        ))
-        # await manager.broadcast(
-        #     {'type': 'alert', 'detail': 'leave', 'client_id': client_id, 'message': "leave the chatting room."})
-
-    # try:
-    #     await manager.send_connections(websocket)
-    #     await manager.broadcast(
-    #         {'type': 'alert', 'detail': 'enter', 'client_id': client_id, 'message': "enter the chatting room"})
-    #     while True:
-    #         data = await websocket.receive_json()
-    #         if data.get('receiver'):
-    #             await manager.send_whisper(
-    #                 {'type': 'whisper', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']})
-    #             await manager.send_personal_message(
-    #                 {'type': 'message', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']},
-    #                 websocket)
-    #             continue
-    #         if data.get('keepalive'):
-    #             await manager.send_personal_message(
-    #                 {'type': 'keepalive'},
-    #                 websocket)
-    #             continue
-    #         await manager.broadcast({'type': 'message', 'client_id': client_id, 'message': data['message']})
-    # except WebSocketDisconnect:
-    #     manager.disconnect(websocket)
-    #     await manager.broadcast(
-    #         {'type': 'alert', 'detail': 'leave', 'client_id': client_id, 'message': "leave the chatting room."})
+        await manager.broadcast({
+            'type': 'alert',
+            'detail': 'enter',
+            'sender': client_id,
+            'receiver': 'all',
+            'message': "leave the chatting room."})
 
 
 @chatting_router.websocket('/chatting/{client_id}/send')
@@ -96,32 +71,18 @@ async def websocket_chatting_send(websocket: WebSocket, client_id: str):
             data = await websocket.receive_json()
             if data.get('keepalive'):
                 await manager.send_personal_message({'type': 'keepalive'}, websocket)
-            if data.get('message'):
-                await redis_connection.lpush('chat', json.dumps({
+            if data.get('message') or data.get('whisper'):
+                await manager.broadcast({
                     "type": data.get('type'),
                     "sender": data.get('sender'),
                     "message": data.get('message'),
                     "receiver": data.get('receiver'),
                     "detail": data.get('detail')
-                }))
+                })
+
             await asyncio.sleep(0.01)
-        # if data.get('receiver'):
-        #     await manager.send_whisper(
-        #         {'type': 'whisper', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']})
-        #     await manager.send_personal_message(
-        #         {'type': 'message', 'sender': client_id, 'client_id': data['receiver'], 'message': data['message']},
-        #         websocket)
-        #     continue
-        # if data.get('keepalive'):
-        #     await manager.send_personal_message(
-        #         {'type': 'keepalive'},
-        #         websocket)
-        #     continue
-        # await manager.broadcast({'type': 'message', 'client_id': client_id, 'message': data['message']})
+
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
-        await redis_connection.lpush('chat', json.dumps(
-            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "leave the chatting room."}))
-
-        # await manager.broadcast(
-        #     {'type': 'alert', 'detail': 'leave', 'client_id': client_id, 'message': "leave the chatting room."})
+        await manager.broadcast(
+            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "leave the chatting room."})

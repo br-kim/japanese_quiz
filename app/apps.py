@@ -4,11 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from redisconnection import redis_connection
 import osenv
 from routers import quiz, login, community, chatting
 import models
-from database import engine
+from database import engine, redis_connection
 
 models.Base.metadata.create_all(bind=engine)
 
