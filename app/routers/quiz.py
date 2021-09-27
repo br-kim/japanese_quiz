@@ -87,7 +87,7 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, response: AnswerRes, db: Session = Depends(get_db)):
     token = request.session.get('csrf_token')
-    if token is not None and response.quiz_type != '/newquiz':
+    if token and response.quiz_type != '/newquiz':
         request.session.pop('csrf_token')
     if response.csrf_token == token:
         char_data = response.character.split('/')[-2:]
@@ -96,7 +96,7 @@ async def score_update(request: Request, response: AnswerRes, db: Session = Depe
         current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
         user_id = current_user.id
         result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
-        if result is None:
+        if not result:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Access")
