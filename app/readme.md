@@ -1,1 +1,3 @@
-GitHub Actions PR Test2
+- Todo
+  - 코드 점검 및 리팩토링
+  - AWS 배포
