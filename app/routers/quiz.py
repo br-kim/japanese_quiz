@@ -59,6 +59,9 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
                 score_values += list(score_dict.values())
                 total_score += sum(score_dict.values())
             weight += [total_score - i for i in score_values]
+            # 모든 weight 가 0인 경우 None
+            if sum(weight) == 0:
+                weight = None
             img_path = random.choices(result, weight).pop()
         else:
             img_path = random.choice(result)
