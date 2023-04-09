@@ -7,7 +7,7 @@ import osenv
 
 
 SQLALCHEMY_DATABASE_URL = osenv.DATABASE_URL
-engine = create_engine(SQLALCHEMY_DATABASE_URL, encoding='utf8')
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 redis_connection = aioredis.from_url(osenv.REDIS_URL)
