@@ -5,6 +5,19 @@ let btnFunction = {
     limQuiz: '/path-list',
     infQuiz: '/path',
     functionContain : null,
+    tokenHeader: {'Content-Type': 'application/json',
+        'Authorization' : localStorage.getItem("jpn_quiz_access_token")},
+
+    RequestToServer : async function(url, method){
+        res = await fetch(url,{
+            headers: btnFunction.tokenHeader,
+            method: method
+        });
+        document.body.innerHTML = await res.text();
+        location.reload();
+        // domParser = new DOMParser();
+        // domParser.parseFromString(await res.text(), "text/html");
+    },
 
     scoreAdd : function(elemId){
         let score = document.getElementById(elemId).innerText;
@@ -49,9 +62,7 @@ let btnFunction = {
             };
             await fetch('/scoreupdate',{
                 method: "PATCH",
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers: btnFunction.tokenHeader,
                 body: JSON.stringify(req_data)}).then(async function(response){
                     if(response.status === 403){
                         alert('csrf 오류입니다.');

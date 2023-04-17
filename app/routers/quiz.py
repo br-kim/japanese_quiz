@@ -40,10 +40,10 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
                     db: Session = Depends(get_db)):
     result = utils.gen_img_path_list(kind)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
-    request.session['csrf_token'] = csrf_token
+    request.state.csrf_token = csrf_token
     if data_type == "path":
         if is_weighted:
-            cur_user_email = request.session.get('user_email')
+            cur_user_email = request.state.user_email
             cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
             weight = []
             total_score = 0
@@ -76,7 +76,7 @@ async def path_data(request: Request, data_type: str, kind: str = 'all', is_weig
 
 @quiz_router.get('/scoreboard')
 async def scoreboard(request: Request, db: Session = Depends(get_db)):
-    user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
+    user = crud.get_user_by_email(db=db, email=request.state.user_email)
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
 
@@ -89,14 +89,14 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
 
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, response: AnswerRes, db: Session = Depends(get_db)):
-    token = request.session.get('csrf_token')
+    token = request.state.csrf_token
     if token and response.quiz_type != '/newquiz':
-        request.session.pop('csrf_token')
+        request.state.csrf_token = None
     if response.csrf_token == token:
         char_data = response.character.split('/')[-2:]
         char_type = char_data[0]
         char_name = char_data[1].split('.')[0]
-        current_user = crud.get_user_by_email(db=db, email=request.session.get('user_email'))
+        current_user = crud.get_user_by_email(db=db, email=request.state.user_email)
         user_id = current_user.id
         result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
         if not result:
