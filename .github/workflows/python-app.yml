@@ -6,13 +6,10 @@ name: Python application
 on: pull_request
 
 jobs:
-  container-job:
+  runner-job:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: python:3.10
 
-    # Service containers to run with `container-job`
     services:
       # Label used to access the service container
       postgres:
@@ -32,7 +29,7 @@ jobs:
           - 5432:5432
     env:
       # The hostname used to communicate with the PostgreSQL service container
-      POSTGRES_HOST: localhost123
+      POSTGRES_HOST: localhost
       # The default PostgreSQL port
       POSTGRES_PORT: 5432
       GOOGLE_CLIENT_ID: ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_ID }}
