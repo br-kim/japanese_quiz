@@ -8,7 +8,7 @@ from models import Base
 
 
 def create_database():
-    engine = create_engine(osenv.POSTGRES_DATABASE_URL)# + "/test_db")
+    engine = create_engine(osenv.POSTGRES_DATABASE_URL)
     conn = engine.connect()
     conn.execute(text("commit"))
     try:
