@@ -14,6 +14,7 @@ import urls
 import schemas
 import crud
 from dependencies import get_db
+from utils import create_token
 
 login_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
@@ -21,15 +22,12 @@ templates = Jinja2Templates(directory='templates')
 
 @login_router.get("/login")
 async def login(request: Request):
-    state = hashlib.sha256(os.urandom(1024)).hexdigest()
-    request.session['state'] = state
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
         'scope': " ".join(urls.GOOGLE_AUTH_SCOPES),
         'access_type': 'offline',
         'include_granted_scopes': 'true',
-        'state': state,
         'redirect_uri': f'{request.base_url}forredirect',
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
@@ -39,9 +37,6 @@ async def login(request: Request):
 
 @login_router.get("/forredirect")
 async def forredirect(request: Request, db: Session = Depends(get_db)):
-    if request.query_params["state"] != request.session["state"]:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-
     code = request.query_params["code"]
     params = {
         "code": code,
@@ -56,26 +51,23 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     res_info = jwt.decode(id_token, options={"verify_signature": False})
     user_email = res_info.get('email')
     user_name = res_info.get('given_name')
-    request.session['user_email'] = user_email
-    request.session['user_name'] = user_name
-    request.session['user_token'] = response_json['access_token']
     email = schemas.UserCreate(email=user_email)
     db_user = crud.get_user_by_email(db=db, email=user_email)
     if db_user:
         if not crud.get_user_hiragana_score(db=db, user_id=db_user.id):
             crud.create_user_scoreboard(db=db, user_id=db_user.id)
     else:
-        current_db_user = crud.create_user(db=db, user=email)
-        crud.create_user_scoreboard(db=db, user_id=current_db_user.id)
-    return RedirectResponse('/')
+        db_user = crud.create_user(db=db, user=email)
+        crud.create_user_scoreboard(db=db, user_id=db_user.id)
+
+    payload = dict(user_email=user_email, user_name=user_name, user_id=db_user.id)
+    token = create_token(payload=payload)
+    return templates.TemplateResponse("login_process.html", {"request": request, "token": token})
 
 
 @login_router.get("/logout")
 async def logout(request: Request):
-    token = request.session.get('user_token')
-    request.session['user_email'] = None
-    request.session['user_name'] = None
-    request.session['user_token'] = None
+    token = None
     token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"
     header = {
         "Content-type": "application/x-www-form-urlencoded"

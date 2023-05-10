@@ -5,14 +5,9 @@ PORT_NUMBER = int(os.environ.get("PORT", 8000))
 GOOGLE_CLIENT_ID = os.getenv('JPN_QUIZ_GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('JPN_QUIZ_GOOGLE_CLIENT_SECRET')
 
-SESSION_KEY = os.getenv('JPN_QUIZ_SESSION_KEY')
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+JWT_KEY = os.getenv('JPN_QUIZ_JWT_KEY', "secret-key")
+DATABASE_URL = os.getenv('DATABASE_URL', default="postgresql://ii:1234@localhost:5432/japanese_quiz")
+POSTGRES_DATABASE_URL = os.getenv('POSTGRES_DATABASE_URL', default="postgresql://postgres:postgres@localhost:5432/postgres")
+TEST_DATABASE_URL = os.getenv('TEST_DATABASE_URL', default="postgresql://ii:1234@localhost:5432/test_database")
 
-HEROKU_POSTGRESQL_GREEN_URL = os.getenv('HEROKU_POSTGRESQL_GREEN_URL')
-if HEROKU_POSTGRESQL_GREEN_URL and HEROKU_POSTGRESQL_GREEN_URL.startswith("postgres://"):
-    HEROKU_POSTGRESQL_GREEN_URL = HEROKU_POSTGRESQL_GREEN_URL.replace("postgres://", "postgresql://", 1)
-
-REDIS_TLS_URL = os.getenv('REDIS_TLS_URL')
-REDIS_URL = os.getenv('REDIS_URL')
+REDIS_URL = os.getenv("REDIS_URL", default="redis://ii:1234@localhost:6379")

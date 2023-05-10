@@ -21,9 +21,7 @@ let articleFunction = {
         }
         let res = await fetch('/freeboard/write/article',{
             method:'POST',
-            headers: {
-                'Content-Type':'application/json'
-            },
+            headers : btnFunction.tokenHeader,
             body: JSON.stringify(data)
         });
         let article_num = await res.text();
@@ -42,9 +40,7 @@ let articleFunction = {
         }
         await fetch(`/freeboard/edit/article/${articleId}`,{
             method:'PATCH',
-            headers: {
-                'Content-Type':'application/json'
-            },
+            headers : btnFunction.tokenHeader,
             body: JSON.stringify(data)
         }).then(res=>{
             if(res.status === 403){
@@ -235,9 +231,7 @@ let articleFunction = {
         }
         await fetch(`/freeboard/edit/comment/${commentId}`,{
             method:'PATCH',
-            headers: {
-                'Content-Type':'application/json'
-            },
+            headers : btnFunction.tokenHeader,
             body: JSON.stringify(data)
         }).then(res=>{
             if(res.status === 403){
@@ -259,9 +253,7 @@ let articleFunction = {
         }
         await fetch('/freeboard/write/comment', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers : btnFunction.tokenHeader,
             body: JSON.stringify(data)
         });
 
@@ -275,6 +267,7 @@ let articleFunction = {
         };
         await fetch(`/freeboard/delete/article`,{
             method:'DELETE',
+            headers: btnFunction.tokenHeader,
             body: JSON.stringify(data)
         });
         window.location.href = document.referrer;
@@ -287,6 +280,7 @@ let articleFunction = {
         };
         await fetch('/freeboard/delete/comment',{
             method:'DELETE',
+            headers: btnFunction.tokenHeader,
             body: JSON.stringify(data)
         }).then(res=>{
             if(res.status === 403){
