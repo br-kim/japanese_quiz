@@ -28,7 +28,7 @@ async def login(request: Request):
         'scope': " ".join(urls.GOOGLE_AUTH_SCOPES),
         'access_type': 'offline',
         'include_granted_scopes': 'true',
-        'redirect_uri': f'{request.base_url}forredirect',
+        'redirect_uri': f'{request.base_url}',
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
@@ -42,11 +42,14 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
         "code": code,
         "client_id": osenv.GOOGLE_CLIENT_ID,
         "client_secret": osenv.GOOGLE_CLIENT_SECRET,
-        'redirect_uri': f'{request.base_url}forredirect',
+        'redirect_uri': f'{request.base_url}',
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
     response_json = res.json()
+    if res.status_code != 200:
+        # 구글 인증 에러
+        raise HTTPException(status_code=400)
     id_token = response_json.get('id_token')
     res_info = jwt.decode(id_token, options={"verify_signature": False})
     user_email = res_info.get('email')
