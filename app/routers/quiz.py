@@ -35,6 +35,49 @@ async def test_mode(request: Request):
     return templates.TemplateResponse("test_mode.html", {"request": request})
 
 
+
+@quiz_router.get("/quiz-data/random")
+async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Optional[str] = None,
+                           db: Session = Depends(get_db), token = Depends(check_user)):
+    result = utils.gen_img_path_list(kind)
+    print(token)
+    csrf_token = base64.b64encode(os.urandom(8)).decode()
+    request.state.csrf_token = csrf_token
+    if is_weighted:
+        cur_user_email = request.state.user_email
+        cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
+        weight = []
+        total_score = 0
+        score_values = []
+        if kind == 'hiragana' or kind == 'all':
+            hira_score_db = crud.get_user_hiragana_score(db=db, user_id=cur_user.id)
+            score_dict = json.loads(hira_score_db.score)
+            score_values += list(score_dict.values())
+            total_score += sum(score_values)
+        if kind == 'katakana' or kind == 'all':
+            kata_score_db = crud.get_user_katakana_score(db=db, user_id=cur_user.id)
+            score_dict = json.loads(kata_score_db.score)
+            score_values += list(score_dict.values())
+            total_score += sum(score_dict.values())
+        weight += [total_score - i for i in score_values]
+        # 모든 weight 가 0인 경우 None
+        if sum(weight) == 0:
+            weight = None
+        img_path = random.choices(result, weight).pop()
+    else:
+        img_path = random.choice(result)
+    return {"path": img_path, "csrf_token": csrf_token}
+
+
+@quiz_router.get("/quiz-data/test-mode")
+async def quiz_test_mode_data(request: Request, kind: str = "all",
+    db: Session = Depends(get_db), token = Depends(check_user)):
+    print(token)
+    result = utils.gen_img_path_list(kind)
+    random.shuffle(result)
+    csrf_token = base64.b64encode(os.urandom(8)).decode()
+    return {"order": result, "csrf_token": csrf_token}
+
 @quiz_router.get("/quiz-data" + "/{data_type}")
 async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
                     db: Session = Depends(get_db), token = Depends(check_user)):
@@ -77,16 +120,26 @@ async def path_data(request: Request, data_type: str, kind: str = "all", is_weig
 
 @quiz_router.get('/scoreboard')
 async def scoreboard(request: Request, db: Session = Depends(get_db)):
-    user = crud.get_user_by_email(db=db, email=request.state.user_email)
-    hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
-    kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
+    """
+    Scoreboard 페이지 리턴
+    """
+    # user = crud.get_user_by_email(db=db, email=request.state.user_token.get("user_email"))
+    # hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
+    # kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
 
     return templates.TemplateResponse("scoreboard.html", {
         "request": request,
-        "hiragana_score": json.loads(hira_score.score),
-        "katakana_score": json.loads(kata_score.score)
+        # "hiragana_score": json.loads(hira_score.score),
+        # "katakana_score": json.loads(kata_score.score)
     })
 
+@quiz_router.get("/scoreboard/data")
+async def scoreboard_data(request: Request, db: Session = Depends(get_db), token=Depends(check_user)):
+    user = crud.get_user_by_email(db=db, email=request.state.user_token.get("user_email"))
+    hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
+    kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
+
+    return
 
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, response: AnswerRes, db: Session = Depends(get_db)):
