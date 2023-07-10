@@ -53,6 +53,7 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
     user_name = res_info.get('given_name')
     email = schemas.UserCreate(email=user_email)
     db_user = crud.get_user_by_email(db=db, email=user_email)
+    print(db_user)
     if db_user:
         if not crud.get_user_hiragana_score(db=db, user_id=db_user.id):
             crud.create_user_scoreboard(db=db, user_id=db_user.id)
@@ -62,7 +63,10 @@ async def forredirect(request: Request, db: Session = Depends(get_db)):
 
     payload = dict(user_email=user_email, user_name=user_name, user_id=db_user.id)
     token = create_token(payload=payload)
-    return templates.TemplateResponse("login_process.html", {"request": request, "token": token})
+    request.state.user_token = payload
+    print(request.state.user_token)
+    # return RedirectResponse("/")
+    return templates.TemplateResponse("index.html", {"request": request, "token": token})
 
 
 @login_router.get("/logout")
