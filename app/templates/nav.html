@@ -3,8 +3,10 @@
         <a class="nav-menu" href="/newquiz">테스트</a>
         <a class="nav-menu" href="/fb">자유게시판</a>
         <a class="nav-menu" href="/ws">채팅</a>
-        {% if not request.state.user_email %}
-        <a class="nav-menu-right" href="/login">로그인</a>{% else %}
-        <a class="nav-menu-right" href="/scoreboard">{{request.state.user_name}}님, 환영합니다!</a>
+        {% if not request.state.user_token.get("user_email") %}
+        <a class="nav-menu-right" href="/login">로그인</a>
+        {% else %}
+        <a class="nav-menu-right" href="/scoreboard">
+            {{request.state.user_token.get("user_email")}}님, 환영합니다!</a>
         <a class="nav-menu-right" href="/logout">로그아웃</a>
         {% endif %}
