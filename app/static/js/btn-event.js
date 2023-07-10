@@ -1,18 +1,24 @@
 let btnFunction = {
     randomImageUrl : '/quiz/path',
     limitQuizImagesUrl : '/newquiz/path-list',
-    quizPathUrl : '/quizdata',
+    quizPathUrl : '/quiz-data',
     limQuiz: '/path-list',
-    infQuiz: '/path',
+    infQuiz: '/random',
     functionContain : null,
     tokenHeader: {'Content-Type': 'application/json',
         'Authorization' : localStorage.getItem("jpn_quiz_access_token")},
 
     RequestToServer : async function(url, method){
+        if (!btnFunction.tokenHeader) {
+            alert("토큰 없음");
+            return;
+        }
+
         res = await fetch(url,{
             headers: btnFunction.tokenHeader,
             method: method
         });
+
         return await res;
         // document.body.innerHTML = await res.text();
         // location.reload();
@@ -117,13 +123,18 @@ let btnFunction = {
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        let new_url = await fetch(url.toString(),{
-            method: 'GET',
-        });
-        let data = new_url.text();
-        let json = JSON.parse(await data);
-        let file_url = json.path;
-        csrf_token = json.csrf_token;
+        // let new_url = await fetch(url.toString(),{
+        //     method: 'GET',
+        // });
+        // let data = new_url.text();
+        // let json = JSON.parse(await data);
+        let req_res = await btnFunction.RequestToServer(url.toString(), "GET");
+        // console.log();
+        // let json = JSON.parse(await req_res);
+        let res_json = await req_res.json();
+        // console.log(res_json);
+        let file_url = res_json.path;
+        csrf_token = res_json.csrf_token;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
