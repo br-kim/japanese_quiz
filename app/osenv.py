@@ -10,4 +10,4 @@ DATABASE_URL = os.getenv('DATABASE_URL', default="postgresql://ii:1234@localhost
 POSTGRES_DATABASE_URL = os.getenv('POSTGRES_DATABASE_URL', default="postgresql://postgres:postgres@localhost:5432/postgres")
 TEST_DATABASE_URL = os.getenv('TEST_DATABASE_URL', default="postgresql://ii:1234@localhost:5432/test_database")
 
-REDIS_URL = os.getenv("REDIS_URL", default="redis://ii:1234@localhost:6379")
+REDIS_URL = os.getenv("REDIS_URL", default="redis://localhost:6379")

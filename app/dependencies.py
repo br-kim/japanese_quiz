@@ -1,4 +1,4 @@
-from fastapi import Request
+from fastapi import Request, HTTPException
 
 from database import SessionLocal
 from utils import get_token_payload
@@ -7,6 +7,8 @@ from utils import get_token_payload
 async def check_user(request: Request):
     token = request.headers.get("Authorization")
     payload = get_token_payload(token)
+    if not payload:
+        raise HTTPException(status_code=403)
     return payload
 
 def get_db():

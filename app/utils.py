@@ -31,6 +31,9 @@ def create_token(payload:dict):
 
 
 def get_token_payload(token):
+    if not token:
+        return None
+
     payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
     return payload
 

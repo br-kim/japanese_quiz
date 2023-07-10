@@ -1,7 +1,10 @@
 import os
 import json
 
-from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime
+from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime, JSON
+
+
+
 
 from database import Base
 
@@ -27,14 +30,16 @@ class HiraganaScore(Base):
     __tablename__ = "hiragana"
 
     id = Column(Integer, primary_key=True, index=True)
-    score = Column(String, server_default=json.dumps(hiragana_data))
+    user_id = Column(Integer)
+    score = Column(JSON, server_default=json.dumps(hiragana_data))
 
 
 class KatakanaScore(Base):
     __tablename__ = "katakana"
 
     id = Column(Integer, primary_key=True, index=True)
-    score = Column(String, server_default=json.dumps(katakana_data))
+    user_id = Column(Integer)
+    score = Column(JSON, server_default=json.dumps(katakana_data))
 
 
 class FreeBoard(TimestampMixin, Base):

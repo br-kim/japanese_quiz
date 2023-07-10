@@ -16,7 +16,7 @@ from dependencies import check_user, get_db
 
 templates = Jinja2Templates(directory='templates')
 
-quiz_router = APIRouter(dependencies=[Depends(check_user)])
+quiz_router = APIRouter()
 
 
 class AnswerRes(BaseModel):
@@ -31,14 +31,15 @@ async def quiz(request: Request):
 
 
 @quiz_router.get(urls.lim_quiz_page_url)
-async def new_quiz(request: Request):
-    return templates.TemplateResponse("new_quiz.html", {"request": request})
+async def test_mode(request: Request):
+    return templates.TemplateResponse("test_mode.html", {"request": request})
 
 
-@quiz_router.get(urls.QUIZ_DATA_BASE_URL + '/{data_type}')
-async def path_data(request: Request, data_type: str, kind: str = 'all', is_weighted: Optional[str] = None,
-                    db: Session = Depends(get_db)):
+@quiz_router.get("/quiz-data" + "/{data_type}")
+async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
+                    db: Session = Depends(get_db), token = Depends(check_user)):
     result = utils.gen_img_path_list(kind)
+    print(token)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
     request.state.csrf_token = csrf_token
     if data_type == "path":

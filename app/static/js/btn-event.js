@@ -13,8 +13,9 @@ let btnFunction = {
             headers: btnFunction.tokenHeader,
             method: method
         });
-        document.body.innerHTML = await res.text();
-        location.reload();
+        return await res;
+        // document.body.innerHTML = await res.text();
+        // location.reload();
         // domParser = new DOMParser();
         // domParser.parseFromString(await res.text(), "text/html");
     },
