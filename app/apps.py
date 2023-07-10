@@ -18,6 +18,12 @@ app.include_router(login.login_router)
 app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
 
+@app.middleware("http")
+async def add_user_token_request(request: Request, call_next):
+    # 유저 토큰 공간 생성
+    request.state.user_token = dict()
+    response = await call_next(request)
+    return response
 
 @app.get("/")
 async def read_root(request: Request):
