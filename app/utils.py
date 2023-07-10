@@ -23,9 +23,10 @@ def gen_img_path_list(gana_type: str):
 
 def create_token(payload:dict):
     # 6시간 후 만료
-    exp_timestamp = (datetime.now()+timedelta(hours=6)).timestamp()
+    exp_timestamp = int((datetime.now()+timedelta(hours=6)).timestamp())
     default_payload = dict(exp=exp_timestamp)
     default_payload.update(payload)
+    print(default_payload)
     token = jwt.encode(payload=default_payload, key=JWT_KEY, algorithm="HS256")
     return token
 
@@ -35,6 +36,7 @@ def get_token_payload(token):
         return None
 
     payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
+    print(payload)
     return payload
 
 
