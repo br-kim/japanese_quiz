@@ -23,16 +23,16 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def get_user_hiragana_score(db: Session, user_id: int):
-    return db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
+    return db.query(models.HiraganaScore).filter(models.HiraganaScore.user_id == user_id).first()
 
 
 def get_user_katakana_score(db: Session, user_id: int):
-    return db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
+    return db.query(models.KatakanaScore).filter(models.KatakanaScore.user_id == user_id).first()
 
 
 def create_user_scoreboard(db: Session, user_id: int):
-    db_hiragana_scoreboard = models.HiraganaScore(id=user_id)
-    db_katakana_scoreboard = models.KatakanaScore(id=user_id)
+    db_hiragana_scoreboard = models.HiraganaScore(user_id=user_id)
+    db_katakana_scoreboard = models.KatakanaScore(user_id=user_id)
     db.add(db_hiragana_scoreboard)
     db.add(db_katakana_scoreboard)
     db.commit()
@@ -43,9 +43,9 @@ def create_user_scoreboard(db: Session, user_id: int):
 
 def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name: str):
     if char_type == 'hiragana':
-        db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
+        db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.user_id == user_id).first()
     elif char_type == 'katakana':
-        db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
+        db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.user_id == user_id).first()
     else:
         raise ValueError
     score = json.loads(db_scoreboard.score)
