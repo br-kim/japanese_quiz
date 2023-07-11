@@ -1,3 +1,5 @@
+import {requestToServer} from "./index.js";
+
 let btnFunction = {
     randomImageUrl : '/quiz/path',
     limitQuizImagesUrl : '/newquiz/path-list',
@@ -5,27 +7,6 @@ let btnFunction = {
     limQuiz: '/path-list',
     infQuiz: '/random',
     functionContain : null,
-    tokenHeader: {'Content-Type': 'application/json',
-        'Authorization' : localStorage.getItem("jpn_quiz_access_token")},
-
-    RequestToServer : async function(url, method){
-        if (!btnFunction.tokenHeader) {
-            alert("토큰 없음");
-            return;
-        }
-
-        res = await fetch(url,{
-            headers: btnFunction.tokenHeader,
-            method: method
-        });
-
-        return await res;
-        // document.body.innerHTML = await res.text();
-        // location.reload();
-        // domParser = new DOMParser();
-        // domParser.parseFromString(await res.text(), "text/html");
-    },
-
     scoreAdd : function(elemId){
         let score = document.getElementById(elemId).innerText;
         score = Number(score) + 1;
@@ -128,7 +109,7 @@ let btnFunction = {
         // });
         // let data = new_url.text();
         // let json = JSON.parse(await data);
-        let req_res = await btnFunction.RequestToServer(url.toString(), "GET");
+        let req_res = await requestToServer(url.toString(), "GET");
         // console.log();
         // let json = JSON.parse(await req_res);
         let res_json = await req_res.json();
