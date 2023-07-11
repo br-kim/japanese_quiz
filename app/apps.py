@@ -21,7 +21,11 @@ app.include_router(chatting.chatting_router)
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):
     # 유저 토큰 공간 생성
-    request.state.user_token = dict()
+    try:
+        getattr(request.state, "user_token")
+    except Exception:
+        request.state.user_token = dict()
+    print(request.state.user_token, "middleware")
     response = await call_next(request)
     return response
 
