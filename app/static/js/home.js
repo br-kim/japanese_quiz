@@ -3,14 +3,12 @@ import {requestToServer, serverBaseUrl} from "./index.js";
 
 export async function loginFunction(){
     let login_url = await requestToServer(serverBaseUrl+"/login", "GET", false);
-    console.log();
     let url = await login_url.json();
     window.location.href = url;
 }
 
 export async function usingCode(){
     // 현재 페이지의 URL
-    console.log("usingCode");
     const url = new URL(window.location.href);
 
     // URLSearchParams 객체 생성
@@ -28,4 +26,58 @@ export async function usingCode(){
     let token = await res.json();
     localStorage.setItem("jpn_quiz_access_token",token);
     window.location.href = serverBaseUrl;
+}
+
+export async function generateNav() {
+    function createAElement(className, href, text, id=null){
+        let element = document.createElement("a");
+        if (className){
+            element.classList.add(className);
+        }
+        if (href){
+            element.href = href;
+        }
+        if (text){
+            element.textContent = text;
+        }
+        if (id){
+            element.id = id;
+        }
+
+        return element;
+    }
+    let navMenuRight = "nav-menu-right";
+    let navMenu = "nav-menu";
+
+    let navDiv = document.getElementById("nav-content");
+
+    let mainNav = createAElement(navMenu, "/", "메인");
+    let infNav = createAElement(navMenu, "/quiz", "무한모드");
+    let testNav = createAElement(navMenu, "/newquiz", "테스트");
+    let freeboardNav = createAElement(navMenu, "/fb", "자유게시판");
+    let chattingNav = createAElement(navMenu, "/ws", "채팅");
+    let loginNav = createAElement(navMenuRight, null, "로그인", "nav-login");
+    let logoutNav = createAElement(navMenuRight, "/logout", "로그아웃");
+    logoutNav.addEventListener("click", () => {
+        localStorage.removeItem("jpn_quiz_access_token");
+    });
+
+    navDiv.appendChild(mainNav);
+    navDiv.appendChild(infNav);
+    navDiv.appendChild(testNav);
+    navDiv.appendChild(freeboardNav);
+    navDiv.appendChild(chattingNav);
+
+    if (localStorage.getItem("jpn_quiz_access_token")) {
+        let res = await requestToServer(serverBaseUrl+"/user-info", "GET");
+        let user_email = await res.json();
+        console.log(user_email);
+        let scoreBoardNav = createAElement(navMenuRight, "/scoreboard", `${user_email}님, 환영합니다!`);
+        navDiv.appendChild(scoreBoardNav);
+        navDiv.appendChild(logoutNav);
+    }
+    else{
+        loginNav.addEventListener("click", loginFunction);
+        navDiv.append(loginNav);
+    }
 }

@@ -12,7 +12,7 @@
 <body>
     <header>
         <div id="nav-content">
-            {% include 'nav.html' %}
+
         </div>
     </header>
     <div id="content"><br>
@@ -28,12 +28,10 @@
 <script type="module" src="../static/js/btn-event.js"></script>
 <script src="../static/js/community.js"></script>
 <script type="module">
-    import {loginFunction, usingCode} from "../static/js/home.js";
-    let nav_login = document.getElementById("nav-login");
-    nav_login.addEventListener("click", async () => {
-        await loginFunction();
-    });
+    import {loginFunction, usingCode, generateNav} from "../static/js/home.js";
+    window.addEventListener("load", generateNav);
     document.addEventListener("DOMContentLoaded", usingCode);
+
     </script>
     {% endblock %}
 </body>
