@@ -2,34 +2,18 @@
 {% block title %} 점수판 {% endblock %}
 {% block content %}
 <div id="score-board-wrapper">
-<div class="score-board">
-    <div> 히라가나 </div>
-{#    {% for key, value in hiragana_score.items() %}#}
-{#        {% if loop.index%20 == 1 %}#}
-{#            <div class="inner-score-board">#}
-{#        {% endif %}#}
-{#        <div>#}
-{#            {{key}} : {{value}}점#}
-{#        </div>#}
-{#        {% if loop.index%20 == 0 %}#}
-{#            </div>#}
-{#        {% endif %}#}
-{##}
-{#    {% endfor %}#}
+    <div class="score-board" id="score-board-hiragana">
+        <div> 히라가나 </div>
+    </div>
+    <div class="score-board" id="score-board-katakana">
+        <div> 카타카나 </div>
     </div>
 </div>
-<div class="score-board">
-    <div> 카타카나 </div>
-{#    {% for key, value  in katakana_score.items() %}#}
-{#        {% if loop.index%20 == 1 %}#}
-{#            <div class="inner-score-board">#}
-{#        {% endif %}#}
-{#        <div>#}
-{#            {{key}} : {{value}}점#}
-{#        </div>#}
-{#        {% if loop.index%20 == 0 %}#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% endfor %}#}
-</div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="module">
+        import {requestScoreBoard} from "../static/js/scoreboard.js";
+        document.addEventListener('DOMContentLoaded', requestScoreBoard);
+    </script>
 {% endblock %}
