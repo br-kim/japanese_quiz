@@ -1,6 +1,6 @@
 import {requestToServer} from "./index.js";
 
-let btnFunction = {
+export let btnFunction = {
     randomImageUrl : '/quiz/path',
     limitQuizImagesUrl : '/newquiz/path-list',
     quizPathUrl : '/quiz-data',
@@ -104,18 +104,10 @@ let btnFunction = {
         if (weighted.checked){
             url.searchParams.append('is_weighted', 'true');
         }
-        // let new_url = await fetch(url.toString(),{
-        //     method: 'GET',
-        // });
-        // let data = new_url.text();
-        // let json = JSON.parse(await data);
         let req_res = await requestToServer(url.toString(), "GET");
-        // console.log();
-        // let json = JSON.parse(await req_res);
         let res_json = await req_res.json();
-        // console.log(res_json);
         let file_url = res_json.path;
-        csrf_token = res_json.csrf_token;
+        let csrf_token = res_json.csrf_token;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
@@ -154,7 +146,8 @@ let btnFunction = {
             ganaType = 'all';
         }
         url.searchParams.append('kind',ganaType);
-        let r = await fetch(url.toString());
+        // let r = await fetch(url.toString());
+        let r = await requestToServer(url.toString(), "GET", true);
         return await r.json();
     },
 
@@ -179,7 +172,7 @@ let btnFunction = {
         let arrayNum = 0;
         let res = await this.requestQuizData();
         let chars = res.order;
-        csrf_token = res.csrf_token;
+        let csrf_token = res.csrf_token;
         btnFunction.changeTitleSrc(chars,arrayNum);
         btnFunction.answerClear();
         return function () {
