@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from schemas import ScoreData
 
 import urls
 import utils
@@ -40,7 +41,6 @@ async def test_mode(request: Request):
 async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Optional[str] = None,
                            db: Session = Depends(get_db), token = Depends(check_user)):
     result = utils.gen_img_path_list(kind)
-    print(token)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
     request.state.csrf_token = csrf_token
     if is_weighted:
@@ -72,7 +72,6 @@ async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Opt
 @quiz_router.get("/quiz-data/test-mode")
 async def quiz_test_mode_data(request: Request, kind: str = "all",
     db: Session = Depends(get_db), token = Depends(check_user)):
-    print(token)
     result = utils.gen_img_path_list(kind)
     random.shuffle(result)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
@@ -82,7 +81,6 @@ async def quiz_test_mode_data(request: Request, kind: str = "all",
 async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
                     db: Session = Depends(get_db), token = Depends(check_user)):
     result = utils.gen_img_path_list(kind)
-    print(token)
     csrf_token = base64.b64encode(os.urandom(8)).decode()
     request.state.csrf_token = csrf_token
     if data_type == "path":
@@ -123,14 +121,8 @@ async def scoreboard(request: Request, db: Session = Depends(get_db)):
     """
     Scoreboard 페이지 리턴
     """
-    # user = crud.get_user_by_email(db=db, email=request.state.user_token.get("user_email"))
-    # hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
-    # kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
-
     return templates.TemplateResponse("scoreboard.html", {
         "request": request,
-        # "hiragana_score": json.loads(hira_score.score),
-        # "katakana_score": json.loads(kata_score.score)
     })
 
 @quiz_router.get("/scoreboard/data")
@@ -138,8 +130,8 @@ async def scoreboard_data(request: Request, db: Session = Depends(get_db), token
     user = crud.get_user_by_email(db=db, email=request.state.user_token.get("user_email"))
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
-
-    return
+    print(hira_score, kata_score)
+    return ScoreData(hiragana=json.loads(hira_score.score), katakana = json.loads(kata_score.score))
 
 @quiz_router.patch('/scoreupdate')
 async def score_update(request: Request, response: AnswerRes, db: Session = Depends(get_db)):
