@@ -26,7 +26,6 @@ async def add_user_token_request(request: Request, call_next):
         getattr(request.state, "user_token")
     except Exception:
         request.state.user_token = dict()
-    print(request.state.user_token, "middleware")
     response = await call_next(request)
     return response
 

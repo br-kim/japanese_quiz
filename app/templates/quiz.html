@@ -17,7 +17,8 @@
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script>
+    <script type="module">
+        import {btnFunction} from "../static/js/btn-event.js";
         document.getElementById("quiz").onload = btnFunction.getRandomImageUrl();
     </script>
 {% endblock %}
