@@ -32,8 +32,40 @@ async def login(request: Request):
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
-    return RedirectResponse(req_url)
+    return req_url
 
+@login_router.get("/oauth")
+async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
+    params = {
+        "code": code,
+        "client_id": osenv.GOOGLE_CLIENT_ID,
+        "client_secret": osenv.GOOGLE_CLIENT_SECRET,
+        "redirect_uri": f"{request.base_url}",
+        "grant_type": "authorization_code",
+    }
+    res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
+    response_json = res.json()
+    if res.status_code != 200:
+        # 구글 인증 에러
+        raise HTTPException(status_code=400)
+    id_token = response_json.get("id_token")
+    res_info = jwt.decode(id_token, options={"verify_signature": False})
+    user_email = res_info.get("email")
+    user_name = res_info.get("given_name")
+    email = schemas.UserCreate(email=user_email)
+    db_user = crud.get_user_by_email(db=db, email=user_email)
+    print(db_user)
+    if db_user:
+        if not crud.get_user_hiragana_score(db=db, user_id=db_user.id):
+            crud.create_user_scoreboard(db=db, user_id=db_user.id)
+    else:
+        db_user = crud.create_user(db=db, user=email)
+        crud.create_user_scoreboard(db=db, user_id=db_user.id)
+
+    payload = dict(user_email=user_email, user_name=user_name, user_id=db_user.id)
+    token = create_token(payload=payload)
+    request.state.user_token = payload
+    return token
 
 @login_router.get("/forredirect")
 async def forredirect(request: Request, db: Session = Depends(get_db)):
