@@ -85,3 +85,11 @@ class Comment(TimestampMixin, CommentBase):
 
     class Config:
         orm_mode: True
+
+
+class ScoreData(BaseModel):
+    hiragana: dict
+    katakana: dict
+
+    class Config:
+        orm_mode: True
