@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
+from dependencies import check_user
 
 user_router = APIRouter()
 
 @user_router.get("/user-info")
-async def get_user_info(request: Request):
-    user_info = request.state.user_token.get("user_email")
-    return user_info
+async def get_user_info(request: Request, token=Depends(check_user)):
+    return token.get("user_email")

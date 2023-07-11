@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import osenv
-from routers import quiz, login, community, chatting
+from routers import quiz, login, community, chatting, user
 import models
 from database import engine, redis_connection
 
@@ -17,6 +17,7 @@ app.include_router(quiz.quiz_router)
 app.include_router(login.login_router)
 app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
+app.include_router(user.user_router)
 
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):
