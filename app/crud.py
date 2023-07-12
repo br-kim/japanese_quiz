@@ -50,7 +50,7 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
         raise ValueError
     score = json.loads(db_scoreboard.score)
     score[char_name] += 1
-    db_scoreboard.score = json.dumps(score)
+    db_scoreboard.score = score
     db.commit()
     db.refresh(db_scoreboard)
     return score[char_name]
