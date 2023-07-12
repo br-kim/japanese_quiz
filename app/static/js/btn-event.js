@@ -1,4 +1,4 @@
-import {requestToServer} from "./index.js";
+import {requestToServer, } from "./index.js";
 
 export let btnFunction = {
     randomImageUrl : '/quiz/path',
@@ -42,27 +42,36 @@ export let btnFunction = {
         let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
-            btnFunction.scoreAdd('correct');
+            btnFunction.scoreAdd("correct");
             let req_data = {
-                csrf_token: csrf_token,
                 character: document.getElementById('quiz').src,
                 quiz_type: location.pathname
             };
-            await fetch('/scoreupdate',{
-                method: "PATCH",
-                headers: btnFunction.tokenHeader,
-                body: JSON.stringify(req_data)}).then(async function(response){
-                    if(response.status === 403){
-                        alert('csrf 오류입니다.');
-                    }else{
-                        if(location.pathname === '/quiz') {
-                            await btnFunction.getRandomImageUrl();
-                        }else{
-                            if(!btnFunction.functionContain) {
-                                btnFunction.functionContain = await btnFunction.getNextImage();
-                            }else{
-                                btnFunction.functionContain();
-                            }}}});
+            let res = await requestToServer("/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+            if (location.pathname === "/quiz"){
+                await btnFunction.getRandomImageUrl();
+            } else {
+                if(!btnFunction.functionContain) {
+                    btnFunction.functionContain = await btnFunction.getNextImage();
+                }else{
+                    btnFunction.functionContain();
+                }
+            }
+            // await fetch('/scoreupdate',{
+            //     method: "PATCH",
+            //     headers: btnFunction.tokenHeader,
+            //     body: JSON.stringify(req_data)}).then(async function(response){
+            //         if(response.status === 403){
+            //             alert('csrf 오류입니다.');
+            //         }else{
+            //             if(location.pathname === '/quiz') {
+            //                 await btnFunction.getRandomImageUrl();
+            //             }else{
+            //                 if(!btnFunction.functionContain) {
+            //                     btnFunction.functionContain = await btnFunction.getNextImage();
+            //                 }else{
+            //                     btnFunction.functionContain();
+            //                 }}}});
         }else{
             alert("오답입니다!");
             btnFunction.scoreAdd('incorrect');
