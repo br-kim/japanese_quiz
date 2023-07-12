@@ -71,8 +71,7 @@ async def quiz_test_mode_data(request: Request, kind: str = "all",
     db: Session = Depends(get_db), token = Depends(check_user)):
     result = utils.gen_img_path_list(kind)
     random.shuffle(result)
-    csrf_token = base64.b64encode(os.urandom(8)).decode()
-    return {"order": result, "csrf_token": csrf_token}
+    return {"order": result}
 
 @quiz_router.get("/quiz-data" + "/{data_type}")
 async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
