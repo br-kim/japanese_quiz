@@ -8,9 +8,15 @@ from fastapi import HTTPException
 
 from osenv import JWT_KEY
 
-
 def gen_img_path(gana: str):
     return "./static/img/" + gana
+
+
+hiragana_url = gen_img_path('hiragana')
+katakana_url = gen_img_path('katakana')
+
+hiragana_urls = [hiragana_url+"/" + i for i in os.listdir(hiragana_url)]
+katakana_urls = [katakana_url+"/" + i for i in os.listdir(katakana_url)]
 
 
 def gen_img_path_list(gana_type: str):
@@ -41,13 +47,6 @@ def get_token_payload(token):
         raise HTTPException(status_code=403, detail="Token Expire")
     print(payload)
     return payload
-
-
-hiragana_url = gen_img_path('hiragana')
-katakana_url = gen_img_path('katakana')
-
-hiragana_urls = [hiragana_url+"/" + i for i in os.listdir(hiragana_url)]
-katakana_urls = [katakana_url+"/" + i for i in os.listdir(katakana_url)]
 
 
 if __name__ == "__main__":
