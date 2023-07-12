@@ -70,6 +70,20 @@ export async function generateNav() {
 
     if (localStorage.getItem("jpn_quiz_access_token")) {
         let res = await requestToServer(serverBaseUrl+"/user-info", "GET");
+        if (res.status === 403){
+            let errorMsg = await res.json();
+            if (errorMsg.detail === "Token Expire"){
+                alert("로그인이 만료되었습니다.");
+                localStorage.removeItem("jpn_quiz_access_token");
+                loginNav.addEventListener("click", loginFunction);
+                navDiv.append(loginNav);
+                return;
+            }
+            else{
+                alert("처리되지 않은 에러입니다.");
+            }
+            // localStorage.removeItem("jpn_quiz_access_token");
+        }
         let user_email = await res.json();
         console.log(user_email);
         let scoreBoardNav = createAElement(navMenuRight, "/scoreboard", `${user_email}님, 환영합니다!`);

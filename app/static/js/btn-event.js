@@ -146,7 +146,6 @@ export let btnFunction = {
             ganaType = 'all';
         }
         url.searchParams.append('kind',ganaType);
-        // let r = await fetch(url.toString());
         let r = await requestToServer(url.toString(), "GET", true);
         return await r.json();
     },

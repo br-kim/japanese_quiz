@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-
+from jwt import ExpiredSignatureError
+from fastapi import HTTPException
 
 from osenv import JWT_KEY
 
@@ -34,8 +35,10 @@ def create_token(payload:dict):
 def get_token_payload(token):
     if not token:
         return None
-
-    payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
+    try:
+        payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=403, detail="Token Expire")
     print(payload)
     return payload
 
