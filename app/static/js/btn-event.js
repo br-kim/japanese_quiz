@@ -1,10 +1,7 @@
-import {requestToServer,} from "./index.js";
+import {requestToServer, token} from "./index.js";
 
 export let btnFunction = {
-    randomImageUrl: '/quiz/path',
-    limitQuizImagesUrl: '/newquiz/path-list',
     quizPathUrl: '/quiz-data',
-    limQuiz: '/path-list',
     infQuiz: '/random',
     functionContain: null,
     scoreAdd: function (elemId) {
@@ -37,30 +34,40 @@ export let btnFunction = {
         }
     },
     isCorrectInfMode: async function () {
+        // 무한 모드에서 정답을 확인하는 함수
         let answer = document.getElementById('answer').value;
         let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
             btnFunction.scoreAdd("correct");
+
             let req_data = {
                 character: document.getElementById('quiz').src,
                 quiz_type: location.pathname
             };
-            let res = await requestToServer("/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+            if (token) {
+                let res = await requestToServer("/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+            }
             await btnFunction.getRandomImageUrl();
         } else {
-            alert("오답입니다!");
+            alert("오답입니다! 정답은 " + quiz + "입니다.");
             btnFunction.scoreAdd('incorrect');
             await btnFunction.getRandomImageUrl();
         }
     },
 
     isCorrectTestMode: async function () {
+        // 테스트 모드에서 정답을 확인하는 함수
         let answer = document.getElementById('answer').value;
         let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
-            let res = await requestToServer("/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+            let req_data = {
+                character: document.getElementById('quiz').src,
+                quiz_type: location.pathname
+            };
+            let res = await requestToServer(
+                "/scoreupdate", "PATCH", true, JSON.stringify(req_data));
             btnFunction.scoreAdd("correct");
             if (!btnFunction.functionContain) {
                 btnFunction.functionContain = await btnFunction.getNextImage();
@@ -68,7 +75,7 @@ export let btnFunction = {
                 btnFunction.functionContain();
             }
         } else {
-            alert("오답입니다!");
+            alert("오답입니다! 정답은 " + quiz + "입니다.");
             btnFunction.scoreAdd('incorrect');
             btnFunction.buildIncorrectSheetTable();
             if (!btnFunction.functionContain) {
@@ -104,10 +111,9 @@ export let btnFunction = {
         if (weighted.checked) {
             url.searchParams.append('is_weighted', 'true');
         }
-        let req_res = await requestToServer(url.toString(), "GET");
+        let req_res = await requestToServer(url.toString(), "GET", false);
         let res_json = await req_res.json();
         let file_url = res_json.path;
-        let csrf_token = res_json.csrf_token;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
@@ -168,6 +174,7 @@ export let btnFunction = {
     },
 
     getNextImage: async function () {
+        // 문자 목록 데이터를 가져온 후 순서대로 보여주는 함수
         let arrayNum = 0;
         let res = await this.requestQuizData();
         let chars = res.order;
@@ -185,6 +192,7 @@ export let btnFunction = {
     },
 
     getNextImageIncorrect: function () {
+        // 오답 퀴즈 데이터 갖고 온 후 순서대로 보여주는 함수
         let arrayNum = 0;
         let chars = btnFunction.getTableData();
         btnFunction.changeTitleSrc(chars, arrayNum);
@@ -202,11 +210,9 @@ export let btnFunction = {
 
 const submitBtn = document.getElementById('submitBtn');
 if (submitBtn !== null) {
-    // get url last path
     let url = window.location.pathname;
-    console.log(url);
     let eventListener = null;
-    if (url === "/quiz"){
+    if (url === "/quiz") {
         eventListener = btnFunction.isCorrectInfMode;
     } else {
         eventListener = btnFunction.isCorrectTestMode;
@@ -249,6 +255,8 @@ if (incorrectQuizBtn !== null) {
         getNextImageBtn.parentNode.replaceChild(newNextImageBtn, getNextImageBtn);
         getNextImageBtn = document.getElementById('getNextImageBtn');
         btnFunction.functionContain = await btnFunction.getNextImageIncorrect();
+        let incorrectSheetTable = document.getElementById('incorrect-sheet-table');
+        incorrectSheetTable.innerHTML = '<tr></tr> <tr></tr>';
         getNextImageBtn.addEventListener('click', () => {
             func();
         }, false);
