@@ -10,10 +10,9 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from schemas import ScoreData
 
-import urls
 import utils
 import crud
-from dependencies import check_user, get_db
+from dependencies import check_user, get_db, check_user_optional_token
 
 templates = Jinja2Templates(directory='templates')
 
@@ -25,12 +24,12 @@ class AnswerRes(BaseModel):
     quiz_type: str
 
 
-@quiz_router.get(urls.inf_quiz_page_url)
+@quiz_router.get("/quiz")
 async def quiz(request: Request):
     return templates.TemplateResponse("quiz.html", {"request": request})
 
 
-@quiz_router.get(urls.lim_quiz_page_url)
+@quiz_router.get("/newquiz")
 async def test_mode(request: Request):
     return templates.TemplateResponse("test_mode.html", {"request": request})
 
@@ -38,8 +37,12 @@ async def test_mode(request: Request):
 
 @quiz_router.get("/quiz-data/random")
 async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Optional[str] = None,
-                           db: Session = Depends(get_db), token = Depends(check_user)):
+                           db: Session = Depends(get_db), token = Depends(check_user_optional_token)):
     result = utils.gen_img_path_list(kind)
+    if not token:
+        img_path = random.choice(result)
+        return {"path": img_path}
+
     if is_weighted:
         cur_user_email = token.get("user_email")
         cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
@@ -73,43 +76,43 @@ async def quiz_test_mode_data(request: Request, kind: str = "all",
     random.shuffle(result)
     return {"order": result}
 
-@quiz_router.get("/quiz-data" + "/{data_type}")
-async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
-                    db: Session = Depends(get_db), token = Depends(check_user)):
-    result = utils.gen_img_path_list(kind)
-    csrf_token = base64.b64encode(os.urandom(8)).decode()
-    request.state.csrf_token = csrf_token
-    if data_type == "path":
-        if is_weighted:
-            cur_user_email = request.state.user_email
-            cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
-            weight = []
-            total_score = 0
-            score_values = []
-            if kind == 'hiragana' or kind == 'all':
-                hira_score_db = crud.get_user_hiragana_score(db=db, user_id=cur_user.id)
-                score_dict = json.loads(hira_score_db.score)
-                score_values += list(score_dict.values())
-                total_score += sum(score_values)
-            if kind == 'katakana' or kind == 'all':
-                kata_score_db = crud.get_user_katakana_score(db=db, user_id=cur_user.id)
-                score_dict = json.loads(kata_score_db.score)
-                score_values += list(score_dict.values())
-                total_score += sum(score_dict.values())
-            weight += [total_score - i for i in score_values]
-            # 모든 weight 가 0인 경우 None
-            if sum(weight) == 0:
-                weight = None
-            img_path = random.choices(result, weight).pop()
-        else:
-            img_path = random.choice(result)
-        return {"path": img_path, "csrf_token": csrf_token}
-
-    elif data_type == "path-list":
-        random.shuffle(result)
-        return {"order": result, "csrf_token": csrf_token}
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Type")
+# @quiz_router.get("/quiz-data" + "/{data_type}")
+# async def path_data(request: Request, data_type: str, kind: str = "all", is_weighted: Optional[str] = None,
+#                     db: Session = Depends(get_db), token = Depends(check_user)):
+#     result = utils.gen_img_path_list(kind)
+#     csrf_token = base64.b64encode(os.urandom(8)).decode()
+#     request.state.csrf_token = csrf_token
+#     if data_type == "path":
+#         if is_weighted:
+#             cur_user_email = request.state.user_email
+#             cur_user = crud.get_user_by_email(db=db, email=cur_user_email)
+#             weight = []
+#             total_score = 0
+#             score_values = []
+#             if kind == 'hiragana' or kind == 'all':
+#                 hira_score_db = crud.get_user_hiragana_score(db=db, user_id=cur_user.id)
+#                 score_dict = json.loads(hira_score_db.score)
+#                 score_values += list(score_dict.values())
+#                 total_score += sum(score_values)
+#             if kind == 'katakana' or kind == 'all':
+#                 kata_score_db = crud.get_user_katakana_score(db=db, user_id=cur_user.id)
+#                 score_dict = json.loads(kata_score_db.score)
+#                 score_values += list(score_dict.values())
+#                 total_score += sum(score_dict.values())
+#             weight += [total_score - i for i in score_values]
+#             # 모든 weight 가 0인 경우 None
+#             if sum(weight) == 0:
+#                 weight = None
+#             img_path = random.choices(result, weight).pop()
+#         else:
+#             img_path = random.choice(result)
+#         return {"path": img_path, "csrf_token": csrf_token}
+#
+#     elif data_type == "path-list":
+#         random.shuffle(result)
+#         return {"order": result, "csrf_token": csrf_token}
+#     else:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Type")
 
 
 @quiz_router.get('/scoreboard')
@@ -126,7 +129,6 @@ async def scoreboard_data(request: Request, db: Session = Depends(get_db), token
     user = crud.get_user_by_email(db=db, email=request.state.user_token.get("user_email"))
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
-    print(hira_score, kata_score)
     return ScoreData(hiragana=json.loads(hira_score.score), katakana = json.loads(kata_score.score))
 
 @quiz_router.patch('/scoreupdate')
