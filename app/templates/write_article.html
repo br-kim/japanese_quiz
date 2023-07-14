@@ -7,7 +7,15 @@
             <br><br><br>
             <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
             <br>
-            <input type="button" value="저장" onclick="articleFunction.sendArticle()">
+            <input id="sendArticleBtn" type="button" value="저장">
         </label>
     </div>
 {% endblock %}
+{% block scripts%}
+{{ super() }}
+    <script type="module">
+    import {articleFunction} from "../static/js/community.js";
+    document.querySelector("#sendArticleBtn").addEventListener("click", articleFunction.sendArticle);
+    </script>
+{% endblock %}
+```

@@ -35,7 +35,8 @@
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script>
+    <script type="module">
+        import {articleFunction} from "/static/js/community.js"
         document.getElementById("write-comment-submit").addEventListener('click',()=>{
             articleFunction.sendComment();
         });

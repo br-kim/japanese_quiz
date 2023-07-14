@@ -16,7 +16,8 @@
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script>
+    <script type="module">
+        import {articleFunction} from "../static/js/community.js";
         window.onload = articleFunction.loadArticleList();
     </script>
 {% endblock %}
