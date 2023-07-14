@@ -10,7 +10,7 @@ import schemas
 from dependencies import get_db
 from dependencies import check_user
 
-community_router = APIRouter(dependencies=[Depends(check_user)])
+community_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
 
@@ -55,12 +55,13 @@ async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
         page = 1
     total_size = crud.get_all_article_size(db=db)
     offset = 3 * (page - 1)
-    return {'articles_length': (total_size - 1) // 3, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
+    result = (total_size // 3) + 1
+    return {'articles_length': result, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
 
 
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
-async def write_article(request: Request, article: Article, db=Depends(get_db)):
-    writer = request.state.user_email
+async def write_article(request: Request, article: Article, db=Depends(get_db), token = Depends(check_user)):
+    writer = token.get("user_email")
     if not (writer and article.dict().get('title') and article.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     db_article = schemas.ArticleCreate(writer=writer, title=html.escape(article.title),
