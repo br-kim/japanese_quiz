@@ -1,3 +1,4 @@
+import enum
 import html
 from typing import Optional
 
@@ -28,11 +29,9 @@ class Comment(BaseModel):
 class CommentEdit(BaseModel):
     contents: str
 
-
-class DeleteContent(BaseModel):
-    content_id: int
-    content_writer: str
-
+class ContentType(enum.Enum):
+    ARTICLE = "article"
+    COMMENT = "comment"
 
 @community_router.get('/fb')
 async def fb(request: Request):
@@ -71,8 +70,8 @@ async def write_article(request: Request, article: Article, db=Depends(get_db), 
 
 
 @community_router.post('/freeboard/write/comment', status_code=status.HTTP_201_CREATED)
-async def write_comment(request: Request, comment: Comment, db=Depends(get_db)):
-    writer = request.state.user_email
+async def write_comment(request: Request, comment: Comment, db=Depends(get_db), token= Depends(check_user)):
+    writer = token.get("user_email")
     if not (writer and comment.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     db_comment = schemas.CommentCreate(writer=writer, contents=comment.contents, article_id=comment.article_id,
@@ -81,35 +80,41 @@ async def write_comment(request: Request, comment: Comment, db=Depends(get_db)):
     return created_comment.id
 
 
-@community_router.patch('/freeboard/edit/article/{article_id}')
-async def edit_article(request: Request, article_id: int, article: Article, db=Depends(get_db)):
+@community_router.patch('/freeboard/article/{article_id}')
+async def edit_article(request: Request,
+                       article_id: int, article: Article, db=Depends(get_db), token= Depends(check_user)):
     db_article = crud.get_article(db, article_num=article_id)
-    if request.state.user_email == db_article.writer:
+    if token.get("user_email") == db_article.writer:
         crud.update_article(db=db, article_id=article_id, title=article.title, contents=article.contents)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
 
-@community_router.patch('/freeboard/edit/comment/{comment_id}')
-async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db)):
+@community_router.patch('/freeboard/comment/{comment_id}')
+async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db), token= Depends(check_user)):
     db_comment = crud.get_comment(db=db, comment_id=comment_id)
-    if request.state.user_email == db_comment.writer:
+    if token.get("user_email") == db_comment.writer:
         crud.update_comment(db=db, comment_id=comment_id, contents=comment.contents)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
 
-@community_router.delete('/freeboard/delete/{content_type}')
-async def delete_content(request: Request, content_type: str, content: DeleteContent, db=Depends(get_db)):
-    if request.state.user_email == content.content_writer:
-        if content_type == 'article':
-            crud.delete_article(db=db, article_id=content.content_id)
-        elif content_type == 'comment':
-            crud.delete_comment(db=db, comment_id=content.content_id)
-        else:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+@community_router.delete('/freeboard/article/{article_id}')
+async def delete_article(request: Request, article_id: int, db=Depends(get_db), token=Depends(check_user)):
+    article = crud.get_article(db=db, article_num=article_id)
+    if token.get("user_email") == article.writer:
+        crud.delete_article(db=db, article_id=article_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    else:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+@community_router.delete('/freeboard/comment/{comment_id}')
+async def delete_comment(request: Request, comment_id: int, db=Depends(get_db), token=Depends(check_user)):
+    comment = crud.get_comment(db=db, comment_id=comment_id)
+    if token.get("user_email") == comment.writer:
+        crud.delete_comment(db=db, comment_id=comment_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
