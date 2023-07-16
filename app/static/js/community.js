@@ -1,4 +1,4 @@
-import {requestToServer, } from "./index.js";
+import {requestToServer,} from "./index.js";
 import {btnFunction} from "./btn-event.js";
 
 export let articleFunction = {
@@ -13,8 +13,13 @@ export let articleFunction = {
         return result.pagenum;
     },
 
+    getArticleIdFromURL: () => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const articleId = urlParams.get('article_id');
+        return articleId;
+    },
     sendArticle: async function () {
-        console.log("sendarticle");
         let data = {
             title: document.getElementById('input-title').value,
             contents: document.getElementById('input-content').value
@@ -26,11 +31,10 @@ export let articleFunction = {
         let res = await requestToServer(
             '/freeboard/write/article', "POST", true, JSON.stringify(data));
         let article_num = await res.text();
-        window.location.href = location.origin + '/article?pagenum=' + article_num;
+        window.location.href = location.origin + '/article?article_id=' + article_num;
     },
-
     editArticle: async function () {
-        let articleId = articleFunction.getSearchParamPagenum();
+        let articleId = articleFunction.getArticleIdFromURL();
         let data = {
             title: document.getElementById('input-title').value,
             contents: document.getElementById('input-content').value
@@ -39,32 +43,29 @@ export let articleFunction = {
             alert('제목과 내용을 입력해주세요.');
             return;
         }
-        await fetch(`/freeboard/edit/article/${articleId}`, {
-            method: 'PATCH',
-            headers: btnFunction.tokenHeader,
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.status === 403) {
-                alert("다른 사람의 글은 수정할 수 없습니다.");
-            }
-        });
-        window.location.href = location.origin + '/article?pagenum=' + articleId;
+        let res = await requestToServer(
+            `/freeboard/edit/article/${articleId}`, "PATCH", true, JSON.stringify(data));
+        if (res.status === 403) {
+            alert("다른 사람의 글은 수정할 수 없습니다.");
+        }
+        window.location.href = location.origin + '/article?article_id=' + articleId;
     },
 
     loadEdit: async () => {
-        let articleId = articleFunction.getSearchParamPagenum();
-        location.href = `/article/edit?pagenum=${articleId}`;
+        let articleId = articleFunction.getArticleIdFromURL();
+        location.href = `/article/edit?article_id=${articleId}`;
     },
 
     loadBeforeArticle: async () => {
-        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getSearchParamPagenum());
+        let res = await requestToServer(
+            location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL(), "GET", true);
         let article = await res.json();
         document.getElementById('input-title').value = article.title;
         document.getElementById('input-content').value = article.contents;
     },
 
     loadArticle: async () => {
-        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getSearchParamPagenum());
+        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL());
         let article = await res.json();
         /** @param article
          *  @param article.title
@@ -198,7 +199,7 @@ export let articleFunction = {
         }
     },
     loadComments: async () => {
-        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getSearchParamPagenum() + '/comment');
+        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL() + '/comment');
         let comments = await res.json();
         comments.forEach((comment) => {
             if (!comment.parent_id) {
@@ -218,76 +219,54 @@ export let articleFunction = {
     },
 
     sendEditComment: async (elem) => {
-        let pagenum = articleFunction.getSearchParamPagenum();
+        let articleId = articleFunction.getArticleIdFromURL();
         let commentId = elem.id.split("-")[elem.id.split("-").length - 1];
-        console.log(elem.id.split("-"));
         let data = {
             contents: elem.value,
-            article_id: Number(pagenum)
         };
-
-        console.log(data);
-        if (!data.article_id || !data.contents) {
+        if (!data.contents) {
             alert('내용을 입력해주세요.');
             return;
         }
-        await fetch(`/freeboard/edit/comment/${commentId}`, {
-            method: 'PATCH',
-            headers: btnFunction.tokenHeader,
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.status === 403) {
-                alert("다른 사람의 댓글은 수정할 수 없습니다.");
-            }
-        });
-        window.location.href = location.origin + '/article?pagenum=' + pagenum;
+        let res = await requestToServer(
+            `/freeboard/comment/${commentId}`, 'PATCH',true, JSON.stringify(data));
+        if (res.status === 403) {
+            alert("다른 사람의 댓글은 수정할 수 없습니다.");
+        }
+        window.location.href = location.origin + '/article?article_id=' + articleId;
     },
 
     sendComment: async (parentId) => {
-        let pagenum = articleFunction.getSearchParamPagenum();
+        let articleId = articleFunction.getArticleIdFromURL();
         let data = {
             contents: document.getElementById('write-comment-input').value,
-            article_id: Number(pagenum),
+            article_id: Number(articleId),
             parent_id: parentId
         };
         if (!data.article_id || !data.contents) {
             alert('내용을 입력해주세요.');
             return;
         }
-        await fetch('/freeboard/write/comment', {
-            method: 'POST',
-            headers: btnFunction.tokenHeader,
-            body: JSON.stringify(data)
-        });
-
-        window.location.href = location.origin + '/article?pagenum=' + pagenum;
+        await requestToServer('/freeboard/write/comment', 'POST', true,  JSON.stringify(data));
+        window.location.href = location.origin + '/article?article_id=' + articleId;
     },
 
     deleteArticle: async () => {
-        let data = {
-            content_id: Number(articleFunction.getSearchParamPagenum()),
-            content_writer: document.getElementById('article-writer')
-        };
-        await fetch(`/freeboard/delete/article`, {
-            method: 'DELETE',
-            headers: btnFunction.tokenHeader,
-            body: JSON.stringify(data)
-        });
+        let article_id = articleFunction.getArticleIdFromURL();
+        let url = new URL(location.origin + `/freeboard/article/${article_id}`);
+        let res = await requestToServer(
+            url, 'DELETE', true);
         window.location.href = document.referrer;
     },
 
     deleteComment: async (comment) => {
-        let data = {
-            content_id: comment.id,
-            content_writer: comment.writer
-        };
-        let res = await requestToServer(
-            'DELETE', '/freeboard/delete/comment', JSON.stringify(data));
+        let res = await requestToServer(`/freeboard/comment/${comment.id}`,
+                'DELETE', true);
         if (res.status === 403){
             alert("다른 사람의 댓글은 삭제할 수 없습니다.");
         }
         window.location.reload();
-    },
+        },
 
     loadArticleList: async () => {
         let pageNum = articleFunction.getSearchParamPagenum();
@@ -313,7 +292,7 @@ export let articleFunction = {
             let titleCell = newRow.insertCell();
             let writerCell = newRow.insertCell();
             let dateCell = newRow.insertCell();
-            titleCell.innerHTML = `<a href="/article?pagenum=${elem.id}">${elem.title}</a>`;
+            titleCell.innerHTML = `<a href="/article?article_id=${elem.id}">${elem.title}</a>`;
             writerCell.textContent = elem.writer;
             dateCell.textContent = articleFunction.datePreProcess(elem.created_at);
         });
@@ -327,14 +306,14 @@ export let articleFunction = {
         if (mod === 0) {
             div -= 1;
         }
-        let begin = (div*5)+1;
-        let end = ((div+1)*5)+1;
+        let begin = (div * 5) + 1;
+        let end = ((div + 1) * 5) + 1;
         if (end > totalPage) {
-            end = totalPage +1;
+            end = totalPage + 1;
         }
         if (div > 0) {
             document.getElementById('pages').innerHTML +=
-                `<a href='/fb?pagenum=${begin-1}'>이전</a> `;
+                `<a href='/fb?pagenum=${begin - 1}'>이전</a> `;
         }
         for (let i = begin; i < end; i++) {
             document.getElementById('pages').innerHTML +=
