@@ -85,7 +85,7 @@ export async function generateNav() {
             // localStorage.removeItem("jpn_quiz_access_token");
         }
         let user_email = await res.json();
-        console.log(user_email);
+        localStorage.setItem("user_email", user_email);
         let scoreBoardNav = createAElement(navMenuRight, "/scoreboard", `${user_email}님, 환영합니다!`);
         navDiv.appendChild(scoreBoardNav);
         navDiv.appendChild(logoutNav);
