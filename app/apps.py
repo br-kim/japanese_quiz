@@ -6,7 +6,8 @@ from fastapi.templating import Jinja2Templates
 import osenv
 from routers import quiz, login, community, chatting, user
 import models
-from database import engine, redis_connection
+from database import engine
+from connectionmanager import broadcast
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -18,6 +19,7 @@ app.include_router(login.login_router)
 app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
+
 
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):
@@ -36,7 +38,11 @@ async def read_root(request: Request):
 
 @app.on_event("startup")
 async def startup_event():
-    await redis_connection.delete("users")
+    await broadcast.connect()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await broadcast.disconnect()
 
 
 if __name__ == "__main__":
