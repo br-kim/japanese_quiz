@@ -1,88 +1,84 @@
 import asyncio
 import json
+from typing import List
 
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
 from fastapi.templating import Jinja2Templates
 
-from dependencies import check_user
-from connectionmanager import manager, redis_connection
+from dependencies import check_user_by_query
+from connectionmanager import broadcast, chatting_room
 
-chatting_router = APIRouter(dependencies=[Depends(check_user)])
+chatting_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
+CHANNEL = "CHAT"
 
-class WebSocketMessage(BaseModel):
-    type: str
-    detail: str
-    message: str
-    sender: str
-    receiver: str
+
+class MessageEvent(BaseModel):
+    sender: str = None
+    message: str | List[str]
+    message_type: str
+
+
+async def receive_message(websocket: WebSocket, username: str):
+    async with broadcast.subscribe(CHANNEL) as subscriber:
+        async for event in subscriber:
+            message_event = MessageEvent.parse_raw(event.message)
+            if message_event.sender != username or True:
+                await websocket.send_json(message_event.dict())
+
+
+async def send_message(websocket: WebSocket):
+    data = await websocket.receive_text()
+    await broadcast.publish(channel=CHANNEL, message=data)
+    await websocket.send_json(json.loads(data))
+
+async def create_alert(websocket: WebSocket, message: str):
+    websocket_message = MessageEvent(message=message, message_type="alert")
+    await broadcast.publish(channel=CHANNEL, message=websocket_message.json())
+    await websocket.send_json(websocket_message.dict())
+
+async def get_chatting_room_users(websocket: WebSocket):
+    user_list = await chatting_room.get_chatting_room_users()
+    message = MessageEvent(message_type="list", message=[i.decode() for i in user_list])
+    await broadcast.publish(channel=CHANNEL, message=message.json())
+    await websocket.send_json(message.dict())
+
+
+async def add_chatting_room_users(websocket: WebSocket, username: str):
+    await chatting_room.add_chatting_room(username)
+    await create_alert(websocket, message=f"{username} 님이 채팅방에 입장하셨습니다.")
+
+
+async def remove_chatting_room_users(websocket: WebSocket, username: str):
+    await chatting_room.remove_chatting_room(username)
+    await create_alert(websocket, message=f"{username} 님이 채팅방에서 나가셨습니다.")
+
+
+@chatting_router.websocket("/ws-endpoint")
+async def websocket_endpoint(websocket: WebSocket, token=Depends(check_user_by_query)):
+    await websocket.accept()
+    username = token.get("user_email")
+    await add_chatting_room_users(websocket, username)
+    await get_chatting_room_users(websocket)
+    try:
+        while True:
+            receive_message_task = asyncio.create_task(receive_message(websocket, username))
+            send_message_task = asyncio.create_task(send_message(websocket))
+            done, pending = await asyncio.wait(
+                [receive_message_task, send_message_task],
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            for task in pending:
+                task.cancel()
+            for task in done:
+                task.result()
+    except WebSocketDisconnect:
+        await remove_chatting_room_users(websocket, username)
+        await websocket.close()
 
 
 @chatting_router.get("/ws")
-async def get(request: Request):
+async def get_chatting_page(request: Request):
     return templates.TemplateResponse("chatting.html", {"request": request})
-
-
-@chatting_router.websocket('/chatting/{client_id}/receive')
-async def websocket_chatting_receive(websocket: WebSocket, client_id: str):
-    before_len = 10000000
-    websocket.session['client_id'] = client_id
-    await manager.connect(websocket)
-    try:
-        await manager.send_connections(websocket)
-        await manager.broadcast(
-            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "enter the chatting room."})
-
-        while True:
-            if await redis_connection.sismember("users", client_id.encode()) is False:
-                break
-            msg_list = await redis_connection.lrange("chat", 0, -1)
-            send_msg_list = msg_list[:len(msg_list) - before_len]
-            if before_len != len(msg_list) and send_msg_list:
-                for data in send_msg_list:
-                    data = json.loads(data.decode())
-                    if data.get('type') == 'whisper':
-                        if data.get('receiver') == client_id:
-                            await manager.send_personal_message(data, websocket)
-
-                    elif data.get('type') == 'message' or data.get('type') == 'alert':
-                        await manager.send_personal_message(data, websocket)
-
-            await asyncio.sleep(0.01)
-            before_len = len(msg_list)
-    except WebSocketDisconnect:
-        await manager.disconnect(websocket)
-        await manager.broadcast({
-            'type': 'alert',
-            'detail': 'enter',
-            'sender': client_id,
-            'receiver': 'all',
-            'message': "leave the chatting room."})
-
-
-@chatting_router.websocket('/chatting/{client_id}/send')
-async def websocket_chatting_send(websocket: WebSocket, client_id: str):
-    websocket.session['client_id'] = client_id
-    await manager.connect(websocket)
-    try:
-        while True:
-            data = await websocket.receive_json()
-            if data.get('keepalive'):
-                await manager.send_personal_message({'type': 'keepalive'}, websocket)
-            if data.get('message') or data.get('whisper'):
-                await manager.broadcast({
-                    "type": data.get('type'),
-                    "sender": data.get('sender'),
-                    "message": data.get('message'),
-                    "receiver": data.get('receiver'),
-                    "detail": data.get('detail')
-                })
-
-            await asyncio.sleep(0.01)
-
-    except WebSocketDisconnect:
-        await manager.disconnect(websocket)
-        await manager.broadcast(
-            {'type': 'alert', 'detail': 'enter', 'sender': client_id, 'message': "leave the chatting room."})
