@@ -1,4 +1,4 @@
-from fastapi import Request, HTTPException, Depends
+from fastapi import Request, HTTPException, Depends, Query
 from fastapi.security import HTTPBearer
 
 from database import SessionLocal
@@ -10,6 +10,12 @@ async def check_user(request: Request, header=Depends(authorization)):
     token = header.credentials
     payload = get_token_payload(token)
     request.state.user_token = payload
+    if not payload:
+        raise HTTPException(status_code=403)
+    return payload
+
+async def check_user_by_query(token=Query(..., alias="token")):
+    payload = get_token_payload(token)
     if not payload:
         raise HTTPException(status_code=403)
     return payload
