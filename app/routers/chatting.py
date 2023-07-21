@@ -3,7 +3,7 @@ import json
 from typing import List
 
 from pydantic import BaseModel
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request, Query
 from fastapi.templating import Jinja2Templates
 
 from dependencies import check_user_by_query
@@ -19,14 +19,17 @@ class MessageEvent(BaseModel):
     sender: str = None
     message: str | List[str]
     message_type: str
+    receiver: str = None
 
 
-async def receive_message(websocket: WebSocket, username: str):
+
+async def receive_message(websocket: WebSocket, username=None):
     async with broadcast.subscribe(CHANNEL) as subscriber:
         async for event in subscriber:
             message_event = MessageEvent.parse_raw(event.message)
-            if message_event.sender != username or True:
-                await websocket.send_json(message_event.dict())
+            if message_event.message_type == "whisper" and str(message_event.receiver) != str(username):
+                continue
+            await websocket.send_json(message_event.dict())
 
 
 async def send_message(websocket: WebSocket):
@@ -57,14 +60,15 @@ async def remove_chatting_room_users(websocket: WebSocket, username: str):
 
 
 @chatting_router.websocket("/ws-endpoint")
-async def websocket_endpoint(websocket: WebSocket, token=Depends(check_user_by_query)):
+async def websocket_endpoint(websocket: WebSocket, user_id: int = Query(...,alias="user-id"), token=Depends(check_user_by_query)):
     await websocket.accept()
-    username = token.get("user_email")
+    # username = token.get("user_email")
+    username = user_id
     await add_chatting_room_users(websocket, username)
     await get_chatting_room_users(websocket)
     try:
         while True:
-            receive_message_task = asyncio.create_task(receive_message(websocket, username))
+            receive_message_task = asyncio.create_task(receive_message(websocket,username=username))
             send_message_task = asyncio.create_task(send_message(websocket))
             done, pending = await asyncio.wait(
                 [receive_message_task, send_message_task],
