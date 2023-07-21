@@ -11,6 +11,7 @@ import models
 from models import Base
 from utils import create_token
 from .database import Session
+from crud import create_user_scoreboard
 
 # def create_database():
 #     engine = create_engine(osenv.POSTGRES_DATABASE_URL)
@@ -58,7 +59,16 @@ def create_user(client, session):
     session.add(new_user)
     payload = dict(user_email=user_email, user_name=user_name, user_id=new_user.id)
     token = create_token(payload=payload)
+    session.commit()
     return token
+
+
+@pytest.fixture(scope="function")
+def create_score(session, create_user):
+    user_id = session.query(models.User).first().id
+    create_user_scoreboard(session, user_id)
+    session.commit()
+    return create_user
 
 
 # @pytest.fixture(scope="session")
