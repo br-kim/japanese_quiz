@@ -38,7 +38,5 @@ async def score_update(response: AnswerRes, db: Session = Depends(get_db), token
     user_email = token.get("user_email")
     current_user = crud.get_user_by_email(db=db, email=user_email)
     user_id = current_user.id
-    result = crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
-    if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad Request")
+    crud.update_user_scoreboard(db=db, user_id=user_id, char_type=char_type, char_name=char_name)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

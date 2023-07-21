@@ -48,12 +48,9 @@ def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name:
         db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.user_id == user_id).first()
     else:
         raise ValueError
-    score = json.loads(db_scoreboard.score)
-    score[char_name] += 1
-    db_scoreboard.score = score
+    db_scoreboard.score[char_name] = db_scoreboard.score[char_name] + 1
     db.commit()
-    db.refresh(db_scoreboard)
-    return score[char_name]
+    return True
 
 
 def create_article(db: Session, article: schemas.ArticleCreate):
