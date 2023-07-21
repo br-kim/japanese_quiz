@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import osenv
-from routers import quiz, login, community, chatting, user
+from routers import quiz, login, community, chatting, user, scoreboard
 import models
 from database import engine
 from connectionmanager import broadcast
@@ -19,6 +19,7 @@ app.include_router(login.login_router)
 app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
+app.include_router(scoreboard.scoreboard_router)
 
 
 @app.middleware("http")

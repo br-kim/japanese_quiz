@@ -11,6 +11,7 @@ from schemas import ScoreData, AnswerRes
 scoreboard_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
+
 @scoreboard_router.get('/scoreboard')
 async def scoreboard(request: Request):
     """
@@ -22,11 +23,11 @@ async def scoreboard(request: Request):
 
 
 @scoreboard_router.get("/scoreboard/data")
-async def scoreboard_data(db: Session = Depends(get_db), token=Depends(check_user)):
+async def get_scoreboard_data(db: Session = Depends(get_db), token=Depends(check_user)):
     user = crud.get_user_by_email(db=db, email=token.get("user_email"))
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
-    return ScoreData(hiragana=json.loads(hira_score.score), katakana=json.loads(kata_score.score))
+    return ScoreData(hiragana=hira_score.score, katakana=kata_score.score)
 
 
 @scoreboard_router.patch('/scoreupdate')
