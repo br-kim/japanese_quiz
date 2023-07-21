@@ -30,7 +30,7 @@ async def get_scoreboard_data(db: Session = Depends(get_db), token=Depends(check
     return ScoreData(hiragana=hira_score.score, katakana=kata_score.score)
 
 
-@scoreboard_router.patch('/scoreupdate')
+@scoreboard_router.patch('/scoreboard/data')
 async def score_update(response: AnswerRes, db: Session = Depends(get_db), token=Depends(check_user)):
     char_data = response.character.split('/')[-2:]
     char_type = char_data[0]

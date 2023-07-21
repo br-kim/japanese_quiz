@@ -46,7 +46,7 @@ export let btnFunction = {
                 quiz_type: location.pathname
             };
             if (token) {
-                let res = await requestToServer("/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+                let res = await requestToServer("/scoreboard/data", "PATCH", true, JSON.stringify(req_data));
             }
             await btnFunction.getRandomImageUrl();
         } else {
@@ -67,7 +67,7 @@ export let btnFunction = {
                 quiz_type: location.pathname
             };
             let res = await requestToServer(
-                "/scoreupdate", "PATCH", true, JSON.stringify(req_data));
+                "/scoreboard/data", "PATCH", true, JSON.stringify(req_data));
             btnFunction.scoreAdd("correct");
             if (!btnFunction.functionContain) {
                 btnFunction.functionContain = await btnFunction.getNextImage();
