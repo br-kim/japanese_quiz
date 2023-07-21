@@ -1,4 +1,3 @@
-
 def test_get_quiz_path_only_hiragana(client):
     """
     랜덤 퀴즈 히라가나 데이터 요청 테스트
@@ -37,9 +36,10 @@ def test_get_test_mode_data(client, create_user):
     token = create_user
     payload = {'kind': 'all'}
     header = {'Authorization': f'Bearer {token}'}
-    response = client.get('/quiz-data/test-mode',headers=header, params=payload)
+    response = client.get('/quiz-data/test-mode', headers=header, params=payload)
     json = response.json()
     assert len(json['order']) == 208
+
 
 def test_get_test_mode_data_hiragana(client, create_user):
     """
@@ -48,9 +48,10 @@ def test_get_test_mode_data_hiragana(client, create_user):
     token = create_user
     payload = {'kind': 'hiragana'}
     header = {'Authorization': f'Bearer {token}'}
-    response = client.get('/quiz-data/test-mode',headers=header, params=payload)
+    response = client.get('/quiz-data/test-mode', headers=header, params=payload)
     json = response.json()
     assert len(json['order']) == 104
+
 
 def test_get_test_mode_data_katakana(client, create_user):
     """
@@ -59,8 +60,6 @@ def test_get_test_mode_data_katakana(client, create_user):
     token = create_user
     payload = {'kind': 'katakana'}
     header = {'Authorization': f'Bearer {token}'}
-    response = client.get('/quiz-data/test-mode',headers=header, params=payload)
+    response = client.get('/quiz-data/test-mode', headers=header, params=payload)
     json = response.json()
     assert len(json['order']) == 104
-    
-
