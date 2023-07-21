@@ -39,12 +39,19 @@ def db():
     drop_database(str(osenv.TEST_DATABASE_URL))
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 def session(db):
     session = Session()
     session.begin_nested()
     yield session
     session.rollback()
+    all_models = Base.metadata.tables.values()
+    for model in all_models:
+        session.execute(model.delete())
+    session.commit()
+    session.close()
+
+# create function cleanup db after each test
 
 @pytest.fixture(scope="function")
 def client(session):
@@ -59,7 +66,7 @@ def create_user(client, session):
     session.add(new_user)
     payload = dict(user_email=user_email, user_name=user_name, user_id=new_user.id)
     token = create_token(payload=payload)
-    session.commit()
+    # session.commit()
     return token
 
 
@@ -67,7 +74,7 @@ def create_user(client, session):
 def create_score(session, create_user):
     user_id = session.query(models.User).first().id
     create_user_scoreboard(session, user_id)
-    session.commit()
+    # session.commit()
     return create_user
 
 
