@@ -93,3 +93,8 @@ class ScoreData(BaseModel):
 
     class Config:
         orm_mode: True
+
+
+class AnswerRes(BaseModel):
+    character: str
+    quiz_type: str
