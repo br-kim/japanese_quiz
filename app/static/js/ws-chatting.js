@@ -1,10 +1,12 @@
 let token = localStorage.getItem("jpn_quiz_access_token");
 
+let userEmail = String(Date.now());
+
 let websocketScheme = (document.location.protocol === 'http:') ? 'ws' : 'wss';
-let ws_url = `${websocketScheme}://${document.location.host}/ws-endpoint?token=${token}`;
+let ws_url = `${websocketScheme}://${document.location.host}/ws-endpoint?token=${token}&user-id=${userEmail}`;
 let ws = new WebSocket(ws_url);
 
-let userEmail = localStorage.getItem("user_email");
+// let userEmail = localStorage.getItem("user_email");
 
 
 ws.onmessage = function (event) {
@@ -20,9 +22,13 @@ ws.onmessage = function (event) {
         return;
     }
     if (data.message_type === 'list'){
+        let chattingUsers = document.getElementById('chatting-users-div');
+            while (chattingUsers.firstChild.nextSibling) {
+                chattingUsers.removeChild(chattingUsers.firstChild.nextSibling);
+            }
         data.message.forEach((elem)=>{
             let node = createUserName(elem);
-            document.getElementById('chatting-users-div').append(node);
+            chattingUsers.append(node);
         });
         return;
     }
@@ -33,9 +39,17 @@ ws.onmessage = function (event) {
             messageHeader = document.createTextNode(data.sender + " : ");
         }
     }
+    if (data.message_type === 'whisper'){
+        if (data.sender === userEmail){
+            messageHeader = document.createTextNode("Your Whisper"+ " : ");
+        }else{
+            messageHeader = document.createTextNode(data.sender + " Whisper : ");
+        }
+    }
     if (data.message_type ==='alert'){
         processAlert(data);
     }
+
     message.append(messageHeader, content);
     messages.appendChild(message);
     document.querySelector("#messages-div").scrollTop =
@@ -76,13 +90,16 @@ function processAlert(data){
 function sendMessage(event) {
     let input = document.getElementById("messageText");
     let target = document.getElementById("sendTo");
-    ws.send(
-        JSON.stringify({
-            message_type: "message",
+    let messageType = target.value ? 'whisper' : 'message';
+    let message= {
+            message_type: messageType,
             sender: userEmail,
-            message: input.value,
-            receiver: target.value
-        }));
+            message: input.value
+        };
+    if (target.value){
+        message.receiver = target.value;
+    }
+    ws.send(JSON.stringify(message));
     input.value = '';
     event.preventDefault();
 }
