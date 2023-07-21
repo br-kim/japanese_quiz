@@ -37,6 +37,7 @@ async def check_user_optional_token(request: Request):
 
 def get_db():
     db = SessionLocal()
+    db.begin()
     try:
         yield db
     finally:
