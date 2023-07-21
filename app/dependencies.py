@@ -22,6 +22,9 @@ async def check_user_by_query(token=Query(..., alias="token")):
 
 async def check_user_optional_token(request: Request):
     token = request.headers.get("Authorization")
+    if not token:
+        return None
+
     if token.startswith("Bearer "):
         token = token.split(" ")[1]
     try:
