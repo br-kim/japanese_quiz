@@ -35,21 +35,33 @@ class ContentType(enum.Enum):
 
 @community_router.get('/fb')
 async def fb(request: Request):
+    """
+    자유게시판 메인 페이지
+    """
     return templates.TemplateResponse('freeboard.html', {'request': request})
 
 
 @community_router.get('/article')
 async def show_article_template(request: Request):
+    """
+    자유게시판 글 조회 페이지
+    """
     return templates.TemplateResponse('article.html', {'request': request})
 
 
 @community_router.get('/article/edit')
 async def show_edit_article_template(request: Request):
+    """
+    자유게시판 글 수정 페이지
+    """
     return templates.TemplateResponse('edit_article.html', {'request': request})
 
 
 @community_router.get('/freeboard')
 async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
+    """
+    자유게시판 글 목록 조회 API
+    """
     if page < 1:
         page = 1
     total_size = crud.get_all_article_size(db=db)
@@ -60,6 +72,9 @@ async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
 
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
 async def write_article(request: Request, article: Article, db=Depends(get_db), token = Depends(check_user)):
+    """
+    자유게시판 글 작성 API
+    """
     writer = token.get("user_email")
     if not (writer and article.dict().get('title') and article.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
@@ -71,6 +86,9 @@ async def write_article(request: Request, article: Article, db=Depends(get_db), 
 
 @community_router.post('/freeboard/write/comment', status_code=status.HTTP_201_CREATED)
 async def write_comment(request: Request, comment: Comment, db=Depends(get_db), token= Depends(check_user)):
+    """
+    자유게시판 댓글 작성 API
+    """
     writer = token.get("user_email")
     if not (writer and comment.dict().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
@@ -83,6 +101,9 @@ async def write_comment(request: Request, comment: Comment, db=Depends(get_db), 
 @community_router.patch('/freeboard/article/{article_id}')
 async def edit_article(request: Request,
                        article_id: int, article: Article, db=Depends(get_db), token= Depends(check_user)):
+    """
+    자유게시판 글 수정 API
+    """
     db_article = crud.get_article(db, article_num=article_id)
     if token.get("user_email") == db_article.writer:
         crud.update_article(db=db, article_id=article_id, title=article.title, contents=article.contents)
@@ -93,6 +114,9 @@ async def edit_article(request: Request,
 
 @community_router.patch('/freeboard/comment/{comment_id}')
 async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db), token= Depends(check_user)):
+    """
+    자유게시판 댓글 수정 API
+    """
     db_comment = crud.get_comment(db=db, comment_id=comment_id)
     if token.get("user_email") == db_comment.writer:
         crud.update_comment(db=db, comment_id=comment_id, contents=comment.contents)
@@ -103,6 +127,9 @@ async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, 
 
 @community_router.delete('/freeboard/article/{article_id}')
 async def delete_article(request: Request, article_id: int, db=Depends(get_db), token=Depends(check_user)):
+    """
+    자유게시판 글 삭제 API
+    """
     article = crud.get_article(db=db, article_num=article_id)
     if token.get("user_email") == article.writer:
         crud.delete_article(db=db, article_id=article_id)
@@ -112,6 +139,9 @@ async def delete_article(request: Request, article_id: int, db=Depends(get_db), 
 
 @community_router.delete('/freeboard/comment/{comment_id}')
 async def delete_comment(request: Request, comment_id: int, db=Depends(get_db), token=Depends(check_user)):
+    """
+    자유게시판 댓글 삭제 API
+    """
     comment = crud.get_comment(db=db, comment_id=comment_id)
     if token.get("user_email") == comment.writer:
         crud.delete_comment(db=db, comment_id=comment_id)
@@ -122,16 +152,25 @@ async def delete_comment(request: Request, comment_id: int, db=Depends(get_db), 
 
 @community_router.get('/write')
 async def write_page(request: Request):
+    """
+    자유게시판 글 작성 페이지
+    """
     return templates.TemplateResponse('write_article.html', {'request': request})
 
 
 @community_router.get('/freeboard/{article_id}')
 async def show_article(article_id: int, db=Depends(get_db)):
+    """
+    자유게시판 글 조회 API
+    """
     db_article = crud.get_article(db=db, article_num=article_id)
     return db_article
 
 
 @community_router.get('/freeboard/{article_id}/comment')
 async def show_comments(article_id, db=Depends(get_db)):
+    """
+    자유게시판 댓글 조회 API
+    """
     db_comments = crud.get_comments_by_article_id(db, article_id=article_id)
     return db_comments

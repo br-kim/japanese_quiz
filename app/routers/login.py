@@ -22,6 +22,9 @@ templates = Jinja2Templates(directory='templates')
 
 @login_router.get("/login")
 async def login(request: Request):
+    """
+    로그인 URL 리턴 API
+    """
     base_url = 'https://accounts.google.com/o/oauth2/v2/auth?'
     url_dict = {
         'response_type': 'code',
@@ -36,6 +39,9 @@ async def login(request: Request):
 
 @login_router.get("/oauth")
 async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
+    """
+    구글 OAuth 인증 API
+    """
     params = {
         "code": code,
         "client_id": osenv.GOOGLE_CLIENT_ID,
@@ -69,6 +75,9 @@ async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
 
 @login_router.get("/logout")
 async def logout(request: Request):
+    """
+    로그아웃 API
+    """
     token = None
     token_revoke = f"https://oauth2.googleapis.com/revoke?token={token}"
     header = {

@@ -18,17 +18,26 @@ quiz_router = APIRouter()
 
 @quiz_router.get("/quiz")
 async def quiz(request: Request):
+    """
+    랜덤 퀴즈 페이지
+    """
     return templates.TemplateResponse("quiz.html", {"request": request})
 
 
 @quiz_router.get("/newquiz")
 async def test_mode(request: Request):
+    """
+    테스트 모드 페이지
+    """
     return templates.TemplateResponse("test_mode.html", {"request": request})
 
 
 @quiz_router.get("/quiz-data/random")
 async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Optional[str] = None,
                            db: Session = Depends(get_db), token=Depends(check_user_optional_token)):
+    """
+    랜덤 퀴즈 데이터 API
+    """
     result = utils.gen_img_path_list(kind)
     if not token:
         img_path = random.choice(result)
@@ -62,6 +71,9 @@ async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Opt
 
 @quiz_router.get("/quiz-data/test-mode")
 async def quiz_test_mode_data(kind: str = "all", token=Depends(check_user)):
+    """
+    테스트 모드 데이터 API
+    """
     result = utils.gen_img_path_list(kind)
     random.shuffle(result)
     return {"order": result}

@@ -24,6 +24,9 @@ async def scoreboard(request: Request):
 
 @scoreboard_router.get("/scoreboard/data")
 async def get_scoreboard_data(db: Session = Depends(get_db), token=Depends(check_user)):
+    """
+    Scoreboard 데이터 API
+    """
     user = crud.get_user_by_email(db=db, email=token.get("user_email"))
     hira_score = crud.get_user_hiragana_score(db=db, user_id=user.id)
     kata_score = crud.get_user_katakana_score(db=db, user_id=user.id)
@@ -32,6 +35,9 @@ async def get_scoreboard_data(db: Session = Depends(get_db), token=Depends(check
 
 @scoreboard_router.patch('/scoreboard/data')
 async def score_update(response: AnswerRes, db: Session = Depends(get_db), token=Depends(check_user)):
+    """
+    Scoreboard 데이터 업데이트 API
+    """
     char_data = response.character.split('/')[-2:]
     char_type = char_data[0]
     char_name = char_data[1].split('.')[0]
