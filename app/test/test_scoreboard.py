@@ -1,4 +1,7 @@
 def test_get_scoreboard_data(client, create_score):
+    """
+    스코어보드 데이터 요청 테스트
+    """
     token = create_score
     header = {'Authorization': f'Bearer {token}'}
     response = client.get('/scoreboard/data', headers=header)
@@ -9,6 +12,9 @@ def test_get_scoreboard_data(client, create_score):
 
 
 def test_update_scoreboard_data(client, create_score):
+    """
+    스코어보드 데이터 업데이트 테스트
+    """
     token = create_score
     header = {'Authorization': f'Bearer {token}'}
     body = dict(character="katakana/ka.png", quiz_type="katakana")
