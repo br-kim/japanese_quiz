@@ -5,10 +5,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 
 import utils
 import crud
+import schemas
 from dependencies import check_user, get_db, check_user_optional_token
 
 templates = Jinja2Templates(directory='templates')
@@ -41,7 +41,7 @@ async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Opt
     result = utils.gen_img_path_list(kind)
     if not token:
         img_path = random.choice(result)
-        return {"path": img_path}
+        return schemas.RandomQuizResponse(path=img_path)
 
     if is_weighted:
         cur_user_email = token.get("user_email")
@@ -66,7 +66,7 @@ async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Opt
         img_path = random.choices(result, weight).pop()
     else:
         img_path = random.choice(result)
-    return {"path": img_path}
+    return schemas.RandomQuizResponse(path=img_path)
 
 
 @quiz_router.get("/quiz-data/test-mode")
