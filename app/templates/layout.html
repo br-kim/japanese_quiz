@@ -12,7 +12,7 @@
 <body>
     <header>
         <div id="nav-content">
-            {% include 'nav.html' %}
+
         </div>
     </header>
     <div id="content"><br>
@@ -25,8 +25,13 @@
     </footer>
     {% block scripts %}
 <script src="../static/js/quiz.js"></script>
-<script src="../static/js/btn-event.js"></script>
-<script src="../static/js/community.js"></script>
+<script type="module" src="../static/js/btn-event.js"></script>
+<script type="module" src="../static/js/community.js"></script>
+<script type="module">
+    import {usingCode, generateNav} from "../static/js/home.js";
+    window.addEventListener("load", generateNav);
+    document.addEventListener("DOMContentLoaded", usingCode);
+</script>
     {% endblock %}
 </body>
 </html>

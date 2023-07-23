@@ -7,13 +7,15 @@
             <br><br><br>
             <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
             <br>
-            <input type="button" value="저장" onclick="articleFunction.editArticle()">
+            <input type="button" value="저장" id="editArticleSaveBtn">
         </label>
     </div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script>
+    <script type="module">
+    import {articleFunction} from "../static/js/community.js";
     articleFunction.loadBeforeArticle()
+    document.getElementById("editArticleSaveBtn").addEventListener("click", articleFunction.editArticle);
     </script>
 {% endblock %}

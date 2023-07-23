@@ -1,32 +1,45 @@
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 import osenv
-from routers import quiz, login, community, chatting
+from routers import quiz, login, community, chatting, user, scoreboard, index
 import models
-from database import engine, redis_connection
+from database import engine
+from connectionmanager import broadcast
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory='static'), name="static")
-templates = Jinja2Templates(directory='templates')
+
+app.include_router(index.index_router)
 app.include_router(quiz.quiz_router)
 app.include_router(login.login_router)
 app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
+app.include_router(user.user_router)
+app.include_router(scoreboard.scoreboard_router)
 
 
-@app.get("/")
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+@app.middleware("http")
+async def add_user_token_request(request: Request, call_next):
+    # 유저 토큰 공간 생성
+    try:
+        getattr(request.state, "user_token")
+    except Exception:
+        request.state.user_token = dict()
+    response = await call_next(request)
+    return response
 
 
 @app.on_event("startup")
 async def startup_event():
-    await redis_connection.delete("users")
+    await broadcast.connect()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await broadcast.disconnect()
 
 
 if __name__ == "__main__":

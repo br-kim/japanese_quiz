@@ -2,7 +2,7 @@ import os
 import json
 
 from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime, JSON
-
+from sqlalchemy.ext.mutable import MutableDict
 
 
 
@@ -31,7 +31,7 @@ class HiraganaScore(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
-    score = Column(JSON, server_default=json.dumps(hiragana_data))
+    score = Column(MutableDict.as_mutable(JSON), default=hiragana_data)
 
 
 class KatakanaScore(Base):
@@ -39,7 +39,7 @@ class KatakanaScore(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
-    score = Column(JSON, server_default=json.dumps(katakana_data))
+    score = Column(MutableDict.as_mutable(JSON), default=katakana_data)
 
 
 class FreeBoard(TimestampMixin, Base):

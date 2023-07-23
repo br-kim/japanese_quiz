@@ -1,10 +1,9 @@
 {% extends "layout.html" %}
-{% block title %} 자유 게시판 {% endblock %}
+{% block title %} 채팅 {% endblock %}
 {% block content %}
-<h1>WebSocket Chat</h1>
+<h1>채팅</h1>
 <h2>Your ID: <span id="ws-id"></span></h2>
 <div id="chatting-div">
-
 <div id="messages-div">
     <div>채팅방</div>
     <ul id='messages'></ul>
@@ -15,14 +14,14 @@
 <form id="chatting-input-form">
     send to : <input type="text" id="sendTo" autocomplete="off"/>
     message : <input type="text" id="messageText" autocomplete="off"/>
-    <button>Send</button>
+    <button id="message-send">Send</button>
 </form>
 
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script>
-    document.getElementById("chatting-input-form").addEventListener('submit', (e)=>{sendMessage(e)});
-    </script>
     <script src="../static/js/ws-chatting.js"></script>
+    <script>
+    document.getElementById("message-send").addEventListener('click', (e)=>{sendMessage(e)});
+    </script>
 {% endblock %}

@@ -23,16 +23,16 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def get_user_hiragana_score(db: Session, user_id: int):
-    return db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
+    return db.query(models.HiraganaScore).filter(models.HiraganaScore.user_id == user_id).first()
 
 
 def get_user_katakana_score(db: Session, user_id: int):
-    return db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
+    return db.query(models.KatakanaScore).filter(models.KatakanaScore.user_id == user_id).first()
 
 
 def create_user_scoreboard(db: Session, user_id: int):
-    db_hiragana_scoreboard = models.HiraganaScore(id=user_id)
-    db_katakana_scoreboard = models.KatakanaScore(id=user_id)
+    db_hiragana_scoreboard = models.HiraganaScore(user_id=user_id)
+    db_katakana_scoreboard = models.KatakanaScore(user_id=user_id)
     db.add(db_hiragana_scoreboard)
     db.add(db_katakana_scoreboard)
     db.commit()
@@ -43,24 +43,20 @@ def create_user_scoreboard(db: Session, user_id: int):
 
 def update_user_scoreboard(db: Session, user_id: int, char_type: str, char_name: str):
     if char_type == 'hiragana':
-        db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.id == user_id).first()
+        db_scoreboard = db.query(models.HiraganaScore).filter(models.HiraganaScore.user_id == user_id).first()
     elif char_type == 'katakana':
-        db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.id == user_id).first()
+        db_scoreboard = db.query(models.KatakanaScore).filter(models.KatakanaScore.user_id == user_id).first()
     else:
         raise ValueError
-    score = json.loads(db_scoreboard.score)
-    score[char_name] += 1
-    db_scoreboard.score = json.dumps(score)
+    db_scoreboard.score[char_name] = db_scoreboard.score[char_name] + 1
     db.commit()
-    db.refresh(db_scoreboard)
-    return score[char_name]
+    return True
 
 
 def create_article(db: Session, article: schemas.ArticleCreate):
     db_article = models.FreeBoard(writer=article.writer, contents=article.contents, title=article.title)
     db.add(db_article)
     db.commit()
-    db.refresh(db_article)
     return db_article
 
 
@@ -68,8 +64,8 @@ def get_article(db: Session, article_num: int):
     return db.query(models.FreeBoard).filter(models.FreeBoard.id == article_num).first()
 
 
-def get_articles_limit(db: Session, offset_value: int):
-    return db.query(models.FreeBoard).order_by(models.FreeBoard.id.desc()).offset(offset_value).limit(3).all()
+def get_articles_limit(db: Session, offset_value: int, limit: int = 3):
+    return db.query(models.FreeBoard).order_by(models.FreeBoard.id.desc()).offset(offset_value).limit(limit).all()
 
 
 def get_all_article_size(db: Session):

@@ -1,32 +1,16 @@
-let btnFunction = {
-    randomImageUrl : '/quiz/path',
-    limitQuizImagesUrl : '/newquiz/path-list',
-    quizPathUrl : '/quizdata',
-    limQuiz: '/path-list',
-    infQuiz: '/path',
-    functionContain : null,
-    tokenHeader: {'Content-Type': 'application/json',
-        'Authorization' : localStorage.getItem("jpn_quiz_access_token")},
+import {requestToServer, token} from "./index.js";
 
-    RequestToServer : async function(url, method){
-        res = await fetch(url,{
-            headers: btnFunction.tokenHeader,
-            method: method
-        });
-        return await res;
-        // document.body.innerHTML = await res.text();
-        // location.reload();
-        // domParser = new DOMParser();
-        // domParser.parseFromString(await res.text(), "text/html");
-    },
-
-    scoreAdd : function(elemId){
+export let btnFunction = {
+    quizPathUrl: '/quiz-data',
+    infQuiz: '/random',
+    functionContain: null,
+    scoreAdd: function (elemId) {
         let score = document.getElementById(elemId).innerText;
         score = Number(score) + 1;
         document.getElementById(elemId).innerText = score;
     },
 
-    buildIncorrectSheetTable : function () {
+    buildIncorrectSheetTable: function () {
         let table = document.getElementById('incorrect-sheet-table');
         if (table !== null) {
             let cellList = [];
@@ -49,87 +33,93 @@ let btnFunction = {
                 document.getElementById('contain-answer').title;
         }
     },
-
-    isCorrect : async function () {
+    isCorrectInfMode: async function () {
+        // 무한 모드에서 정답을 확인하는 함수
         let answer = document.getElementById('answer').value;
         let quiz = document.getElementById('contain-answer').title;
         if (answer === quiz) {
             alert("정답입니다!");
-            btnFunction.scoreAdd('correct');
+            btnFunction.scoreAdd("correct");
+
             let req_data = {
-                csrf_token: csrf_token,
                 character: document.getElementById('quiz').src,
                 quiz_type: location.pathname
             };
-            await fetch('/scoreupdate',{
-                method: "PATCH",
-                headers: btnFunction.tokenHeader,
-                body: JSON.stringify(req_data)}).then(async function(response){
-                    if(response.status === 403){
-                        alert('csrf 오류입니다.');
-                    }else{
-                        if(location.pathname === '/quiz') {
-                            await btnFunction.getRandomImageUrl();
-                        }else{
-                            if(!btnFunction.functionContain) {
-                                btnFunction.functionContain = await btnFunction.getNextImage();
-                            }else{
-                                btnFunction.functionContain();
-                            }}}});
-        }else{
-            alert("오답입니다!");
+            if (token) {
+                let res = await requestToServer("/scoreboard/data", "PATCH", true, JSON.stringify(req_data));
+            }
+            await btnFunction.getRandomImageUrl();
+        } else {
+            alert("오답입니다! 정답은 " + quiz + "입니다.");
             btnFunction.scoreAdd('incorrect');
-             if(location.pathname === '/quiz') {
-                 await btnFunction.getRandomImageUrl();
-             }else{
-                 btnFunction.buildIncorrectSheetTable();
-                 if(!btnFunction.functionContain){
-                     btnFunction.functionContain = await btnFunction.getNextImage();
-                 }else{
-                     btnFunction.functionContain();
-                 }
-             }
+            await btnFunction.getRandomImageUrl();
         }
-        },
+    },
 
-    showAnswer : function () {
+    isCorrectTestMode: async function () {
+        // 테스트 모드에서 정답을 확인하는 함수
+        let answer = document.getElementById('answer').value;
+        let quiz = document.getElementById('contain-answer').title;
+        if (answer === quiz) {
+            alert("정답입니다!");
+            let req_data = {
+                character: document.getElementById('quiz').src,
+                quiz_type: location.pathname
+            };
+            let res = await requestToServer(
+                "/scoreboard/data", "PATCH", true, JSON.stringify(req_data));
+            btnFunction.scoreAdd("correct");
+            if (!btnFunction.functionContain) {
+                btnFunction.functionContain = await btnFunction.getNextImage();
+            } else {
+                btnFunction.functionContain();
+            }
+        } else {
+            alert("오답입니다! 정답은 " + quiz + "입니다.");
+            btnFunction.scoreAdd('incorrect');
+            btnFunction.buildIncorrectSheetTable();
+            if (!btnFunction.functionContain) {
+                btnFunction.functionContain = await btnFunction.getNextImage();
+            } else {
+                btnFunction.functionContain();
+            }
+        }
+    },
+
+    showAnswer: function () {
         document.getElementById('show-answer').innerText = "정답은 " +
             document.getElementById('contain-answer').title + "입니다.";
-        },
+    },
 
-    answerClear : function () {
+    answerClear: function () {
         document.getElementById('answer').value = "";
         document.getElementById('show-answer').innerText = "";
-        },
+    },
 
-    getRandomImageUrl : async function () {
+    getRandomImageUrl: async function () {
         let hira = document.getElementById('inf-hiragana');
         let kata = document.getElementById('inf-katakana');
         let weighted = document.getElementById('is-weighted');
         let url = new URL(btnFunction.quizPathUrl + btnFunction.infQuiz, window.location.origin);
-        if (hira.checked && kata.checked){
-            url.searchParams.append('kind','all');
-        }else if(hira.checked){
-            url.searchParams.append('kind','hiragana');
-        }else if(kata.checked){
-            url.searchParams.append('kind','katakana');
+        if (hira.checked && kata.checked) {
+            url.searchParams.append('kind', 'all');
+        } else if (hira.checked) {
+            url.searchParams.append('kind', 'hiragana');
+        } else if (kata.checked) {
+            url.searchParams.append('kind', 'katakana');
         }
-        if (weighted.checked){
+        if (weighted.checked) {
             url.searchParams.append('is_weighted', 'true');
         }
-        let new_url = await fetch(url.toString(),{
-            method: 'GET',
-        });
-        let data = new_url.text();
-        let json = JSON.parse(await data);
-        let file_url = json.path;
-        csrf_token = json.csrf_token;
+        let req_res = await requestToServer(url.toString(), "GET", false);
+        let res_json = await req_res.json();
+        let file_url = res_json.path;
         document.getElementById('quiz').src = file_url;
         document.getElementById('contain-answer').title = urlToFileName(file_url);
         btnFunction.answerClear();
     },
 
-    toggleFunc : function () {
+    toggleFunc: function () {
         let target = document.getElementById('incorrect-sheet-table');
         if (target.style.visibility === "hidden") {
             target.style.visibility = "visible";
@@ -140,7 +130,7 @@ let btnFunction = {
         }
     },
 
-    getTableData : function () {
+    getTableData: function () {
         let table = document.getElementById('incorrect-sheet-table');
         let arr = [];
         let get_url = (elem) => {
@@ -154,46 +144,46 @@ let btnFunction = {
         return arr;
     },
 
-    requestQuizData : async function () {
-        let url = new URL(btnFunction.quizPathUrl + btnFunction.limQuiz,window.location.origin);
+    requestQuizData: async function () {
+        let url = new URL("/quiz-data/test-mode", window.location.origin);
         let params = new URLSearchParams(location.search);
         let ganaType = params.get('kind');
-        if (ganaType === null){
+        if (ganaType === null) {
             ganaType = 'all';
         }
-        url.searchParams.append('kind',ganaType);
-        let r = await fetch(url.toString());
+        url.searchParams.append('kind', ganaType);
+        let r = await requestToServer(url.toString(), "GET", true);
         return await r.json();
     },
 
-    initRefreshBtn : function (){
-        if (document.getElementById('refresherBtn') === null){
+    initRefreshBtn: function () {
+        if (document.getElementById('refresherBtn') === null) {
             let refreshBtn = document.createElement('button');
             refreshBtn.innerText = "새로 고침";
             refreshBtn.id = "refresherBtn";
             document.getElementById('refresher-container').appendChild(refreshBtn);
-            document.getElementById("refresherBtn").addEventListener('click',function (){
+            document.getElementById("refresherBtn").addEventListener('click', function () {
                 location.reload();
-            },false);
+            }, false);
         }
     },
 
-    changeTitleSrc : function (arr, arrNum){
+    changeTitleSrc: function (arr, arrNum) {
         document.getElementById("quiz").src = arr[arrNum];
         document.getElementById('contain-answer').title = urlToFileName(arr[arrNum]);
     },
 
-    getNextImage : async function () {
+    getNextImage: async function () {
+        // 문자 목록 데이터를 가져온 후 순서대로 보여주는 함수
         let arrayNum = 0;
         let res = await this.requestQuizData();
         let chars = res.order;
-        csrf_token = res.csrf_token;
-        btnFunction.changeTitleSrc(chars,arrayNum);
+        btnFunction.changeTitleSrc(chars, arrayNum);
         btnFunction.answerClear();
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
-                btnFunction.changeTitleSrc(chars,arrayNum);
+                btnFunction.changeTitleSrc(chars, arrayNum);
             } else {
                 btnFunction.initRefreshBtn();
             }
@@ -201,58 +191,74 @@ let btnFunction = {
         };
     },
 
-    getNextImageIncorrect : function () {
+    getNextImageIncorrect: function () {
+        // 오답 퀴즈 데이터 갖고 온 후 순서대로 보여주는 함수
         let arrayNum = 0;
         let chars = btnFunction.getTableData();
-        btnFunction.changeTitleSrc(chars,arrayNum);
+        btnFunction.changeTitleSrc(chars, arrayNum);
         return function () {
             arrayNum += 1;
             if (arrayNum < chars.length) {
-                btnFunction.changeTitleSrc(chars,arrayNum);
+                btnFunction.changeTitleSrc(chars, arrayNum);
             } else {
                 btnFunction.initRefreshBtn();
             }
             btnFunction.answerClear();
         };
-    },
+    }
 };
 
 const submitBtn = document.getElementById('submitBtn');
-if (submitBtn !== null){
-    submitBtn.addEventListener('click',btnFunction.isCorrect,false);
+if (submitBtn !== null) {
+    let url = window.location.pathname;
+    let eventListener = null;
+    if (url === "/quiz") {
+        eventListener = btnFunction.isCorrectInfMode;
+    } else {
+        eventListener = btnFunction.isCorrectTestMode;
+    }
+    submitBtn.addEventListener('click', eventListener, false);
 }
 
 const showAnswerBtn = document.getElementById('showAnswerBtn');
-if (showAnswerBtn !== null){
-    showAnswerBtn.addEventListener('click',btnFunction.showAnswer,false);
+if (showAnswerBtn !== null) {
+    showAnswerBtn.addEventListener('click', btnFunction.showAnswer, false);
 }
 
 const getRandomImageBtn = document.getElementById('getRandomImageBtn');
 if (getRandomImageBtn !== null) {
-    getRandomImageBtn.addEventListener('click', btnFunction.getRandomImageUrl,false);
+    getRandomImageBtn.addEventListener('click', btnFunction.getRandomImageUrl, false);
 }
 
 const toggleBtn = document.getElementById('toggleBtn');
-if (toggleBtn !== null){
-    toggleBtn.addEventListener('click',btnFunction.toggleFunc,false);
+if (toggleBtn !== null) {
+    toggleBtn.addEventListener('click', btnFunction.toggleFunc, false);
 }
 
-const getNextImageBtn = document.getElementById('getNextImageBtn');
+let getNextImageBtn = document.getElementById('getNextImageBtn');
 if (getNextImageBtn !== null) {
-    (async() => {
-        await btnFunction.getNextImage().then(func =>{
-            getNextImageBtn.addEventListener('click', async () => {func();}, false);
+    (async () => {
+        await btnFunction.getNextImage().then(async func => {
+            btnFunction.functionContain = await btnFunction.getNextImage();
+            getNextImageBtn.addEventListener('click', async () => {
+                func();
+            }, false);
         });
     })();
 }
 
 const incorrectQuizBtn = document.getElementById('incorrectQuizBtn');
-if (incorrectQuizBtn !== null){
-    incorrectQuizBtn.addEventListener('click', function () {
+if (incorrectQuizBtn !== null) {
+    incorrectQuizBtn.addEventListener('click', async () => {
         let func = btnFunction.getNextImageIncorrect();
-        const incorrectQuizNextBtn = document.getElementById('incorrectQuizNextBtn');
-        if (incorrectQuizNextBtn !== null){
-            incorrectQuizNextBtn.addEventListener('click', function () {
-                func();},false);}
-        },{once:true});
+        let newNextImageBtn = getNextImageBtn.cloneNode(true);
+        getNextImageBtn.parentNode.replaceChild(newNextImageBtn, getNextImageBtn);
+        getNextImageBtn = document.getElementById('getNextImageBtn');
+        btnFunction.functionContain = await btnFunction.getNextImageIncorrect();
+        let incorrectSheetTable = document.getElementById('incorrect-sheet-table');
+        incorrectSheetTable.innerHTML = '<tr></tr> <tr></tr>';
+        getNextImageBtn.addEventListener('click', () => {
+            func();
+        }, false);
+    }, {once: true});
 }
