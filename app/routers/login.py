@@ -69,7 +69,6 @@ async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
 
     payload = dict(user_email=user_email, user_name=user_name, user_id=db_user.id)
     token = create_token(payload=payload)
-    request.state.user_token = payload
     return token
 
 
