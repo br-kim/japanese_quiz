@@ -11,8 +11,8 @@ import models
 from models import Base
 from utils import create_token
 from .database import Session
-from crud import create_user_scoreboard
-
+from crud import create_user_scoreboard, create_article, create_comment
+from schemas import ArticleCreate, CommentCreate, Article, Comment
 
 def init_database():
     if not database_exists(str(osenv.TEST_DATABASE_URL)):
@@ -65,5 +65,18 @@ def create_user(client, session):
 def create_score(session, create_user):
     user_id = session.query(models.User).first().id
     create_user_scoreboard(session, user_id)
-    session.commit()
     return create_user
+
+@pytest.fixture(scope="function")
+def create_article_fixture(session, create_user):
+    user = session.query(models.User).first()
+    article = create_article(session, ArticleCreate(writer=user.email,title="test",contents="test"))
+    return create_user, Article.from_orm(article)
+
+@pytest.fixture(scope="function")
+def create_comment_fixture(session, create_article_fixture):
+    token, _ = create_article_fixture
+    user = session.query(models.User).first()
+    article = session.query(models.FreeBoard).first()
+    comment = create_comment(session, CommentCreate(writer=user.email,contents="test",article_id=article.id))
+    return token, Comment.from_orm(comment)
