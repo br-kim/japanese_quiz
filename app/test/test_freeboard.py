@@ -107,8 +107,8 @@ def test_get_comment(client, session, create_comment_fixture):
     댓글 요청 테스트
     """
     token, exist_comment = create_comment_fixture
-    exist_comment_id = exist_comment.id
+    exist_comment_article_id = exist_comment.article_id
     header = {"Authorization": "Bearer " + token}
-    res = client.get(f"/freeboard/comment/{exist_comment_id}", headers=header)
+    res = client.get(f"/freeboard/{exist_comment_article_id}/comment", headers=header)
     assert res.status_code == 200
-    assert res.json().get("contents") == "test"
+    assert res.json()[0].get("contents") == "test"
