@@ -1,6 +1,6 @@
 import enum
 import html
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Request, Depends, HTTPException, status, Response
 from fastapi.templating import Jinja2Templates
@@ -29,12 +29,19 @@ class Comment(BaseModel):
 class CommentEdit(BaseModel):
     contents: str
 
+
 class ContentType(enum.Enum):
     ARTICLE = "article"
     COMMENT = "comment"
 
+
+class ArticleListResponse(BaseModel):
+    articles_length: int
+    articles: List[schemas.Article]
+
+
 @community_router.get('/fb')
-async def fb(request: Request):
+async def get_freeboard_page(request: Request):
     """
     자유게시판 메인 페이지
     """
@@ -57,8 +64,8 @@ async def show_edit_article_template(request: Request):
     return templates.TemplateResponse('edit_article.html', {'request': request})
 
 
-@community_router.get('/freeboard')
-async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
+@community_router.get('/freeboard', response_model=ArticleListResponse)
+async def get_article_list(page: Optional[int] = 1, db=Depends(get_db)):
     """
     자유게시판 글 목록 조회 API
     """
@@ -67,11 +74,12 @@ async def freeboard(page: Optional[int] = 1, db=Depends(get_db)):
     total_size = crud.get_all_article_size(db=db)
     offset = 3 * (page - 1)
     result = (total_size // 3) + 1
-    return {'articles_length': result, 'articles': crud.get_articles_limit(db=db, offset_value=offset)}
+    articles = crud.get_articles_limit(db=db, offset_value=offset)
+    return ArticleListResponse(articles_length=result, articles=articles)
 
 
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
-async def write_article(request: Request, article: Article, db=Depends(get_db), token = Depends(check_user)):
+async def write_article(request: Request, article: Article, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 글 작성 API
     """
@@ -85,7 +93,7 @@ async def write_article(request: Request, article: Article, db=Depends(get_db), 
 
 
 @community_router.post('/freeboard/write/comment', status_code=status.HTTP_201_CREATED)
-async def write_comment(request: Request, comment: Comment, db=Depends(get_db), token= Depends(check_user)):
+async def write_comment(request: Request, comment: Comment, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 댓글 작성 API
     """
@@ -100,7 +108,7 @@ async def write_comment(request: Request, comment: Comment, db=Depends(get_db), 
 
 @community_router.patch('/freeboard/article/{article_id}')
 async def edit_article(request: Request,
-                       article_id: int, article: Article, db=Depends(get_db), token= Depends(check_user)):
+                       article_id: int, article: Article, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 글 수정 API
     """
@@ -113,7 +121,8 @@ async def edit_article(request: Request,
 
 
 @community_router.patch('/freeboard/comment/{comment_id}')
-async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db), token= Depends(check_user)):
+async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db),
+                       token=Depends(check_user)):
     """
     자유게시판 댓글 수정 API
     """
@@ -137,6 +146,7 @@ async def delete_article(request: Request, article_id: int, db=Depends(get_db), 
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
+
 @community_router.delete('/freeboard/comment/{comment_id}')
 async def delete_comment(request: Request, comment_id: int, db=Depends(get_db), token=Depends(check_user)):
     """
@@ -158,19 +168,19 @@ async def write_page(request: Request):
     return templates.TemplateResponse('write_article.html', {'request': request})
 
 
-@community_router.get('/freeboard/{article_id}')
-async def show_article(article_id: int, db=Depends(get_db)):
+@community_router.get('/freeboard/{article_id}', response_model=schemas.Article)
+async def get_article(article_id: int, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 글 조회 API
     """
     db_article = crud.get_article(db=db, article_num=article_id)
-    return db_article
+    return schemas.Article.from_orm(db_article)
 
 
-@community_router.get('/freeboard/{article_id}/comment')
-async def show_comments(article_id, db=Depends(get_db)):
+@community_router.get('/freeboard/{article_id}/comment', response_model=List[schemas.Comment])
+async def get_comments(article_id, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 댓글 조회 API
     """
     db_comments = crud.get_comments_by_article_id(db, article_id=article_id)
-    return db_comments
+    return [schemas.Comment.from_orm(comment) for comment in db_comments]
