@@ -1,10 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
-
-
-class TimestampMixin(object):
-    created_at: str
 
 
 class UserBase(BaseModel):
@@ -15,8 +12,9 @@ class UserCreate(UserBase):
     pass
 
 
-class User(TimestampMixin, UserBase):
+class User(UserBase):
     id: int
+    created_at: datetime
 
     class Config:
         orm_mode = True
@@ -62,11 +60,12 @@ class ArticleCreate(ArticleBase):
     pass
 
 
-class Article(TimestampMixin, ArticleBase):
+class Article(ArticleBase):
+    created_at: datetime
     id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class CommentBase(BaseModel):
@@ -80,11 +79,12 @@ class CommentCreate(CommentBase):
     pass
 
 
-class Comment(TimestampMixin, CommentBase):
+class Comment(CommentBase):
+    created_at: datetime
     id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class ScoreData(BaseModel):
@@ -92,7 +92,7 @@ class ScoreData(BaseModel):
     katakana: dict
 
     class Config:
-        orm_mode: True
+        orm_mode = True
 
 
 class AnswerRes(BaseModel):
