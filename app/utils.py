@@ -33,7 +33,6 @@ def create_token(payload:dict):
     exp_timestamp = int((datetime.now()+timedelta(hours=6)).timestamp())
     default_payload = dict(exp=exp_timestamp)
     default_payload.update(payload)
-    print(default_payload)
     token = jwt.encode(payload=default_payload, key=JWT_KEY, algorithm="HS256")
     return token
 
@@ -45,7 +44,6 @@ def get_token_payload(token):
         payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
     except ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Token Expire")
-    print(payload)
     return payload
 
 
