@@ -1,11 +1,10 @@
 import asyncio
 import json
-from typing import List
 
-from pydantic import BaseModel
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request, Query
 from fastapi.templating import Jinja2Templates
 
+import schemas
 from dependencies import check_user_by_query
 from connectionmanager import broadcast, chatting_room
 
@@ -14,19 +13,10 @@ templates = Jinja2Templates(directory='templates')
 
 CHANNEL = "CHAT"
 
-
-class MessageEvent(BaseModel):
-    sender: str = None
-    message: str | List[str]
-    message_type: str
-    receiver: str = None
-
-
-
 async def receive_message(websocket: WebSocket, username=None):
     async with broadcast.subscribe(CHANNEL) as subscriber:
         async for event in subscriber:
-            message_event = MessageEvent.parse_raw(event.message)
+            message_event = schemas.MessageEvent.parse_raw(event.message)
             if message_event.message_type == "whisper" and str(message_event.receiver) != str(username):
                 continue
             await websocket.send_json(message_event.dict())
@@ -38,13 +28,13 @@ async def send_message(websocket: WebSocket):
     await websocket.send_json(json.loads(data))
 
 async def create_alert(websocket: WebSocket, message: str):
-    websocket_message = MessageEvent(message=message, message_type="alert")
+    websocket_message = schemas.MessageEvent(message=message, message_type="alert")
     await broadcast.publish(channel=CHANNEL, message=websocket_message.json())
     await websocket.send_json(websocket_message.dict())
 
 async def get_chatting_room_users(websocket: WebSocket):
     user_list = await chatting_room.get_chatting_room_users()
-    message = MessageEvent(message_type="list", message=[i.decode() for i in user_list])
+    message = schemas.MessageEvent(message_type="list", message=[i.decode() for i in user_list])
     await broadcast.publish(channel=CHANNEL, message=message.json())
     await websocket.send_json(message.dict())
 
