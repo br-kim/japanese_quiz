@@ -1,7 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 import osenv
 from routers import quiz, login, community, chatting, user, scoreboard, index
