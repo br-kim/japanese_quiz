@@ -65,7 +65,8 @@ export let articleFunction = {
     },
 
     loadArticle: async () => {
-        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL());
+        let res = await requestToServer(
+            location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL(), "GET", true);
         let article = await res.json();
         /** @param article
          *  @param article.title
@@ -199,7 +200,8 @@ export let articleFunction = {
         }
     },
     loadComments: async () => {
-        let res = await fetch(location.origin + '/freeboard/' + articleFunction.getArticleIdFromURL() + '/comment');
+        let res = await requestToServer(
+            location.origin + `/freeboard/${articleFunction.getArticleIdFromURL()}/comment`, 'GET',true);
         let comments = await res.json();
         comments.forEach((comment) => {
             if (!comment.parent_id) {
