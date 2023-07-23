@@ -38,7 +38,6 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       REDIS_TLS_URL: ${{ secrets.REDIS_TLS_URL }}
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
       JPN_QUIZ_ENVIRON: ${{ secrets.JPN_QUIZ_ENVIRON }}
 
     steps:
