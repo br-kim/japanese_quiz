@@ -33,11 +33,9 @@ jobs:
       POSTGRES_HOST: localhost
       # The default PostgreSQL port
       POSTGRES_PORT: 5432
-
       GOOGLE_CLIENT_ID: ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.JPN_QUIZ_GOOGLE_CLIENT_SECRET }}
       SESSION_KEY: ${{ secrets.JPN_QUIZ_SESSION_KEY }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       REDIS_TLS_URL: ${{ secrets.REDIS_TLS_URL }}
       JPN_QUIZ_ENVIRON: ${{ secrets.JPN_QUIZ_ENVIRON }}
