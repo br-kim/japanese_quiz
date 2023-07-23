@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory='templates')
 
 
 @scoreboard_router.get('/scoreboard')
-async def scoreboard(request: Request):
+async def get_scoreboard_page(request: Request):
     """
     Scoreboard 페이지 리턴
     """
