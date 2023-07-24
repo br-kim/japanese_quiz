@@ -32,7 +32,9 @@ export async function generateNav() {
     function createAElement(className, href, text, id=null){
         let element = document.createElement("a");
         if (className){
-            element.classList.add(className);
+            // element.classList.add(className);
+            element.classList.add("nav-link");
+            element.classList.add("active");
         }
         if (href){
             element.href = href;
@@ -43,13 +45,16 @@ export async function generateNav() {
         if (id){
             element.id = id;
         }
-
-        return element;
+        // create li element class nav-item
+        let liElement = document.createElement("li");
+        liElement.classList.add("nav-item");
+        liElement.appendChild(element);
+        return liElement;
     }
     let navMenuRight = "nav-menu-right";
     let navMenu = "nav-menu";
 
-    let navDiv = document.getElementById("nav-content");
+    let navDiv = document.getElementById("nav-div");
 
     let mainNav = createAElement(navMenu, "/", "메인");
     let infNav = createAElement(navMenu, "/quiz", "무한모드");
@@ -61,12 +66,22 @@ export async function generateNav() {
     logoutNav.addEventListener("click", () => {
         localStorage.removeItem("jpn_quiz_access_token");
     });
+    // create ul element class navbar-nav me-auto mb-2 mb-lg-0
+    let ulElement = document.createElement("ul");
+    navDiv.appendChild(ulElement);
 
-    navDiv.appendChild(mainNav);
-    navDiv.appendChild(infNav);
-    navDiv.appendChild(testNav);
-    navDiv.appendChild(freeboardNav);
-    navDiv.appendChild(chattingNav);
+    ulElement.classList.add("navbar-nav", "me-auto", "mb-2", "mb-lg-0");
+    ulElement.appendChild(mainNav);
+    ulElement.appendChild(infNav);
+    ulElement.appendChild(testNav);
+    ulElement.appendChild(freeboardNav);
+    ulElement.appendChild(chattingNav);
+
+    // navDiv.appendChild(mainNav);
+    // navDiv.appendChild(infNav);
+    // navDiv.appendChild(testNav);
+    // navDiv.appendChild(freeboardNav);
+    // navDiv.appendChild(chattingNav);
 
     if (localStorage.getItem("jpn_quiz_access_token")) {
         let res = await requestToServer(serverBaseUrl+"/user-info", "GET");
@@ -76,7 +91,8 @@ export async function generateNav() {
                 alert("로그인이 만료되었습니다.");
                 localStorage.removeItem("jpn_quiz_access_token");
                 loginNav.addEventListener("click", loginFunction);
-                navDiv.append(loginNav);
+                ulElement.appendChild(loginNav);
+                // navDiv.append(loginNav);
                 return;
             }
             else{
@@ -87,11 +103,15 @@ export async function generateNav() {
         let userInfoRes = await res.json();
         localStorage.setItem("user_email", userInfoRes.email);
         let scoreBoardNav = createAElement(navMenuRight, "/scoreboard", `${userInfoRes.email}님, 환영합니다!`);
-        navDiv.appendChild(scoreBoardNav);
-        navDiv.appendChild(logoutNav);
+        ulElement.appendChild(scoreBoardNav);
+        ulElement.appendChild(logoutNav);
+
+        // navDiv.appendChild(scoreBoardNav);
+        // navDiv.appendChild(logoutNav);
     }
     else{
         loginNav.addEventListener("click", loginFunction);
-        navDiv.append(loginNav);
+        ulElement.appendChild(loginNav);
+        // navDiv.append(loginNav);
     }
 }

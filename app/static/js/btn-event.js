@@ -158,9 +158,11 @@ export let btnFunction = {
 
     initRefreshBtn: function () {
         if (document.getElementById('refresherBtn') === null) {
+            alert("퀴즈가 종료되었습니다.");
             let refreshBtn = document.createElement('button');
             refreshBtn.innerText = "새로 고침";
             refreshBtn.id = "refresherBtn";
+            refreshBtn.classList.add("btn", "btn-primary");
             document.getElementById('refresher-container').appendChild(refreshBtn);
             document.getElementById("refresherBtn").addEventListener('click', function () {
                 location.reload();

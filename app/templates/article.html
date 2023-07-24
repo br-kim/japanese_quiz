@@ -1,47 +1,58 @@
 {% extends "layout.html" %}
 {% block title %} {% endblock %}
 {% block content %}
-<h1><a href="/fb">자유 게시판</a></h1>
-<br>
-<div id="wrap-freeboard-content">
-<div id="contain-article">
-<div>
-    <input class="article-button" id="article-edit-button" type="button" value="수정">
-    <input class="article-button" id="article-delete-button" type="button" value="삭제">
-</div>
-    <div id="show-article">
-        <div id="article-title"></div>
-        <div id="article-created"></div><br><br>
-        <div id="article-writer"></div><br>
-        <div id="article-content"></div>
-    </div>
-</div>
-    <br><br>
+    <div class="d-flex flex-column">
+        <h1><a href="/fb">자유 게시판</a></h1>
+        <br>
+        <div id="wrap-freeboard-content">
+            <div id="contain-article">
+                <div id="show-article">
+                    <div id="article-title-container" class="d-flex justify-content-between">
+                        <div id="article-title"></div>
+                        <div>
+                            <input class="btn btn-secondary" id="article-edit-button" type="button" value="수정">
+                            <input class="btn btn-danger" id="article-delete-button" type="button" value="삭제">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                <div id="article-writer"></div>
+                <div id="article-created"></div>
+                </div>
 
-<div id="contain-comments">
-    <div id="show-comments">
+                <hr>
+                <div id="article-content"></div>
+                <hr>
+            </div>
+        </div>
+        <br><br>
+
+        <div id="contain-comments">
+            <div id="show-comments">
+            </div>
+        </div>
+        <br><br><br>
+        <div id="write-comment">
+            <br>
+            <label id="write-label">
+                <input type="text" size="100px" id="write-comment-input">
+                <input type="button" class="btn btn-primary" id="write-comment-submit" value="등록">
+                <input type="hidden" id="state-childcomment" value=true><br><br>
+            </label>
+        </div>
     </div>
-</div>
-    <br><br><br>
-<div id="write-comment">
-    <br>
-    <label id="write-label">
-        <input type="text" size="100px" id="write-comment-input">
-        <input type="button" id="write-comment-submit" value="등록">
-        <input type="hidden" id="state-childcomment" value=true><br><br>
-    </label>
-</div>
-</div>
+    </div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
     <script type="module">
         import {articleFunction} from "/static/js/community.js"
-        document.getElementById("write-comment-submit").addEventListener('click',()=>{
+
+        document.getElementById("write-comment-submit").addEventListener('click', () => {
             articleFunction.sendComment();
         });
-        document.getElementById('article-edit-button').addEventListener('click',articleFunction.loadEdit);
-        document.getElementById('article-delete-button').addEventListener('click',articleFunction.deleteArticle);
+        document.getElementById('article-edit-button').addEventListener('click', articleFunction.loadEdit);
+        document.getElementById('article-delete-button').addEventListener('click', articleFunction.deleteArticle);
         window.onload = articleFunction.loadArticle();
         document.getElementById('show-comments').onload = articleFunction.loadComments();
     </script>

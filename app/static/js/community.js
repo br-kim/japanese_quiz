@@ -75,7 +75,8 @@ export let articleFunction = {
          *  @param article.created_at
          */
         document.title = article.title;
-        document.getElementById('article-title').innerText = article.title;
+        // document.getElementById('article-title').innerText = article.title;
+        document.getElementById('article-title').innerHTML = `<h3>${article.title}</h3>`;
         document.getElementById('article-content').innerText = article.contents;
         document.getElementById('article-writer').innerText = article.writer;
         document.getElementById('article-created').innerText =
@@ -83,6 +84,7 @@ export let articleFunction = {
     },
 
     toggleComment: (target) => {
+        // 댓글 수정 시 댓글 밑에 수정 항목이 보일지 말지 결정
         if (target.style.visibility === "visible") {
             target.style.visibility = "hidden";
         } else {
@@ -97,6 +99,7 @@ export let articleFunction = {
         let editSubmitButton = document.createElement('input');
         editSubmitButton.type = 'button';
         editSubmitButton.value = '등록';
+        editSubmitButton.classList.add("btn", "btn-primary", "btn-sm");
         inputLabel.appendChild(editInput);
         inputLabel.appendChild(editSubmitButton);
         inputLabel.id = `comment-edit-label-${ele.id}`;
@@ -108,6 +111,7 @@ export let articleFunction = {
     },
 
     buildComment: (comment) => {
+
         let commentDiv = document.createElement('div');
 
         let writerDiv = document.createElement('div');
@@ -118,16 +122,24 @@ export let articleFunction = {
         let deleteButton = document.createElement('input');
         let childCommentButton = document.createElement('input');
 
+        let buttonContainerDiv = document.createElement('div');
+        let commentInfoDiv = document.createElement('div');
+        let commentHeaderDiv = document.createElement('div');
+        commentHeaderDiv.classList.add("d-flex", "justify-content-between");
+
         childCommentButton.type = 'button';
         childCommentButton.value = '대댓글';
         childCommentButton.id = `child-comment-button-${comment.id}`;
+        childCommentButton.classList.add("btn", "btn-primary", "btn-sm");
 
         editButton.innerText = '수정';
         editButton.id = `comment-edit-button-${comment.id}`;
+        editButton.classList.add("btn", "btn-secondary", "btn-sm");
 
         deleteButton.type = 'button';
         deleteButton.value = '삭제';
         deleteButton.id = `comment-delete-button-${comment.id}`;
+        deleteButton.classList.add("btn", "btn-danger", "btn-sm");
 
         commentDiv.dataset.commentId = comment.id;
         commentDiv.classList.add('contain-comment');
@@ -139,30 +151,30 @@ export let articleFunction = {
         createAtDiv.innerText += articleFunction.datePreProcess(comment.created_at);
 
         let inputLabel = articleFunction.buildCommentEdit(comment);
-        childCommentButton.classList.add('comment-edit-button');
-        editButton.classList.add('comment-edit-button');
-        deleteButton.classList.add('comment-edit-button');
+        inputLabel.style.visibility = "hidden";
 
-        commentDiv.append(writerDiv, createAtDiv);
-        commentDiv.innerHTML += '<br>';
-        commentDiv.append(editButton, deleteButton);
+        commentInfoDiv.append(writerDiv, createAtDiv);
+        commentHeaderDiv.append(commentInfoDiv, buttonContainerDiv);
+        commentDiv.append(commentHeaderDiv);
+        buttonContainerDiv.append(editButton, deleteButton);
         if (comment.id === comment.parent_id) {
-            commentDiv.append(childCommentButton);
+            buttonContainerDiv.append(childCommentButton);
         }
         commentDiv.appendChild(contentsDiv);
-        commentDiv.innerHTML += '<br>';
         commentDiv.appendChild(inputLabel);
-        commentDiv.innerHTML += '<br> <br>';
-
+        commentDiv.innerHTML += '<hr>';
+        if (comment.parent_id != comment.id){
+            commentDiv.classList.add("child-comment");
+        }
         document.getElementById('show-comments').appendChild(commentDiv);
         document.getElementById(`comment-edit-button-${comment.id}`)
             .addEventListener('click', () => {
                 articleFunction.toggleComment(document.getElementById(`comment-edit-label-${comment.id}`));
-            }, false);
+            });
         document.getElementById(`comment-edit-submit-${comment.id}`).addEventListener(
             'click', async () => {
                 await articleFunction.sendEditComment(document.getElementById(`comment-edit-input-${comment.id}`));
-            }, false);
+            });
         if (document.getElementById(`child-comment-button-${comment.id}`)) {
             document.getElementById(`child-comment-button-${comment.id}`)
                 .addEventListener("click", async () => {
@@ -171,13 +183,17 @@ export let articleFunction = {
         }
         document.getElementById(deleteButton.id).addEventListener('click', async () => {
             await articleFunction.deleteComment(comment);
-        }, false);
+        });
     },
+
     changeChildComment: (commentId) => {
+        console.log("changeChildComment");
         let state = document.getElementById("state-childcomment").value;
         let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
+        console.log(comment);
         if (state === "true") {
-            document.getElementById("state-childcomment").value = 'false';
+            console.log("true");
+            document.getElementById("state-childcomment").value = "false";
             comment.classList.replace('contain-comment', 'selected-comment');
             const oriElement = document.getElementById('write-comment-submit');
             let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
@@ -190,7 +206,7 @@ export let articleFunction = {
                     document.body.querySelector('#write-comment-submit').replaceWith(oriElement);
                 });
         } else {
-            document.getElementById("state-childcomment").value = 'true';
+            document.getElementById("state-childcomment").value = "true";
             comment.classList.replace('selected-comment', 'contain-comment');
             let cloneElement = document.getElementById('write-comment-submit').cloneNode(true);
             document.getElementById('write-comment-submit').replaceWith(cloneElement);
