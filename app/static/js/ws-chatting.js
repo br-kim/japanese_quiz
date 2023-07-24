@@ -13,9 +13,6 @@ ws.onmessage = function (event) {
     let messages = document.getElementById('messages');
     let message = document.createElement('li');
     let data = JSON.parse(event.data);
-    console.log(event);
-    console.log(data);
-    console.log(data.message);
     let content = document.createTextNode(data.message);
     let messageHeader = "";
     if (!data.message) {

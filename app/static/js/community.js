@@ -303,7 +303,6 @@ export let articleFunction = {
     buildPageIndex: (totalPage, nowPage = 1) => {
         nowPage = Number(nowPage);
         let div = Math.floor(nowPage / 5);
-        console.log(totalPage, div);
         let mod = nowPage % 5;
         if (mod === 0) {
             div -= 1;
@@ -313,17 +312,21 @@ export let articleFunction = {
         if (end > totalPage) {
             end = totalPage + 1;
         }
+        let pageList = document.getElementById('page-list');
         if (div > 0) {
-            document.getElementById('pages').innerHTML +=
-                `<a href='/fb?pagenum=${begin - 1}'>이전</a> `;
+            pageList.innerHTML +=
+        `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${begin - 1}">이전</a></li>`;
+                // `<a href='/fb?pagenum=${begin - 1}'>이전</a> `;
         }
         for (let i = begin; i < end; i++) {
-            document.getElementById('pages').innerHTML +=
-                `<a href='/fb?pagenum=${i}'>${i}</a> `;
+            pageList.innerHTML +=
+                `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${i}">${i}</a></li>`;
+                // `<a href='/fb?pagenum=${i}'>${i}</a> `;
         }
         if (end !== totalPage + 1) {
-            document.getElementById('pages').innerHTML +=
-                `<a href='/fb?pagenum=${end}'>다음</a> `;
+            pageList.innerHTML +=
+                `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${end}">다음</a></li>`;
+                // `<a href='/fb?pagenum=${end}'>다음</a> `;
         }
     }
 };

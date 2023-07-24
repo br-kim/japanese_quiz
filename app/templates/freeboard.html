@@ -12,7 +12,12 @@
         <tbody></tbody>
     </table>
 </div>
-<div id="pages"></div>
+    <div class="container d-flex justify-content-center">
+    <nav>
+        <ul class="pagination" id="page-list">
+        </ul>
+    </nav>
+    </div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
