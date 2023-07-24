@@ -32,7 +32,7 @@ async def test_mode(request: Request):
     return templates.TemplateResponse("test_mode.html", {"request": request})
 
 
-@quiz_router.get("/quiz-data/random")
+@quiz_router.get("/quiz-data/random", response_model=schemas.RandomQuizResponse)
 async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Optional[str] = None,
                            db: Session = Depends(get_db), token=Depends(check_user_optional_token)):
     """
@@ -69,13 +69,11 @@ async def random_quiz_data(request: Request, kind: str = "all", is_weighted: Opt
     return schemas.RandomQuizResponse(path=img_path)
 
 
-@quiz_router.get("/quiz-data/test-mode")
+@quiz_router.get("/quiz-data/test-mode", response_model=schemas.TestQuizResponse)
 async def quiz_test_mode_data(kind: str = "all", token=Depends(check_user)):
     """
     테스트 모드 데이터 API
     """
     result = utils.gen_img_path_list(kind)
     random.shuffle(result)
-    return {"order": result}
-
-
+    return schemas.TestQuizResponse(order=result)
