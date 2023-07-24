@@ -1,27 +1,32 @@
 {% extends "layout.html" %}
 {% block title %} 채팅 {% endblock %}
 {% block content %}
-<h1>채팅</h1>
-<h2>Your ID: <span id="ws-id"></span></h2>
-<div id="chatting-div">
-<div id="messages-div">
-    <div>채팅방</div>
-    <ul id='messages'></ul>
-</div>
-<div id="chatting-users-div"><div>참여자 목록</div></div>
-
+    <div class="d-flex flex-column">
+        <h1>채팅</h1>
+        <h2>Your ID: <span id="ws-id"></span></h2>
+        <div id="chatting-div" class="d-flex justify-content-between">
+            <div id="messages-div">
+                <div>채팅방</div>
+                <ul id='messages'></ul>
+            </div>
+            <div id="chatting-users-container">
+                채팅 참여 유저
+                <div id="chatting-users-div"></div>
+            </div>
+        </div>
+        <form id="chatting-input-form">
+            send to : <input type="text" id="sendTo" autocomplete="off"/>
+            message : <input type="text" id="messageText" autocomplete="off"/>
+            <button id="message-send">Send</button>
+        </form>
     </div>
-<form id="chatting-input-form">
-    send to : <input type="text" id="sendTo" autocomplete="off"/>
-    message : <input type="text" id="messageText" autocomplete="off"/>
-    <button id="message-send">Send</button>
-</form>
-
 {% endblock %}
 {% block scripts %}
     {{ super() }}
     <script src="../static/js/ws-chatting.js"></script>
     <script>
-    document.getElementById("message-send").addEventListener('click', (e)=>{sendMessage(e)});
+        document.getElementById("message-send").addEventListener('click', (e) => {
+            sendMessage(e)
+        });
     </script>
 {% endblock %}

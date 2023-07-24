@@ -1,6 +1,7 @@
 let token = localStorage.getItem("jpn_quiz_access_token");
 
 let userEmail = String(Date.now());
+document.getElementById("ws-id").innerText = userEmail;
 
 let websocketScheme = (document.location.protocol === 'http:') ? 'ws' : 'wss';
 let ws_url = `${websocketScheme}://${document.location.host}/ws-endpoint?token=${token}&user-id=${userEmail}`;
@@ -20,8 +21,8 @@ ws.onmessage = function (event) {
     }
     if (data.message_type === 'list'){
         let chattingUsers = document.getElementById('chatting-users-div');
-            while (chattingUsers.firstChild.nextSibling) {
-                chattingUsers.removeChild(chattingUsers.firstChild.nextSibling);
+            while (chattingUsers.firstChild) {
+                chattingUsers.removeChild(chattingUsers.firstChild);
             }
         data.message.forEach((elem)=>{
             let node = createUserName(elem);
