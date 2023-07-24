@@ -1,10 +1,8 @@
-import enum
 import html
 from typing import Optional, List
 
 from fastapi import APIRouter, Request, Depends, HTTPException, status, Response
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 
 import crud
 import schemas
@@ -13,31 +11,6 @@ from dependencies import check_user
 
 community_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
-
-
-class Article(BaseModel):
-    title: str
-    contents: str
-
-
-class Comment(BaseModel):
-    contents: str
-    article_id: int
-    parent_id: Optional[int]
-
-
-class CommentEdit(BaseModel):
-    contents: str
-
-
-class ContentType(enum.Enum):
-    ARTICLE = "article"
-    COMMENT = "comment"
-
-
-class ArticleListResponse(BaseModel):
-    articles_length: int
-    articles: List[schemas.Article]
 
 
 @community_router.get('/fb')
@@ -64,7 +37,7 @@ async def show_edit_article_template(request: Request):
     return templates.TemplateResponse('edit_article.html', {'request': request})
 
 
-@community_router.get('/freeboard', response_model=ArticleListResponse)
+@community_router.get('/freeboard', response_model=schemas.ArticleListResponse)
 async def get_article_list(page: Optional[int] = 1, db=Depends(get_db)):
     """
     자유게시판 글 목록 조회 API
@@ -75,11 +48,11 @@ async def get_article_list(page: Optional[int] = 1, db=Depends(get_db)):
     offset = 3 * (page - 1)
     result = (total_size // 3) + 1
     articles = crud.get_articles_limit(db=db, offset_value=offset)
-    return ArticleListResponse(articles_length=result, articles=articles)
+    return schemas.ArticleListResponse(articles_length=result, articles=articles)
 
 
 @community_router.post('/freeboard/write/article', status_code=status.HTTP_201_CREATED)
-async def write_article(request: Request, article: Article, db=Depends(get_db), token=Depends(check_user)):
+async def write_article(request: Request, article: schemas.ArticleRequest, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 글 작성 API
     """
@@ -93,7 +66,7 @@ async def write_article(request: Request, article: Article, db=Depends(get_db), 
 
 
 @community_router.post('/freeboard/write/comment', status_code=status.HTTP_201_CREATED)
-async def write_comment(request: Request, comment: Comment, db=Depends(get_db), token=Depends(check_user)):
+async def write_comment(request: Request, comment: schemas.CommentRequest, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 댓글 작성 API
     """
@@ -108,7 +81,7 @@ async def write_comment(request: Request, comment: Comment, db=Depends(get_db), 
 
 @community_router.patch('/freeboard/article/{article_id}')
 async def edit_article(request: Request,
-                       article_id: int, article: Article, db=Depends(get_db), token=Depends(check_user)):
+                       article_id: int, article: schemas.ArticleRequest, db=Depends(get_db), token=Depends(check_user)):
     """
     자유게시판 글 수정 API
     """
@@ -121,7 +94,7 @@ async def edit_article(request: Request,
 
 
 @community_router.patch('/freeboard/comment/{comment_id}')
-async def edit_comment(request: Request, comment_id: int, comment: CommentEdit, db=Depends(get_db),
+async def edit_comment(request: Request, comment_id: int, comment: schemas.CommentEdit, db=Depends(get_db),
                        token=Depends(check_user)):
     """
     자유게시판 댓글 수정 API
