@@ -15,11 +15,20 @@ export async function requestScoreBoard(){
 
 function generateScore(data){
     let scoreContainer = document.createElement("div");
+    scoreContainer.classList.add("row", "row-cols-2");
     for (let key in data){
         const value = data[key];
+        let scoreSetDiv = document.createElement("div");
+        scoreSetDiv.classList.add("d-flex", "justify-content-between", "row");
         let scoreDiv = document.createElement("div");
-        scoreDiv.innerHTML = `${key} : ${value}`;
-        scoreContainer.appendChild(scoreDiv);
+        scoreDiv.classList.add("col");
+        let characterDiv = document.createElement("div");
+        characterDiv.classList.add("col");
+        characterDiv.innerHTML = key;
+        scoreDiv.innerHTML = value;
+        scoreSetDiv.append(characterDiv, scoreDiv);
+        scoreSetDiv.append(document.createElement("hr"));
+        scoreContainer.append(scoreSetDiv);
     }
     return scoreContainer;
 }
