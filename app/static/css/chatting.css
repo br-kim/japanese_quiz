@@ -1,6 +1,5 @@
 #messages-div, #chatting-users-div {
-    height: 300px;
-    width: 500px;
+    height: 400px;
     overflow-y: auto;
     overflow-x: auto;
 }

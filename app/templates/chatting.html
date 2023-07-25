@@ -1,24 +1,30 @@
 {% extends "layout.html" %}
 {% block title %} 채팅 {% endblock %}
 {% block content %}
-    <div class="d-flex flex-column">
-        <h1>채팅</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <div id="chatting-div" class="d-flex justify-content-between">
-            <div id="messages-div">
+    <div class="d-flex flex-column justify-content-center container">
+        <div class="text-center">
+            <h1>채팅</h1>
+        </div>
+        <div class="text-center">
+            <h2>Your ID: <span id="ws-id"></span></h2>
+        </div>
+        <div id="chatting-div" class="d-flex justify-content-center row">
+            <div id="messages-div" class="d-flex flex-column col-5 col">
                 <div>채팅방</div>
                 <ul id='messages'></ul>
             </div>
-            <div id="chatting-users-container">
-                채팅 참여 유저
+            <div id="chatting-users-container" class="d-flex flex-column col-2">
+                <div>채팅 참여 유저</div>
                 <div id="chatting-users-div"></div>
             </div>
         </div>
-        <form id="chatting-input-form">
-            send to : <input type="text" id="sendTo" autocomplete="off"/>
-            message : <input type="text" id="messageText" autocomplete="off"/>
-            <button id="message-send">Send</button>
-        </form>
+        <div class="d-flex justify-content-center">
+            <form id="chatting-input-form">
+                send to : <input type="text" id="sendTo" autocomplete="off"/>
+                message : <input type="text" id="messageText" autocomplete="off"/>
+                <button id="message-send">Send</button>
+            </form>
+        </div>
     </div>
 {% endblock %}
 {% block scripts %}
