@@ -4,7 +4,12 @@ import {btnFunction} from "./btn-event.js";
 export let articleFunction = {
     datePreProcess: (timeStamp) => {
         let date = new Date(timeStamp);
-        return date.toLocaleString("jpn", {dateStyle: 'medium', timeStyle: 'medium', hour12: false});
+        let today = new Date();
+        if (date.toLocaleDateString() === today.toLocaleDateString()) {
+            return date.toLocaleTimeString("jpn", {hour: '2-digit', minute: '2-digit'});
+        } else {
+            return date.toLocaleDateString("jpn", {year: 'numeric', month: '2-digit', day: '2-digit'});
+        }
     },
 
     getSearchParamPagenum: () => {
@@ -163,7 +168,7 @@ export let articleFunction = {
         commentDiv.appendChild(contentsDiv);
         commentDiv.appendChild(inputLabel);
         commentDiv.innerHTML += '<hr>';
-        if (comment.parent_id != comment.id){
+        if (comment.parent_id != comment.id) {
             commentDiv.classList.add("child-comment");
         }
         document.getElementById('show-comments').appendChild(commentDiv);
@@ -217,7 +222,7 @@ export let articleFunction = {
     },
     loadComments: async () => {
         let res = await requestToServer(
-            location.origin + `/freeboard/${articleFunction.getArticleIdFromURL()}/comment`, 'GET',true);
+            location.origin + `/freeboard/${articleFunction.getArticleIdFromURL()}/comment`, 'GET', true);
         let comments = await res.json();
         comments.forEach((comment) => {
             if (!comment.parent_id) {
@@ -247,7 +252,7 @@ export let articleFunction = {
             return;
         }
         let res = await requestToServer(
-            `/freeboard/comment/${commentId}`, 'PATCH',true, JSON.stringify(data));
+            `/freeboard/comment/${commentId}`, 'PATCH', true, JSON.stringify(data));
         if (res.status === 403) {
             alert("다른 사람의 댓글은 수정할 수 없습니다.");
         }
@@ -265,7 +270,7 @@ export let articleFunction = {
             alert('내용을 입력해주세요.');
             return;
         }
-        await requestToServer('/freeboard/write/comment', 'POST', true,  JSON.stringify(data));
+        await requestToServer('/freeboard/write/comment', 'POST', true, JSON.stringify(data));
         window.location.href = location.origin + '/article?article_id=' + articleId;
     },
 
@@ -279,12 +284,12 @@ export let articleFunction = {
 
     deleteComment: async (comment) => {
         let res = await requestToServer(`/freeboard/comment/${comment.id}`,
-                'DELETE', true);
-        if (res.status === 403){
+            'DELETE', true);
+        if (res.status === 403) {
             alert("다른 사람의 댓글은 삭제할 수 없습니다.");
         }
         window.location.reload();
-        },
+    },
 
     loadArticleList: async () => {
         let pageNum = articleFunction.getSearchParamPagenum();
@@ -331,18 +336,15 @@ export let articleFunction = {
         let pageList = document.getElementById('page-list');
         if (div > 0) {
             pageList.innerHTML +=
-        `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${begin - 1}">이전</a></li>`;
-                // `<a href='/fb?pagenum=${begin - 1}'>이전</a> `;
+                `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${begin - 1}">이전</a></li>`;
         }
         for (let i = begin; i < end; i++) {
             pageList.innerHTML +=
                 `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${i}">${i}</a></li>`;
-                // `<a href='/fb?pagenum=${i}'>${i}</a> `;
         }
         if (end !== totalPage + 1) {
             pageList.innerHTML +=
                 `<li class="page-item" ><a class="page-link" href="/fb?pagenum=${end}">다음</a></li>`;
-                // `<a href='/fb?pagenum=${end}'>다음</a> `;
         }
     }
 };
