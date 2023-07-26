@@ -68,7 +68,9 @@ jobs:
         PYTHONPATH=. pytest $(pwd)/test -q
 
     - name: Generate deployment package
-      run: zip -r deploy.zip . -x '*.git*'
+      run: |
+        cd app
+        zip -r deploy.zip . -x '*.git*'
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
