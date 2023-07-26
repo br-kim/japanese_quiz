@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block title %} 점수판 {% endblock %}
 {% block content %}
-<div id="score-board-wrapper">
-    <div class="score-board" id="score-board-hiragana">
-        <div> 히라가나 </div>
+    <div id="score-board-wrapper" class="container justify-content-center d-flex">
+        <div id="score-board-hiragana" class="m-2">
+            <div>히라가나</div>
+        </div>
+        <div id="score-board-katakana" class="m-2">
+            <div>카타카나</div>
+        </div>
     </div>
-    <div class="score-board" id="score-board-katakana">
-        <div> 카타카나 </div>
-    </div>
-</div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}

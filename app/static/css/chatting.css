@@ -1,28 +1,5 @@
-#chatting-div{
-    /*border: black groove;*/
-    display: flex;
-    width: 50vw;
-    justify-content: center;
-    align-self: center;
-}
-
-#messages-div, #chatting-users-div{
-    /*display: inline-flex;*/
-    border: black groove;
-    float: left;
+#messages-div, #chatting-users-div {
+    height: 400px;
     overflow-y: auto;
-    height: 50vh;
-    max-height: 50vh;
-    /*justify-content: center;*/
-    /*vertical-align: middle;*/
-}
-
-#messages{
-    width:35vw;
-    flex: 0 0 auto;
-
-}
-
-#chatting-users-div{
-     width: 10vw;
+    overflow-x: auto;
 }

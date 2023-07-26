@@ -22,7 +22,7 @@ async def get_scoreboard_page(request: Request):
     })
 
 
-@scoreboard_router.get("/scoreboard/data")
+@scoreboard_router.get("/scoreboard/data", response_model=ScoreData)
 async def get_scoreboard_data(db: Session = Depends(get_db), token=Depends(check_user)):
     """
     Scoreboard 데이터 API

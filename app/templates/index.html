@@ -1,21 +1,23 @@
 {% extends "layout.html" %}
 {% block title %} 메인 페이지{% endblock %}
 {% block content %}
+    <div class="d-flex flex-column">
     <div id="main-title">
         <h1>일본어 퀴즈</h1>
     </div>
     <br>
-    <div id="begin-inf">
+    <div id="begin-inf" class="mt-4">
         <form action="/quiz">
-            <input type="submit" value="무한모드">
+            <input class="btn btn-primary" type="submit" value="무한모드">
         </form>
     </div>
-    <div id="begin-full">
+    <div id="begin-full" class="mt-4">
         <form action="/newquiz">
-            <input type="submit" value="테스트">
+            <input class="btn btn-primary" type="submit" value="테스트">
             <label><input type="radio" name="kind" value="hiragana" > 히라가나 </label>
             <label><input type="radio" name="kind" value="katakana" > 카타가나 </label>
             <label><input type="radio" name="kind" value="all" checked> 모든문자 </label>
         </form>
+    </div>
     </div>
 {% endblock %}

@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% block title %} 자유 게시판 {% endblock %}
 {% block content %}
-<h1>자유 게시판  <a href="/write"><button>글 쓰기</button></a></h1>
+    <div class="d-flex flex-column">
+    <div class="d-flex justify-content-between mt-4">
+<h1>자유 게시판 </h1> <a href="/write"><button class="btn btn-light">글 쓰기</button></a>
+        </div>
 <div id="contain-table">
     <table id="result">
         <thead>
@@ -12,7 +15,13 @@
         <tbody></tbody>
     </table>
 </div>
-<div id="pages"></div>
+    <div class="container d-flex justify-content-center">
+    <nav>
+        <ul class="pagination" id="page-list">
+        </ul>
+    </nav>
+    </div>
+    </div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
