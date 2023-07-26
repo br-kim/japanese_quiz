@@ -69,8 +69,7 @@ jobs:
 
     - name: Generate deployment package
       run: |
-        cd app
-        zip -r deploy.zip . -x '*.git*'
+        zip -r deploy.zip ./app -x '*.git*'
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
