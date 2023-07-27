@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: ~/japanese-quiz
+    destination: /home/ec2-user/build
 
 file_exists_behavior: OVERWRITE
 
