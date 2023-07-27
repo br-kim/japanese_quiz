@@ -1,1 +1,1 @@
-pip install -r app/requirements.txt
+pip install -r home/ec2-user/build/app/requirements.txt
