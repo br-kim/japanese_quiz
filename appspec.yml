@@ -1,6 +1,11 @@
 version: 0.0
 os: linux
 
+files:
+  - source: source
+    destination: ~
+
+file_exists_behavior: DISALLOW|OVERWRITE|RETAIN
 hooks:
   AfterInstall:
     - location: scripts/before_start_server.sh
