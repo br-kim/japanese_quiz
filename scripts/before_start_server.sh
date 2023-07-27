@@ -1,1 +1,2 @@
 pip install -r /home/ec2-user/build/app/requirements.txt
+echo "install requirements"
