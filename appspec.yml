@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: ~
+    destination: ~/japanese-quiz
 
 file_exists_behavior: OVERWRITE
 
