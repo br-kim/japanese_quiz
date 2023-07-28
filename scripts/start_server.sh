@@ -1,1 +1,14 @@
-gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker
+source /home/ec2-user/build/app/venv/bin/activate
+echo "activate venv"
+export PATH=$PATH:$HOME/build/app/venv/lib/python3.11/site-packages
+echo "export PATH"
+source /home/ec2-user/.bashrc
+echo "source bashrc"
+
+cd /home/ec2-user/build/app
+echo "cd app"
+
+echo $DATABASE_URL
+echo "check DATABASE_URL"
+
+gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker > /dev/null 2> /dev/null < /dev/null &
