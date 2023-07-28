@@ -8,6 +8,8 @@ echo "source bashrc"
 cd /home/ec2-user/build/app
 echo "cd app"
 
+cat ~/.bashrc
+
 echo $DATABASE_URL
 echo "check DATABASE_URL"
 
