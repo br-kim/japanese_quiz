@@ -11,4 +11,4 @@ echo "cd app"
 echo $DATABASE_URL
 echo "check DATABASE_URL"
 
-gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker
+gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker > /dev/null 2> /dev/null < /dev/null &
