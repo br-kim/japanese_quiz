@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -21,6 +23,16 @@ app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
 app.include_router(scoreboard.scoreboard_router)
 
+logger = logging.getLogger(__name__)
+# 로그 레벨 설정
+logger.setLevel(logging.INFO)
+
+# 콘솔 핸들러 생성 및 설정
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):
@@ -32,6 +44,20 @@ async def add_user_token_request(request: Request, call_next):
     response = await call_next(request)
     return response
 
+@app.middleware("http")
+async def set_logging(request: Request, call_next):
+    user_ip = request.client.host
+    method = request.method
+    endpoint = request.url.path
+    request_query_param = request.query_params
+    logging_data_dict = {
+        "user_ip": user_ip,
+        "method": method,
+        "endpoint": endpoint,
+        "request_query_param": request_query_param
+    }
+    logger.info(logging_data_dict)
+    return await call_next(request)
 
 @app.on_event("startup")
 async def startup_event():
