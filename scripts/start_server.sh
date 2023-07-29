@@ -19,5 +19,5 @@ if [ ! -d "$log_dir" ]; then
 fi
 
 current_date=$(date +"%Y%m%dT%H%M%S")
-gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker > \
+gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
  /home/ec2-user/log/out_$current_date 2> /home/ec2-user/log/err_$current_date < /dev/null &
