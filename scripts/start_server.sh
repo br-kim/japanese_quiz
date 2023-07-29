@@ -11,6 +11,6 @@ echo "cd app"
 echo $DATABASE_URL
 echo "check DATABASE_URL"
 
-current_date = $(date +"%Y%m%dT%H%M%S")
+current_date=$(date +"%Y%m%dT%H%M%S")
 gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker > \
  /home/ec2-user/log/out_$current_date 2> /home/ec2-user/log/err_$current_date < /dev/null &
