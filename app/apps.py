@@ -46,12 +46,12 @@ async def add_user_token_request(request: Request, call_next):
 
 @app.middleware("http")
 async def set_logging(request: Request, call_next):
-    user_ip = request.client.host
     method = request.method
     endpoint = request.url.path
+    real_ip = request.headers.get("x-real-ip")
     request_query_param = request.query_params
     logging_data_dict = {
-        "user_ip": user_ip,
+        "user_ip": real_ip,
         "method": method,
         "endpoint": endpoint,
         "request_query_param": request_query_param
