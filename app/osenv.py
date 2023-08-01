@@ -10,9 +10,12 @@ ENVIRON = os.getenv('JPN_QUIZ_ENVIRON', "dev")
 
 if ENVIRON == "test":
     DATABASE_URL = os.getenv('DATABASE_URL', default="postgresql://ii:1234@localhost:5432/test_database")
+    SERVER_URL = "http://localhost:8000"
 else:
     DATABASE_URL = os.getenv('DATABASE_URL', default="postgresql://ii:1234@localhost:5432/japanese_quiz")
+    SERVER_URL = "https://japanese-quiz.site"
 
 TEST_DATABASE_URL = os.getenv('TEST_DATABASE_URL', default="postgresql://ii:1234@localhost:5432/test_database")
 
 REDIS_URL = os.getenv("REDIS_URL", default="redis://localhost:6379")
+

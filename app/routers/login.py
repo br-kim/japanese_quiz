@@ -31,7 +31,7 @@ async def login(request: Request):
         'scope': " ".join(urls.GOOGLE_AUTH_SCOPES),
         'access_type': 'offline',
         'include_granted_scopes': 'true',
-        'redirect_uri': f'{request.base_url}',
+        'redirect_uri': f'{osenv.SERVER_URL}',
         'client_id': osenv.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
@@ -46,7 +46,7 @@ async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
         "code": code,
         "client_id": osenv.GOOGLE_CLIENT_ID,
         "client_secret": osenv.GOOGLE_CLIENT_SECRET,
-        "redirect_uri": f"{request.base_url}",
+        "redirect_uri": f"{osenv.SERVER_URL}",
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
