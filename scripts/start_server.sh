@@ -8,9 +8,6 @@ echo "source bashrc"
 cd /home/ec2-user/build/app
 echo "cd app"
 
-echo $DATABASE_URL
-echo "check DATABASE_URL"
-
 log_dir="/home/ec2-user/log"
 
 # 디렉토리가 존재하는지 확인하고 없으면 생성
@@ -29,4 +26,4 @@ fi
 
 
 gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
- $log_date_dir/out.log 2> $log_log_date_dir/err.log < /dev/null &
+ $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
