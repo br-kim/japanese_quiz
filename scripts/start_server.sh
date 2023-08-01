@@ -29,4 +29,4 @@ fi
 
 
 gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
- /home/ec2-user/log/$log_date_dir/out.log 2> /home/ec2-user/log/$log_log_date_dir/err.log < /dev/null &
+ $log_date_dir/out.log 2> $log_log_date_dir/err.log < /dev/null &
