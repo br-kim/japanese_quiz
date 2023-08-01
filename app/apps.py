@@ -59,6 +59,15 @@ async def set_logging(request: Request, call_next):
     logger.info(logging_data_dict)
     return await call_next(request)
 
+@app.middleware("http")
+async def error_logging(request: Request, call_next):
+    try:
+        response = await call_next(request)
+    except Exception as e:
+        logger.error(e)
+        raise e
+    return response
+
 @app.on_event("startup")
 async def startup_event():
     await broadcast.connect()
