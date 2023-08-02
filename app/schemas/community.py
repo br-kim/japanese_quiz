@@ -19,14 +19,14 @@ class Article(ArticleBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CommentBase(BaseModel):
     writer: str
     contents: str
     article_id: int
-    parent_id: Optional[int]
+    parent_id: int | None = None
 
 
 class CommentCreate(CommentBase):
@@ -38,7 +38,7 @@ class Comment(CommentBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ArticleRequest(BaseModel):
@@ -49,7 +49,7 @@ class ArticleRequest(BaseModel):
 class CommentRequest(BaseModel):
     contents: str
     article_id: int
-    parent_id: Optional[int]
+    parent_id: int | None = None
 
 
 class CommentEdit(BaseModel):
