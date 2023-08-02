@@ -8,11 +8,12 @@ import constants
 import models
 from routers import quiz, login, community, chatting, user, scoreboard, index
 from database import engine
+from config import get_settings
 from connectionmanager import broadcast
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(**get_settings().DOCS_SETTING)
 app.mount("/static", StaticFiles(directory='static'), name="static")
 
 app.include_router(index.index_router)
@@ -22,6 +23,7 @@ app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
 app.include_router(scoreboard.scoreboard_router)
+
 
 logger = logging.getLogger(__name__)
 # 로그 레벨 설정
