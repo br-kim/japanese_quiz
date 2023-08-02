@@ -1,5 +1,4 @@
 import os
-import json
 
 from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime, JSON
 from sqlalchemy.ext.mutable import MutableDict

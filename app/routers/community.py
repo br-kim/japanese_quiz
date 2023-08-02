@@ -71,7 +71,7 @@ async def write_comment(request: Request, comment: schemas.CommentRequest, db=De
     자유게시판 댓글 작성 API
     """
     writer = token.get("user_email")
-    if not (writer and comment.dict().get('contents')):
+    if not (writer and comment.model_dump().get('contents')):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     db_comment = schemas.CommentCreate(writer=writer, contents=comment.contents, article_id=comment.article_id,
                                        parent_id=comment.parent_id)
@@ -147,7 +147,7 @@ async def get_article(article_id: int, db=Depends(get_db), token=Depends(check_u
     자유게시판 글 조회 API
     """
     db_article = crud.get_article(db=db, article_num=article_id)
-    return schemas.Article.from_orm(db_article)
+    return schemas.Article.model_validate(db_article)
 
 
 @community_router.get('/freeboard/{article_id}/comment', response_model=List[schemas.Comment])
@@ -156,4 +156,4 @@ async def get_comments(article_id, db=Depends(get_db), token=Depends(check_user)
     자유게시판 댓글 조회 API
     """
     db_comments = crud.get_comments_by_article_id(db, article_id=article_id)
-    return [schemas.Comment.from_orm(comment) for comment in db_comments]
+    return [schemas.Comment.model_validate(comment) for comment in db_comments]

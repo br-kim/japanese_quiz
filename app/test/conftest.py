@@ -71,7 +71,7 @@ def create_score(session, create_user):
 def create_article_fixture(session, create_user):
     user = session.query(models.User).first()
     article = create_article(session, ArticleCreate(writer=user.email,title="test",contents="test"))
-    return create_user, Article.from_orm(article)
+    return create_user, Article.model_validate(article)
 
 @pytest.fixture(scope="function")
 def create_comment_fixture(session, create_article_fixture):
@@ -79,4 +79,4 @@ def create_comment_fixture(session, create_article_fixture):
     user = session.query(models.User).first()
     article = session.query(models.FreeBoard).first()
     comment = create_comment(session, CommentCreate(writer=user.email,contents="test",article_id=article.id))
-    return token, Comment.from_orm(comment)
+    return token, Comment.model_validate(comment)

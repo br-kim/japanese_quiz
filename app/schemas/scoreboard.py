@@ -13,7 +13,7 @@ class HiraganaScore(HiraganaScoreBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class KatakanaScoreBase(BaseModel):
@@ -28,7 +28,7 @@ class KatakanaScore(KatakanaScoreBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ScoreData(BaseModel):
@@ -36,7 +36,7 @@ class ScoreData(BaseModel):
     katakana: dict
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AnswerRes(BaseModel):
