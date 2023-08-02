@@ -1,12 +1,11 @@
 import os
 from datetime import datetime, timedelta
-from typing import Optional
 
 import jwt
 from jwt import ExpiredSignatureError
 from fastapi import HTTPException
 
-from osenv import JWT_KEY
+import constants
 
 def gen_img_path(gana: str):
     return "./static/img/" + gana
@@ -33,7 +32,7 @@ def create_token(payload:dict):
     exp_timestamp = int((datetime.now()+timedelta(hours=6)).timestamp())
     default_payload = dict(exp=exp_timestamp)
     default_payload.update(payload)
-    token = jwt.encode(payload=default_payload, key=JWT_KEY, algorithm="HS256")
+    token = jwt.encode(payload=default_payload, key=constants.JWT_KEY, algorithm="HS256")
     return token
 
 
@@ -41,7 +40,7 @@ def get_token_payload(token):
     if not token:
         return None
     try:
-        payload = jwt.decode(jwt=token.encode(), key=JWT_KEY, algorithms=["HS256"])
+        payload = jwt.decode(jwt=token.encode(), key=constants.JWT_KEY, algorithms=["HS256"])
     except ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Token Expire")
     return payload

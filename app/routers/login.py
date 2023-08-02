@@ -1,18 +1,16 @@
 import urllib.parse
-import hashlib
-import os
 
 import requests
 import jwt
-from fastapi import APIRouter, Request, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-import osenv
 import urls
 import schemas
 import crud
+import constants
+from config import get_settings
 from dependencies import get_db
 from utils import create_token
 
@@ -31,8 +29,8 @@ async def login(request: Request):
         'scope': " ".join(urls.GOOGLE_AUTH_SCOPES),
         'access_type': 'offline',
         'include_granted_scopes': 'true',
-        'redirect_uri': f'{osenv.SERVER_URL}',
-        'client_id': osenv.GOOGLE_CLIENT_ID,
+        'redirect_uri': f'{get_settings().SERVER_URL}',
+        'client_id': constants.GOOGLE_CLIENT_ID,
     }
     req_url = base_url + urllib.parse.urlencode(url_dict)
     return req_url
@@ -44,9 +42,9 @@ async def google_oauth(request: Request, code, db: Session = Depends(get_db)):
     """
     params = {
         "code": code,
-        "client_id": osenv.GOOGLE_CLIENT_ID,
-        "client_secret": osenv.GOOGLE_CLIENT_SECRET,
-        "redirect_uri": f"{osenv.SERVER_URL}",
+        "client_id": constants.GOOGLE_CLIENT_ID,
+        "client_secret": constants.GOOGLE_CLIENT_SECRET,
+        "redirect_uri": f"{get_settings().SERVER_URL}",
         "grant_type": "authorization_code",
     }
     res = requests.post(urls.GOOGLE_GET_TOKEN_URL, data=params)
