@@ -3,13 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import osenv
+from config import get_settings
+import constants
 
-
-SQLALCHEMY_DATABASE_URL = osenv.DATABASE_URL
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(get_settings().DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-redis_connection = aioredis.from_url(osenv.REDIS_URL)
+redis_connection = aioredis.from_url(constants.REDIS_URL)
 
 Base = declarative_base()

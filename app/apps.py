@@ -4,9 +4,9 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
-import osenv
-from routers import quiz, login, community, chatting, user, scoreboard, index
+import constants
 import models
+from routers import quiz, login, community, chatting, user, scoreboard, index
 from database import engine
 from connectionmanager import broadcast
 
@@ -30,8 +30,6 @@ logger.setLevel(logging.INFO)
 # 콘솔 핸들러 생성 및 설정
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 @app.middleware("http")
@@ -78,5 +76,5 @@ async def shutdown_event():
 
 
 if __name__ == "__main__":
-    uvicorn.run("apps:app", host="0.0.0.0", port=osenv.PORT_NUMBER, workers=1, reload=True, proxy_headers=True)
+    uvicorn.run("apps:app", host="0.0.0.0", port=constants.PORT_NUMBER, workers=1, reload=True, proxy_headers=True)
 

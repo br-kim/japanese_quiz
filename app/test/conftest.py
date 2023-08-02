@@ -1,34 +1,32 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, drop_database, create_database
-from sqlalchemy import text
 from fastapi.testclient import TestClient
 
 
-import osenv
 import models
 from models import Base
 from utils import create_token
 from .database import Session
 from crud import create_user_scoreboard, create_article, create_comment
 from schemas import ArticleCreate, CommentCreate, Article, Comment
+import constants
 
 def init_database():
-    if not database_exists(str(osenv.TEST_DATABASE_URL)):
-        create_database(str(osenv.TEST_DATABASE_URL))
+    if not database_exists(constants.TEST_DATABASE_URL):
+        create_database(constants.TEST_DATABASE_URL)
 
 
 @pytest.fixture(scope="session")
 def db():
-    if database_exists(str(osenv.TEST_DATABASE_URL)):
-        drop_database(str(osenv.TEST_DATABASE_URL))
+    if database_exists(constants.TEST_DATABASE_URL):
+        drop_database(constants.TEST_DATABASE_URL)
     init_database()
-    engine = create_engine(str(osenv.TEST_DATABASE_URL))
+    engine = create_engine(constants.TEST_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     Session.configure(bind=engine)
     yield
-    drop_database(str(osenv.TEST_DATABASE_URL))
+    drop_database(constants.TEST_DATABASE_URL)
 
 
 @pytest.fixture(scope="function")
