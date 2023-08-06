@@ -1,4 +1,5 @@
 current_date=$(date +"%Y%m%dT%H%M%S")
+JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE=$current_date
 
 source /home/ec2-user/build/app/venv/bin/activate
 echo "activate venv"
@@ -6,7 +7,7 @@ export PATH=$PATH:$HOME/build/app/venv/lib/python3.11/site-packages
 echo "export PATH"
 export JPN_QUIZ_ENVIRON=prod
 echo "export JPN_QUIZ_ENVIRON"
-export JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE=$current_date
+export JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE
 source /home/ec2-user/.bashrc
 echo "source bashrc"
 
