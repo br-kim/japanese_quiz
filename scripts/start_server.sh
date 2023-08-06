@@ -34,7 +34,7 @@ fi
 # $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
 cd /home/ec2-user/build/app
 echo $JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE
-gunicorn apps:app > /home/ec2-user/log/out0806.log 2> /home/ec2-user/log/err0806.log < /dev/null &
+gunicorn apps:app > /dev/null 2> /dev/null < /dev/null &
 
 echo "start server"
 
