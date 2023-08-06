@@ -54,6 +54,9 @@ $log_date_dir/err.log {
     size 10240
     missingok
     notifempty
+    postrotate
+      killall -s SIGUSR1 gunicorn
+    endscript
 }
 
 $log_date_dir/out.log {
@@ -62,6 +65,9 @@ $log_date_dir/out.log {
     size 10240
     missingok
     notifempty
+    postrotate
+      killall -s SIGUSR1 gunicorn
+    endscript
 }
 
 EOF
