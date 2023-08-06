@@ -27,11 +27,11 @@ app.include_router(scoreboard.scoreboard_router)
 
 logger = logging.getLogger(__name__)
 # 로그 레벨 설정
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.INFO)
 
 # 콘솔 핸들러 생성 및 설정
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(get_settings().APP_LOGGING_LEVEL)
 logger.addHandler(console_handler)
 
 @app.middleware("http")
