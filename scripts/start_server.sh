@@ -50,14 +50,14 @@ logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
 cat << EOF > "$logrotate_conf"
 $log_date_dir/err.log {
     rotate 10
-    size 1M
+    size 10240
     missingok
     notifempty
 }
 
 $log_date_dir/out.log {
     rotate 10
-    size 1M
+    size 10240
     missingok
     notifempty
 }
