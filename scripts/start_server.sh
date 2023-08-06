@@ -45,3 +45,29 @@ else
     echo "Health check succeeded. Received response code: $response_code"
 fi
 
+logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
+
+cat << EOF > "$logrotate_conf"
+$log_date_dir/err.log {
+    rotate 10
+    size 1M
+    missingok
+    notifempty
+}
+
+$log_date_dir/out.log {
+    rotate 10
+    size 1M
+    missingok
+    notifempty
+}
+
+EOF
+
+chmod 644 "$logrotate_conf"
+
+echo "create logrotate conf"
+
+logrotate -f "$logrotate_conf"
+
+echo "run logrotate"
