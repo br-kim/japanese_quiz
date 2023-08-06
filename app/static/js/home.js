@@ -29,7 +29,7 @@ export async function usingCode() {
 }
 
 export async function generateNav() {
-    function createAElement(href, text, id = null) {
+    function createNavElement(href, text, id = null) {
         let element = document.createElement("a");
         element.classList.add("nav-link");
         element.classList.add("active");
@@ -42,36 +42,32 @@ export async function generateNav() {
         if (id) {
             element.id = id;
         }
-        let divElement = document.createElement("div");
-        divElement.classList.add("nav-item");
-        divElement.appendChild(element);
-        return divElement;
+        let liElement = document.createElement("li");
+        liElement.classList.add("nav-item");
+        liElement.appendChild(element);
+        return liElement;
     }
 
     let navDiv = document.getElementById("nav-div");
 
-    let navLeftDiv = document.createElement("div");
-    let navRightDiv = document.createElement("div");
+    let navLeftDiv = document.createElement("ul");
+    let navRightDiv = document.createElement("ul");
 
-    navLeftDiv.classList.add("d-flex", "justify-content-start");
-    navRightDiv.classList.add("d-flex", "justify-content-end");
+    navLeftDiv.classList.add("navbar-nav", "me-auto", "mb-2", "mb-lg-0");
+    navRightDiv.classList.add("navbar-nav", "ml-auto", "mb-2", "mb-lg-0");
 
-    let mainNav = createAElement("/", "메인");
-    let infNav = createAElement("/quiz", "무한모드");
-    let testNav = createAElement("/newquiz", "테스트");
-    let freeboardNav = createAElement("/fb", "자유게시판");
-    let chattingNav = createAElement("/ws", "채팅");
-    let loginNav = createAElement(null, "로그인", "nav-login");
-    let logoutNav = createAElement("/logout", "로그아웃");
+    let mainNav = createNavElement("/", "메인");
+    let infNav = createNavElement("/quiz", "무한모드");
+    let testNav = createNavElement("/newquiz", "테스트");
+    let freeboardNav = createNavElement("/fb", "자유게시판");
+    let chattingNav = createNavElement("/ws", "채팅");
+    let loginNav = createNavElement(null, "로그인", "nav-login");
+    let logoutNav = createNavElement("/logout", "로그아웃");
     logoutNav.addEventListener("click", () => {
         localStorage.removeItem("jpn_quiz_access_token");
     });
-    let divContainer = document.createElement("div");
 
-    navDiv.appendChild(divContainer);
-
-    divContainer.classList.add("navbar-nav", "mb-2", "mb-lg-0", "w-100", "justify-content-between");
-    divContainer.append(navLeftDiv, navRightDiv);
+    navDiv.append(navLeftDiv, navRightDiv);
 
     navLeftDiv.append(mainNav, infNav, testNav, freeboardNav, chattingNav);
 
@@ -92,7 +88,7 @@ export async function generateNav() {
         }
         let userInfoRes = await res.json();
         localStorage.setItem("user_email", userInfoRes.email);
-        let scoreBoardNav = createAElement("/scoreboard", `${userInfoRes.email}님, 환영합니다!`);
+        let scoreBoardNav = createNavElement("/scoreboard", `${userInfoRes.email}님, 환영합니다!`);
         navRightDiv.appendChild(scoreBoardNav);
         navRightDiv.appendChild(logoutNav);
     } else {
