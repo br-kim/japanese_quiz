@@ -29,3 +29,15 @@ fi
 
 gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
  $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
+
+echo "start server"
+
+response_code=$(curl -s -o /dev/null -w "%{http_code}" https://japanese-quiz.site/health/123)
+
+if [ "$response_code" -ne 200 ]; then
+    echo "Health check failed. Received response code: $response_code"
+    exit 1
+else
+    echo "Health check succeeded. Received response code: $response_code"
+fi
+
