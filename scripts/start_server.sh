@@ -31,6 +31,7 @@ fi
 
 #gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
 # $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
+cd /home/ec2-user/build/app
 
 gunicorn apps:app -c "/home/ec2-user/build/app/gunicorn.conf.py"> /dev/null 2> /dev/null < /dev/null &
 
