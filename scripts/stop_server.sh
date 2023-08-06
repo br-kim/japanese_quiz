@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 실행중인 FastAPI 앱의 PID를 배열로 저장
+# 실행중인 gunicorn의 PID를 배열로 저장
 PIDS=($(ps aux | grep gunicorn | grep -v grep | awk '{print $2}'))
 
 if [ ${#PIDS[@]} -eq 0 ]; then
