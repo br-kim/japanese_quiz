@@ -51,37 +51,37 @@ else
     echo "Health check succeeded. Received response code: $response_code"
 fi
 
-logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
-
-cat << EOF > "$logrotate_conf"
-$log_date_dir/err.log {
-    su root ec2-user
-    rotate 10
-    size 10240
-    missingok
-    notifempty
-    postrotate
-      killall -s SIGUSR1 gunicorn
-    endscript
-}
-
-$log_date_dir/out.log {
-    su root ec2-user
-    rotate 10
-    size 10240
-    missingok
-    notifempty
-    postrotate
-      killall -s SIGUSR1 gunicorn
-    endscript
-}
-
-EOF
-
-chmod 644 "$logrotate_conf"
-
-echo "create logrotate conf"
-
-logrotate -f "$logrotate_conf"
-
-echo "run logrotate"
+#logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
+#
+#cat << EOF > "$logrotate_conf"
+#$log_date_dir/err.log {
+#    su root ec2-user
+#    rotate 10
+#    size 10240
+#    missingok
+#    notifempty
+#    postrotate
+#      killall -s SIGUSR1 gunicorn
+#    endscript
+#}
+#
+#$log_date_dir/out.log {
+#    su root ec2-user
+#    rotate 10
+#    size 10240
+#    missingok
+#    notifempty
+#    postrotate
+#      killall -s SIGUSR1 gunicorn
+#    endscript
+#}
+#
+#EOF
+#
+#chmod 644 "$logrotate_conf"
+#
+#echo "create logrotate conf"
+#
+#logrotate -f "$logrotate_conf"
+#
+#echo "run logrotate"
