@@ -29,10 +29,6 @@ if [ ! -d "$log_date_dir" ]; then
   mkdir -p "$log_date_dir"
 fi
 
-
-#gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
-# $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
-
 cd /home/ec2-user/build/app
 
 gunicorn apps:app > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
@@ -52,37 +48,37 @@ else
     echo "Health check succeeded. Received response code: $response_code"
 fi
 
-#logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
-#
-#cat << EOF > "$logrotate_conf"
-#$log_date_dir/err.log {
-#    su root ec2-user
-#    rotate 10
-#    size 10240
-#    missingok
-#    notifempty
-#    postrotate
-#      killall -s SIGUSR1 gunicorn
-#    endscript
-#}
-#
-#$log_date_dir/out.log {
-#    su root ec2-user
-#    rotate 10
-#    size 10240
-#    missingok
-#    notifempty
-#    postrotate
-#      killall -s SIGUSR1 gunicorn
-#    endscript
-#}
-#
-#EOF
-#
-#chmod 644 "$logrotate_conf"
-#
-#echo "create logrotate conf"
-#
-#logrotate -f "$logrotate_conf"
-#
-#echo "run logrotate"
+logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
+
+cat << EOF > "$logrotate_conf"
+$log_date_dir/err.log {
+    su root ec2-user
+    rotate 10
+    size 10240
+    missingok
+    notifempty
+    postrotate
+      killall -s SIGUSR1 gunicorn
+    endscript
+}
+
+$log_date_dir/out.log {
+    su root ec2-user
+    rotate 10
+    size 10240
+    missingok
+    notifempty
+    postrotate
+      killall -s SIGUSR1 gunicorn
+    endscript
+}
+
+EOF
+
+chmod 644 "$logrotate_conf"
+
+echo "create logrotate conf"
+
+logrotate -f "$logrotate_conf"
+
+echo "run logrotate"
