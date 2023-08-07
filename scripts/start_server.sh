@@ -1,5 +1,8 @@
 current_date=$(date +"%Y%m%dT%H%M%S")
 JPN_QUIZ_DEPLOY_DATE=$current_date
+export JPN_QUIZ_DEPLOY_DATE
+LOG_PATH="/home/ec2-user/log/$JPN_QUIZ_DEPLOY_DATE/out.log"
+ERROR_LOG_PATH="/home/ec2-user/log/$JPN_QUIZ_DEPLOY_DATE/err.log"
 
 source /home/ec2-user/build/app/venv/bin/activate
 echo "activate venv"
@@ -7,7 +10,8 @@ export PATH=$PATH:$HOME/build/app/venv/lib/python3.11/site-packages
 echo "export PATH"
 export JPN_QUIZ_ENVIRON=prod
 echo "export JPN_QUIZ_ENVIRON"
-export JPN_QUIZ_DEPLOY_DATE
+export LOG_PATH
+export ERROR_LOG_PATH
 source /home/ec2-user/.bashrc
 echo "source bashrc"
 
@@ -31,7 +35,7 @@ fi
 
 cd /home/ec2-user/build/app
 
-gunicorn apps:app -c gunicorn.conf.py > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
+gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
 
 echo "start server"
 
