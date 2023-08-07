@@ -53,8 +53,8 @@ logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
 cat << EOF > "$logrotate_conf"
 $log_date_dir/err.log {
     su root ec2-user
-    rotate 10
-    size 10240
+    rotate 7
+    daily
     missingok
     notifempty
     postrotate
@@ -64,8 +64,8 @@ $log_date_dir/err.log {
 
 $log_date_dir/out.log {
     su root ec2-user
-    rotate 10
-    size 10240
+    rotate 7
+    daily
     missingok
     notifempty
     postrotate
