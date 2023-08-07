@@ -2,7 +2,7 @@ from fastapi import Request, HTTPException, Depends, Query
 from fastapi.security import HTTPBearer
 
 from database import SessionLocal
-from utils import get_token_payload
+from utils.utils import get_token_payload
 
 
 authorization = HTTPBearer()

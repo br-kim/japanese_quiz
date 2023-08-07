@@ -6,5 +6,5 @@ for key, value in os.environ.items():
 
 bind = '0.0.0.0:' + str(constants.PORT_NUMBER)
 worker_class = 'uvicorn.workers.UvicornWorker'
-accesslog = f'/home/ec2-user/log/{os.getenv("JPN_QUIZ_DEPLOY_DATE")}/out.log'
-errorlog = f'/home/ec2-user/log/{os.getenv("JPN_QUIZ_DEPLOY_DATE")}/err.log'
+access_log = constants.LOG_PATH
+error_log = constants.ERROR_LOG_PATH

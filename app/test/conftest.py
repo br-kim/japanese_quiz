@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 import models
 from models import Base
-from utils import create_token
+from utils.utils import create_token
 from .database import Session
 from crud import create_user_scoreboard, create_article, create_comment
 from schemas import ArticleCreate, CommentCreate, Article, Comment

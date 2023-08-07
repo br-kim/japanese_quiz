@@ -1,5 +1,3 @@
-import logging
-
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +8,7 @@ from routers import quiz, login, community, chatting, user, scoreboard, index
 from database import engine
 from config import get_settings
 from connectionmanager import broadcast
+from utils.logging_utils import info_logger, error_logger
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -24,15 +23,6 @@ app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
 app.include_router(scoreboard.scoreboard_router)
 
-
-logger = logging.getLogger(__name__)
-# 로그 레벨 설정
-logger.setLevel(logging.INFO)
-
-# 콘솔 핸들러 생성 및 설정
-console_handler = logging.StreamHandler()
-console_handler.setLevel(get_settings().APP_LOGGING_LEVEL)
-logger.addHandler(console_handler)
 
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):
@@ -56,7 +46,7 @@ async def set_logging(request: Request, call_next):
         "endpoint": endpoint,
         "request_query_param": request_query_param
     }
-    logger.info(logging_data_dict)
+    info_logger.info(logging_data_dict)
     return await call_next(request)
 
 @app.middleware("http")
@@ -64,7 +54,7 @@ async def error_logging(request: Request, call_next):
     try:
         response = await call_next(request)
     except Exception as e:
-        logger.error(e)
+        error_logger.error(e)
         raise e
     return response
 

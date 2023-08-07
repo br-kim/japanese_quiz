@@ -12,7 +12,7 @@ import crud
 import constants
 from config import get_settings
 from dependencies import get_db
-from utils import create_token
+from utils.utils import create_token
 
 login_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
