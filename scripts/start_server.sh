@@ -31,7 +31,7 @@ fi
 
 cd /home/ec2-user/build/app
 
-gunicorn apps:app &
+gunicorn apps:app > /dev/null 2> /dev/null &
 
 echo "start server"
 
