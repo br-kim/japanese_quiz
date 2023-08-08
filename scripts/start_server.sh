@@ -35,7 +35,10 @@ fi
 
 cd /home/ec2-user/build/app
 
-gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
+#gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
+
+gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > /dev/null 2> /dev/null < /dev/null &
+
 
 echo "start server"
 
