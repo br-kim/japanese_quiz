@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-import utils
+import utils.utils as utils
 import crud
 import schemas
 from dependencies import check_user, get_db, check_user_optional_token

@@ -4,6 +4,8 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings
 
+from constants import JPN_QUIZ_ENVIRON
+
 class TestSettings(BaseSettings):
     DATABASE_URL: str = os.getenv('DATABASE_URL', default="postgresql://ii:1234@localhost:5432/test_database")
     SERVER_URL: str = "http://localhost:8000"
@@ -26,10 +28,9 @@ class ProductionSettings(BaseSettings):
 
 @lru_cache()
 def get_settings():
-    environ = os.getenv('JPN_QUIZ_ENVIRON', "test")
-    if environ == "test":
+    if JPN_QUIZ_ENVIRON == "test":
         return TestSettings()
-    elif environ == "local":
+    elif JPN_QUIZ_ENVIRON == "local":
         return LocalSettings()
-    elif environ == "prod":
+    elif JPN_QUIZ_ENVIRON == "prod":
         return ProductionSettings()

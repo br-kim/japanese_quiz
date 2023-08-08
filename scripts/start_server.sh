@@ -1,4 +1,8 @@
 current_date=$(date +"%Y%m%dT%H%M%S")
+JPN_QUIZ_DEPLOY_DATE=$current_date
+export JPN_QUIZ_DEPLOY_DATE
+LOG_PATH="/home/ec2-user/log/$JPN_QUIZ_DEPLOY_DATE/out.log"
+ERROR_LOG_PATH="/home/ec2-user/log/$JPN_QUIZ_DEPLOY_DATE/err.log"
 
 source /home/ec2-user/build/app/venv/bin/activate
 echo "activate venv"
@@ -6,7 +10,8 @@ export PATH=$PATH:$HOME/build/app/venv/lib/python3.11/site-packages
 echo "export PATH"
 export JPN_QUIZ_ENVIRON=prod
 echo "export JPN_QUIZ_ENVIRON"
-export JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE=$current_date
+export LOG_PATH
+export ERROR_LOG_PATH
 source /home/ec2-user/.bashrc
 echo "source bashrc"
 
@@ -28,12 +33,12 @@ if [ ! -d "$log_date_dir" ]; then
   mkdir -p "$log_date_dir"
 fi
 
-
-#gunicorn -b :8000 apps:app -k uvicorn.workers.UvicornWorker --access-logfile - > \
-# $log_date_dir/out.log 2> $log_date_dir/err.log < /dev/null &
 cd /home/ec2-user/build/app
-echo $JPN_QUIZ_JPN_QUIZ_DEPLOY_DATE
-gunicorn apps:app -c "/home/ec2-user/build/app/gunicorn.conf.py"> /home/ec2-user/log/out0806.log 2> /home/ec2-user/log/err0806.log < /dev/null &
+
+#gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
+
+gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > /dev/null 2> /dev/null < /dev/null &
+
 
 echo "start server"
 
@@ -55,8 +60,8 @@ logrotate_conf="/etc/logrotate.d/jpn_quiz_logrotate"
 cat << EOF > "$logrotate_conf"
 $log_date_dir/err.log {
     su root ec2-user
-    rotate 10
-    size 10240
+    rotate 7
+    daily
     missingok
     notifempty
     postrotate
@@ -66,8 +71,8 @@ $log_date_dir/err.log {
 
 $log_date_dir/out.log {
     su root ec2-user
-    rotate 10
-    size 10240
+    rotate 7
+    daily
     missingok
     notifempty
     postrotate
