@@ -49,7 +49,7 @@ export let articleFunction = {
             return;
         }
         let res = await requestToServer(
-            `/freeboard/edit/article/${articleId}`, "PATCH", true, JSON.stringify(data));
+            `/freeboard/article/${articleId}`, "PATCH", true, JSON.stringify(data));
         if (res.status === 403) {
             alert("다른 사람의 글은 수정할 수 없습니다.");
         }
