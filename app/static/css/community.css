@@ -5,3 +5,7 @@
 .child-comment{
     background-color: #e1f3ff;
 }
+
+textarea.no-resize {
+    resize: none;
+}
