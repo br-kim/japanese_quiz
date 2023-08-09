@@ -2,9 +2,14 @@
 {% block title %} 글쓰기 {% endblock %}
 {% block content %}
     <div class="col-md-6 d-flex justify-content-center flex-column" id="contain-article-write">
+        <div class="d-flex justify-content-between">
+            <div class="text-center col-md-10"><h3>글 작성</h3></div>
+            <input class="btn btn-primary" id="sendArticleBtn" type="button" value="저장">
+        </div>
         <input class="form-control" id="input-title" type="text" name="title" placeholder="제목을 입력해주세요.">
-            <textarea class="form-control no-resize" id="input-content" name="contents" placeholder="내용을 입력해주세요."></textarea>
-        <input class="btn btn-primary" id="sendArticleBtn" type="button" value="저장">
+        <textarea class="form-control no-resize" id="input-content" name="contents" rows="10"
+                  placeholder="내용을 입력해주세요."></textarea>
+
     </div>
 {% endblock %}
 {% block scripts %}
