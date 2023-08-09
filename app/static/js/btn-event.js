@@ -11,28 +11,20 @@ export let btnFunction = {
     },
 
     buildIncorrectSheetTable: function () {
-        let table = document.getElementById('incorrect-sheet-table');
-        if (table !== null) {
-            let cellList = [];
-            let begin = table.rows.length - 2;
-            let cellsLength = table.rows[begin].cells.length;
-            if (cellsLength > 4) {
-                let f = Math.floor(cellsLength / 4);
-                begin += 2 * f;
-                table.insertRow();
-                table.insertRow();
-            }
-
-            for (let i = begin; i < begin + 2; i++) {
-                cellList.push(table.rows[i].insertCell(-1));
-            }
-            cellList[0].innerHTML =
-                "<img alt='image' src=" + document.getElementById('quiz').src + ">";
-
-            cellList[1].innerText =
-                document.getElementById('contain-answer').title;
-        }
+        let grid = document.getElementById('incorrect-sheet-grid');
+        let japaneseCharacterDiv = document.createElement('div');
+        let pronDiv = document.createElement('div');
+        let incorrectSetDiv = document.createElement('div');
+        incorrectSetDiv.classList.add('col');
+        incorrectSetDiv.append(japaneseCharacterDiv, pronDiv);
+        let characterImg = document.createElement('img');
+        characterImg.alt = "image";
+        characterImg.src = document.getElementById('quiz').src;
+        japaneseCharacterDiv.append(characterImg);
+        pronDiv.innerText = document.getElementById('contain-answer').title;
+        grid.append(incorrectSetDiv);
     },
+
     isCorrectInfMode: async function () {
         // 무한 모드에서 정답을 확인하는 함수
         let answer = document.getElementById('answer').value;
@@ -131,15 +123,13 @@ export let btnFunction = {
     },
 
     getTableData: function () {
-        let table = document.getElementById('incorrect-sheet-table');
+        let grid = document.getElementById('incorrect-sheet-grid');
         let arr = [];
-        let get_url = (elem) => {
-            let url = elem.firstChild.src;
-            arr.push(url);
-        };
-        for (let i = 0; i < table.rows.length; i += 2) {
-            let buffer = Array.from(table.rows[i].cells);
-            buffer.forEach(get_url);
+        for (let i = 0; i < grid.children.length; i++) {
+            let child = grid.children[i];
+            if (child.children.length > 0 && child.children[0].children[0].tagName === 'IMG') {
+                arr.push(child.children[0].children[0].src);
+            }
         }
         return arr;
     },
@@ -219,22 +209,22 @@ if (submitBtn !== null) {
     } else {
         eventListener = btnFunction.isCorrectTestMode;
     }
-    submitBtn.addEventListener('click', eventListener, false);
+    submitBtn.addEventListener('click', eventListener);
 }
 
 const showAnswerBtn = document.getElementById('showAnswerBtn');
 if (showAnswerBtn !== null) {
-    showAnswerBtn.addEventListener('click', btnFunction.showAnswer, false);
+    showAnswerBtn.addEventListener('click', btnFunction.showAnswer);
 }
 
 const getRandomImageBtn = document.getElementById('getRandomImageBtn');
 if (getRandomImageBtn !== null) {
-    getRandomImageBtn.addEventListener('click', btnFunction.getRandomImageUrl, false);
+    getRandomImageBtn.addEventListener('click', btnFunction.getRandomImageUrl);
 }
 
 const toggleBtn = document.getElementById('toggleBtn');
 if (toggleBtn !== null) {
-    toggleBtn.addEventListener('click', btnFunction.toggleFunc, false);
+    toggleBtn.addEventListener('click', btnFunction.toggleFunc);
 }
 
 let getNextImageBtn = document.getElementById('getNextImageBtn');
@@ -244,7 +234,7 @@ if (getNextImageBtn !== null) {
             btnFunction.functionContain = await btnFunction.getNextImage();
             getNextImageBtn.addEventListener('click', async () => {
                 func();
-            }, false);
+            });
         });
     })();
 }
@@ -258,7 +248,7 @@ if (incorrectQuizBtn !== null) {
         getNextImageBtn = document.getElementById('getNextImageBtn');
         btnFunction.functionContain = await btnFunction.getNextImageIncorrect();
         let incorrectSheetTable = document.getElementById('incorrect-sheet-table');
-        incorrectSheetTable.innerHTML = '<tr></tr> <tr></tr>';
+        incorrectSheetTable.innerHTML = "";
         getNextImageBtn.addEventListener('click', () => {
             func();
         }, false);

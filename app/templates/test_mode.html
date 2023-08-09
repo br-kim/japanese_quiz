@@ -1,23 +1,28 @@
 {% extends "layout.html" %}
 {% block title %}테스트{% endblock %}
 {% block content %}
-    <div class="d-flex flex-column">
-{% include 'quiz_block.html' %}
-    <div id="refresher-container"></div>
-    <form onsubmit="return false;">
-        <label for="answer">정답 : </label>
-        <input type="text" id="answer">
-        <input id="submitBtn" class="btn btn-primary" type="submit" value="제출">
-        <input class="getNextBtn" id="getNextImageBtn" type="hidden" value="다음">
-    </form>
-{% include 'answer_block.html' %}
-    <div id="incorrect-sheet">
-        오답 노트 <button class="btn btn-secondary" id="toggleBtn"> 접기 </button>
-        <button id="incorrectQuizBtn" class="btn btn-secondary"> 오답퀴즈 </button>
-    <table id="incorrect-sheet-table">
-        <tr></tr> <tr></tr>
-    </table>
-    </div>
+    <div class="d-flex flex-column align-items-start align-items-center">
+        <div class="d-flex flex-column">
+            {% include 'quiz_block.html' %}
+            <div id="refresher-container"></div>
+            <form onsubmit="return false;">
+                <label for="answer">정답 : </label>
+                <input class="form-control" type="text" id="answer">
+                <input id="submitBtn" class="btn btn-primary" type="submit" value="제출">
+                <input class="getNextBtn" id="getNextImageBtn" type="hidden" value="다음">
+            </form>
+            {% include 'answer_block.html' %}
+        </div>
+        <div class="d-flex flex-column">
+            <div class="container d-flex" id="incorrect-sheet">
+                <h3 class="text-nowrap">오답 노트</h3>
+                <button class="btn btn-secondary text-nowrap" id="toggleBtn"> 접기</button>
+                <button id="incorrectQuizBtn" class="btn btn-secondary text-nowrap"> 오답퀴즈</button>
+            </div>
+        </div>
+        <div>
+            <div id="incorrect-sheet-grid" class="d-flex row row-cols-auto">
+            </div>
+        </div>
     </div>
 {% endblock %}
-
