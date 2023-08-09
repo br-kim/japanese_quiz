@@ -1,21 +1,17 @@
 {% extends "layout.html" %}
 {% block title %} 글쓰기 {% endblock %}
 {% block content %}
-    <div id="contain-article-write">
-        <label>
-            <input id="input-title" type="text" style="width:100%" name="title" placeholder="제목을 입력해주세요.">
-            <br><br><br>
-            <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
-            <br>
-            <input id="sendArticleBtn" type="button" value="저장">
-        </label>
+    <div class="col-md-6 d-flex justify-content-center flex-column" id="contain-article-write">
+        <input class="form-control" id="input-title" type="text" name="title" placeholder="제목을 입력해주세요.">
+            <textarea class="form-control no-resize" id="input-content" name="contents" placeholder="내용을 입력해주세요."></textarea>
+        <input class="btn btn-primary" id="sendArticleBtn" type="button" value="저장">
     </div>
 {% endblock %}
-{% block scripts%}
-{{ super() }}
+{% block scripts %}
+    {{ super() }}
     <script type="module">
-    import {articleFunction} from "../static/js/community.js";
-    document.querySelector("#sendArticleBtn").addEventListener("click", articleFunction.sendArticle);
+        import {articleFunction} from "../static/js/community.js";
+
+        document.querySelector("#sendArticleBtn").addEventListener("click", articleFunction.sendArticle);
     </script>
 {% endblock %}
-```

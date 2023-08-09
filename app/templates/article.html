@@ -3,7 +3,6 @@
 {% block content %}
     <div class="d-flex flex-column">
         <h1><a href="/fb">자유 게시판</a></h1>
-        <br>
         <div id="wrap-freeboard-content">
             <div id="contain-article">
                 <div id="show-article">
@@ -16,28 +15,24 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between">
-                <div id="article-writer"></div>
-                <div id="article-created"></div>
+                    <div id="article-writer"></div>
+                    <div id="article-created"></div>
                 </div>
-
                 <hr>
                 <div id="article-content"></div>
                 <hr>
             </div>
         </div>
-        <br><br>
 
         <div id="contain-comments">
             <div id="show-comments">
             </div>
         </div>
-        <br><br><br>
         <div id="write-comment">
-            <br>
             <label id="write-label">
                 <input type="text" size="100px" id="write-comment-input">
                 <input type="button" class="btn btn-primary" id="write-comment-submit" value="등록">
-                <input type="hidden" id="state-childcomment" value=true><br><br>
+                <input type="hidden" id="state-childcomment" value=true>
             </label>
         </div>
     </div>

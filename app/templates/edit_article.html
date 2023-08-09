@@ -1,21 +1,22 @@
 {% extends "layout.html" %}
-{% block title %} 글쓰기 {% endblock %}
+{% block title %} 글 수정하기 {% endblock %}
 {% block content %}
-    <div id="contain-article-write">
-        <label>
-            <input id="input-title" type="text" style="width:100%" name="title" placeholder="제목을 입력해주세요.">
-            <br><br><br>
-            <textarea id="input-content" cols="100" rows="30" name="contents" placeholder="내용을 입력해주세요."></textarea>
-            <br>
-            <input type="button" value="저장" id="editArticleSaveBtn">
-        </label>
+    <div class="col-md-6 d-flex justify-content-center flex-column" id="contain-article-write">
+        <div class="d-flex justify-content-between">
+            <div class="text-center col-md-10"><h3>글 수정</h3></div>
+            <input class="btn btn-primary col-md-1" type="button" value="저장" id="editArticleSaveBtn">
+        </div>
+        <input class="form-control" id="input-title" type="text" name="title" placeholder="제목을 입력해주세요.">
+        <textarea class="form-control no-resize" id="input-content" name="contents" placeholder="내용을 입력해주세요."></textarea>
+
     </div>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
     <script type="module">
-    import {articleFunction} from "../static/js/community.js";
-    articleFunction.loadBeforeArticle()
-    document.getElementById("editArticleSaveBtn").addEventListener("click", articleFunction.editArticle);
+        import {articleFunction} from "../static/js/community.js";
+
+        articleFunction.loadBeforeArticle()
+        document.getElementById("editArticleSaveBtn").addEventListener("click", articleFunction.editArticle);
     </script>
 {% endblock %}
