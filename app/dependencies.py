@@ -14,6 +14,14 @@ async def check_user(request: Request, header=Depends(authorization)):
         raise HTTPException(status_code=403)
     return payload
 
+async def check_admin(request: Request, header=Depends(authorization)):
+    token = header.credentials
+    payload = get_token_payload(token)
+    request.state.user_token = payload
+    if not payload or payload.get("user_email") != "idle947@gmail.com":
+        raise HTTPException(status_code=404)
+    return payload
+
 async def check_user_by_query(token=Query(..., alias="token")):
     payload = get_token_payload(token)
     if not payload:
