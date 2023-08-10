@@ -10,7 +10,6 @@ from config import get_settings
 from connectionmanager import broadcast
 from utils.logging_utils import info_logger, error_logger
 
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(**get_settings().DOCS_SETTING)
 app.mount("/static", StaticFiles(directory='static'), name="static")
