@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 
 import jwt
-from jwt import ExpiredSignatureError
+from jwt import ExpiredSignatureError, InvalidSignatureError
 from fastapi import HTTPException
 
 import constants
@@ -43,6 +43,8 @@ def get_token_payload(token):
         payload = jwt.decode(jwt=token.encode(), key=constants.JWT_KEY, algorithms=["HS256"])
     except ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Token Expire")
+    except InvalidSignatureError:
+        raise HTTPException(status_code=403, detail="Token Invalid")
     return payload
 
 
