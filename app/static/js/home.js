@@ -88,10 +88,15 @@ export async function generateNav() {
                 return;
             } else {
                 alert("처리되지 않은 에러입니다.");
+                localStorage.removeItem("jpn_quiz_access_token");
+                notLoginProcess();
+                return;
             }
+
+        } else if (res.status === 404) {
+            alert("유저가 존재하지 않습니다.");
             localStorage.removeItem("jpn_quiz_access_token");
             notLoginProcess();
-            return;
         }
         let userInfoRes = await res.json();
         localStorage.setItem("user_email", userInfoRes.email);
