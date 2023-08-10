@@ -1,8 +1,8 @@
-"""init_database_model
+"""init db
 
-Revision ID: 7a32749906e0
-Revises: 7a2db7616d3f
-Create Date: 2023-04-07 00:22:02.148426
+Revision ID: ff4b4a4b6a7a
+Revises: 
+Create Date: 2023-08-10 22:55:29.725603
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7a32749906e0'
-down_revision = '7a2db7616d3f'
+revision = 'ff4b4a4b6a7a'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -40,19 +40,22 @@ def upgrade() -> None:
     op.create_index(op.f('ix_freeboard_id'), 'freeboard', ['id'], unique=False)
     op.create_table('hiragana',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('score', sa.String(), server_default='{"ma": 0, "bya": 0, "zu": 0, "ra": 0, "sa": 0, "cho": 0, "me": 0, "ki": 0, "ko": 0, "we": 0, "su": 0, "gyo": 0, "be": 0, "yu": 0, "ka": 0, "mi": 0, "ru": 0, "wo": 0, "hi": 0, "byu": 0, "de": 0, "gya": 0, "mo": 0, "shi": 0, "ze": 0, "e": 0, "shu": 0, "no": 0, "sha": 0, "bu": 0, "hyu": 0, "o": 0, "za": 0, "kya": 0, "bi": 0, "gyu": 0, "wi": 0, "te": 0, "pa": 0, "he": 0, "ju": 0, "myu": 0, "byo": 0, "ne": 0, "ryu": 0, "nu": 0, "ro": 0, "po": 0, "ku": 0, "pi": 0, "ni": 0, "sho": 0, "hyo": 0, "na": 0, "a": 0, "ta": 0, "pe": 0, "re": 0, "nyu": 0, "ga": 0, "fu": 0, "n": 0, "wa": 0, "zo": 0, "gu": 0, "pyu": 0, "mu": 0, "hya": 0, "kyu": 0, "bo": 0, "nyo": 0, "chu": 0, "ba": 0, "myo": 0, "nya": 0, "so": 0, "ryo": 0, "ge": 0, "ho": 0, "pyo": 0, "pya": 0, "pu": 0, "chi": 0, "yo": 0, "to": 0, "kyo": 0, "rya": 0, "ha": 0, "da": 0, "tsu": 0, "ya": 0, "se": 0, "do": 0, "jo": 0, "ri": 0, "cha": 0, "go": 0, "gi": 0, "ji": 0, "mya": 0, "u": 0, "ja": 0, "i": 0, "ke": 0}', nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('score', sa.JSON(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_hiragana_id'), 'hiragana', ['id'], unique=False)
     op.create_table('katakana',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('score', sa.String(), server_default='{"ma": 0, "bya": 0, "zu": 0, "ra": 0, "sa": 0, "cho": 0, "me": 0, "ki": 0, "ko": 0, "we": 0, "su": 0, "gyo": 0, "be": 0, "yu": 0, "ka": 0, "mi": 0, "ru": 0, "wo": 0, "hi": 0, "byu": 0, "de": 0, "gya": 0, "mo": 0, "shi": 0, "ze": 0, "e": 0, "shu": 0, "no": 0, "sha": 0, "bu": 0, "hyu": 0, "o": 0, "za": 0, "kya": 0, "bi": 0, "gyu": 0, "wi": 0, "te": 0, "pa": 0, "he": 0, "ju": 0, "myu": 0, "byo": 0, "ne": 0, "ryu": 0, "nu": 0, "ro": 0, "po": 0, "ku": 0, "pi": 0, "ni": 0, "sho": 0, "hyo": 0, "na": 0, "a": 0, "ta": 0, "pe": 0, "re": 0, "nyu": 0, "ga": 0, "fu": 0, "n": 0, "wa": 0, "zo": 0, "gu": 0, "pyu": 0, "mu": 0, "hya": 0, "kyu": 0, "bo": 0, "nyo": 0, "chu": 0, "ba": 0, "myo": 0, "nya": 0, "so": 0, "ryo": 0, "ge": 0, "ho": 0, "pyo": 0, "pya": 0, "pu": 0, "chi": 0, "yo": 0, "to": 0, "kyo": 0, "rya": 0, "ha": 0, "da": 0, "tsu": 0, "ya": 0, "se": 0, "do": 0, "jo": 0, "ri": 0, "cha": 0, "go": 0, "gi": 0, "ji": 0, "mya": 0, "u": 0, "ja": 0, "i": 0, "ke": 0}', nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('score', sa.JSON(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_katakana_id'), 'katakana', ['id'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=True),
+    sa.Column('permission', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
