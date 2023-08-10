@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 
 import constants
 import models
-from routers import quiz, login, community, chatting, user, scoreboard, index
+from routers import quiz, login, community, chatting, user, scoreboard, index, admin
 from database import engine
 from config import get_settings
 from connectionmanager import broadcast
@@ -22,7 +22,7 @@ app.include_router(community.community_router)
 app.include_router(chatting.chatting_router)
 app.include_router(user.user_router)
 app.include_router(scoreboard.scoreboard_router)
-
+app.include_router(admin.admin_router)
 
 @app.middleware("http")
 async def add_user_token_request(request: Request, call_next):

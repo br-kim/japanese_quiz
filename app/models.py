@@ -23,6 +23,7 @@ class User(TimestampMixin, Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+    permission = Column(Integer, default=0)
 
 
 class HiraganaScore(Base):

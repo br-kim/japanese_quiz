@@ -18,6 +18,8 @@ echo "source bashrc"
 cd /home/ec2-user/build/app
 echo "cd app"
 
+
+
 log_dir="/home/ec2-user/log"
 
 # 디렉토리가 존재하는지 확인하고 없으면 생성
@@ -34,6 +36,9 @@ if [ ! -d "$log_date_dir" ]; then
 fi
 
 cd /home/ec2-user/build/app
+
+alembic upgrade head
+echo "alembic upgrade head"
 
 #gunicorn apps:app -c gunicorn.conf.py --log-config gunicorn.logging.conf > $log_dir/$current_date/out 2> $log_dir/$current_date/err < /dev/null &
 

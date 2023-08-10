@@ -21,3 +21,5 @@ class User(UserBase):
 
 class UserInfoResponse(BaseModel):
     email: str
+    permission: int | None = None
+
