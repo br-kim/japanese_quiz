@@ -7,7 +7,7 @@
 - Backend
     - Python
     - FastAPI
-- FrontEnd
+- Frontend
     - Javascript
     - Bootstrap
 - DB
