@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime, JSON
+from sqlalchemy import Column, Integer, String, UnicodeText, func, DateTime, JSON, VARCHAR
 from sqlalchemy.ext.mutable import MutableDict
 
 
@@ -32,6 +32,7 @@ class HiraganaScore(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     score = Column(MutableDict.as_mutable(JSON), default=hiragana_data)
+    # score = Column(VARCHAR, default=hiragana_data)
 
 
 class KatakanaScore(Base):
@@ -40,6 +41,7 @@ class KatakanaScore(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     score = Column(MutableDict.as_mutable(JSON), default=katakana_data)
+    # score = Column(VARCHAR, default=hiragana_data)
 
 
 class FreeBoard(TimestampMixin, Base):
