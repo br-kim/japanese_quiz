@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Depends
+from fastapi.responses import Response
 
 from dependencies import check_user, get_db
 import schemas
@@ -12,4 +13,6 @@ async def get_user_info(request: Request, db=Depends(get_db), token=Depends(chec
     유저 정보 API
     """
     user = crud.get_user_by_email(db, token.get("user_email"))
+    if not user:
+        return Response(status_code=404)
     return schemas.UserInfoResponse(email=user.email, permission=user.permission)
