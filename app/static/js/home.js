@@ -71,6 +71,11 @@ export async function generateNav() {
 
     navLeftDiv.append(mainNav, infNav, testNav, freeboardNav, chattingNav);
 
+    function notLoginProcess() {
+        loginNav.addEventListener("click", loginFunction);
+        navRightDiv.appendChild(loginNav);
+    }
+
     if (localStorage.getItem("jpn_quiz_access_token")) {
         let res = await requestToServer(serverBaseUrl + "/user-info", "GET");
         if (res.status === 403) {
@@ -84,7 +89,9 @@ export async function generateNav() {
             } else {
                 alert("처리되지 않은 에러입니다.");
             }
-            // localStorage.removeItem("jpn_quiz_access_token");
+            localStorage.removeItem("jpn_quiz_access_token");
+            notLoginProcess();
+            return;
         }
         let userInfoRes = await res.json();
         localStorage.setItem("user_email", userInfoRes.email);
@@ -92,7 +99,6 @@ export async function generateNav() {
         navRightDiv.appendChild(scoreBoardNav);
         navRightDiv.appendChild(logoutNav);
     } else {
-        loginNav.addEventListener("click", loginFunction);
-        navRightDiv.appendChild(loginNav);
+        notLoginProcess();
     }
 }
