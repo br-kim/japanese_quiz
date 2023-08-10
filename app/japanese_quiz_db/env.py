@@ -1,3 +1,5 @@
+import os
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -13,6 +15,9 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+
+config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL", "postgresql://ii:1234@localhost:5432/japanese_quiz"))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
