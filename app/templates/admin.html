@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %} 어드민 페이지{% endblock %}
+{% block content %}
+    <div class="flex-column">
+        <h3>어드민 페이지</h3>
+        <div id="admin-content">
+            <button id="user-list-btn" class="btn btn-primary">유저 목록 확인</button>
+            <div id="user-list-div" class="row">
+                <div class="col" id="user-list-id-div"></div>
+                <div class="col" id="user-list-email-div"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="module" src="../static/js/admin.js"></script>
+{% endblock %}
