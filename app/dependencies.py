@@ -3,9 +3,19 @@ from fastapi.security import HTTPBearer
 
 from database import SessionLocal
 from utils.utils import get_token_payload
+from crud import get_user_by_email
 
 
 authorization = HTTPBearer()
+
+def get_db():
+    db = SessionLocal()
+    db.begin()
+    try:
+        yield db
+    finally:
+        db.close()
+
 async def check_user(request: Request, header=Depends(authorization)):
     token = header.credentials
     payload = get_token_payload(token)
@@ -14,11 +24,12 @@ async def check_user(request: Request, header=Depends(authorization)):
         raise HTTPException(status_code=403)
     return payload
 
-async def check_admin(request: Request, header=Depends(authorization)):
+async def check_admin(request: Request, db=Depends(get_db), header=Depends(authorization)):
     token = header.credentials
     payload = get_token_payload(token)
     request.state.user_token = payload
-    if not payload or payload.get("user_email") != "idle947@gmail.com":
+    user = get_user_by_email(db, payload.get("user_email"))
+    if not payload or user.permission != 1:
         raise HTTPException(status_code=404)
     return payload
 
@@ -43,10 +54,3 @@ async def check_user_optional_token(request: Request):
     return payload
 
 
-def get_db():
-    db = SessionLocal()
-    db.begin()
-    try:
-        yield db
-    finally:
-        db.close()
