@@ -7,7 +7,7 @@ from dependencies import check_admin, get_db
 import schemas
 import crud
 
-admin_router = APIRouter(prefix="/admin")
+admin_router = APIRouter()
 templates = Jinja2Templates(directory='templates')
 
 
