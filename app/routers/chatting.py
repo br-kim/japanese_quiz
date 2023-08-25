@@ -35,8 +35,8 @@ async def create_alert(websocket: WebSocket, message: str):
 async def get_chatting_room_users(websocket: WebSocket):
     user_list = await chatting_room.get_chatting_room_users()
     message = schemas.MessageEvent(message_type="list", message=[i.decode() for i in user_list])
-    await broadcast.publish(channel=CHANNEL, message=message.json())
-    await websocket.send_json(message.dict())
+    await broadcast.publish(channel=CHANNEL, message=message.model_dump_json())
+    await websocket.send_json(message.model_dump())
 
 
 async def add_chatting_room_users(websocket: WebSocket, username: str):
