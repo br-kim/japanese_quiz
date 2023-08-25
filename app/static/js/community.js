@@ -192,12 +192,9 @@ export let articleFunction = {
     },
 
     changeChildComment: (commentId) => {
-        console.log("changeChildComment");
         let state = document.getElementById("state-childcomment").value;
         let comment = document.querySelector(`[data-comment-id="${commentId}"]`);
-        console.log(comment);
         if (state === "true") {
-            console.log("true");
             document.getElementById("state-childcomment").value = "false";
             comment.classList.replace('contain-comment', 'selected-comment');
             const oriElement = document.getElementById('write-comment-submit');
